@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'providers/auth_provider.dart';
 import 'screens/splash_screen.dart';
 import 'screens/login_screen.dart';
@@ -28,7 +27,7 @@ class DhahabuApp extends StatelessWidget {
             secondary: const Color(0xFF1A1A2E),
             brightness: Brightness.light,
           ),
-          textTheme: GoogleFonts.interTextTheme(),
+          textTheme: ThemeData.light().textTheme,
           useMaterial3: true,
           appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
           inputDecorationTheme: InputDecorationTheme(
