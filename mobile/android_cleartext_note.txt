@@ -1,0 +1,17 @@
+IMPORTANT — Allow HTTP on Android (required for local Django)
+
+Open this file after running `flutter create .`:
+
+  android/app/src/main/AndroidManifest.xml
+
+Inside the <application ...> tag, add:
+
+  android:usesCleartextTraffic="true"
+
+Example:
+
+  <application
+      android:label="dhahabu"
+      android:name="${applicationName}"
+      android:icon="@mipmap/ic_launcher"
+      android:usesCleartextTraffic="true">
