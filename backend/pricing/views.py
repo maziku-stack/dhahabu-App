@@ -1,34 +1,23 @@
-from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics
 from django.utils import timezone
 from .models import GoldPrice
 from .serializers import GoldPriceSerializer, GoldPriceCreateSerializer
 
-
 class CurrentPricesView(APIView):
-    """Return latest price for each karat (24K, 22K, 18K)."""
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         result = []
         for karat in ['24K', '22K', '18K']:
-            price = GoldPrice.objects.filter(
-                karat=karat, is_active=True
-            ).order_by('-effective_at').first()
+            price = GoldPrice.objects.filter(karat=karat, is_active=True).order_by('-effective_at').first()
             if price:
                 result.append(GoldPriceSerializer(price).data)
             else:
-                result.append({
-                    'karat': karat,
-                    'price_per_gram': None,
-                    'currency': 'TZS',
-                    'is_stale': True,
-                    'message': 'No price available',
-                })
+                result.append({'karat': karat, 'price_per_gram': None, 'currency': 'TZS', 'is_stale': True, 'message': 'No price'})
         return Response({'prices': result, 'fetched_at': timezone.now().isoformat()})
-
 
 class PriceHistoryView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
@@ -41,9 +30,7 @@ class PriceHistoryView(generics.ListAPIView):
             qs = qs.filter(karat=karat)
         return qs[:50]
 
-
 class SetPriceView(generics.CreateAPIView):
-    """Admin only – publish a new market price."""
     permission_classes = [IsAuthenticated]
     serializer_class = GoldPriceCreateSerializer
 

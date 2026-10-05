@@ -3,7 +3,7 @@ import '../models/user.dart';
 import '../services/api_service.dart';
 
 class AuthProvider with ChangeNotifier {
-  final ApiService _api = ApiService();
+  final _api = ApiService();
   User? _user;
   bool _loading = true;
   bool _authenticated = false;
@@ -30,9 +30,8 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<Map<String, dynamic>> requestOtp(String phone, String role) {
-    return _api.requestOtp(phone, role);
-  }
+  Future<Map<String, dynamic>> requestOtp(String phone, String role) =>
+      _api.requestOtp(phone, role);
 
   Future<void> verifyOtp({
     required String phone,
@@ -52,8 +51,33 @@ class AuthProvider with ChangeNotifier {
       miningSite: miningSite,
       businessName: businessName,
     );
-    _user = User.fromJson(data['user']);
+    _user = User.fromJson(data['user'] as Map<String, dynamic>);
     _authenticated = true;
+    notifyListeners();
+  }
+
+  Future<void> setPin(String pin) async {
+    await _api.setPin(pin);
+    if (_user != null) {
+      _user = User(
+        id: _user!.id,
+        phone: _user!.phone,
+        fullName: _user!.fullName,
+        role: _user!.role,
+        phoneVerified: _user!.phoneVerified,
+        pinSet: true,
+        region: _user!.region,
+        miningSite: _user!.miningSite,
+        dealerVerified: _user!.dealerVerified,
+        verificationStatus: _user!.verificationStatus,
+      );
+      notifyListeners();
+    }
+  }
+
+  Future<void> refreshUser() async {
+    final data = await _api.getMe();
+    _user = User.fromJson(data);
     notifyListeners();
   }
 

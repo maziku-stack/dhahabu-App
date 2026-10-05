@@ -3,10 +3,10 @@ from datetime import timedelta
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth import get_user_model
-from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework import generics
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import OTPCode, DealerProfile
 from .serializers import (
@@ -17,7 +17,7 @@ from .serializers import (
 User = get_user_model()
 
 
-def get_tokens_for_user(user):
+def tokens_for(user):
     refresh = RefreshToken.for_user(user)
     return {'refresh': str(refresh), 'access': str(refresh.access_token)}
 
@@ -29,27 +29,27 @@ class RequestOTPView(APIView):
         ser = RequestOTPSerializer(data=request.data)
         ser.is_valid(raise_exception=True)
         phone = ser.validated_data['phone'].strip()
-        role = ser.validated_data.get('role', 'miner')
 
-        # Rate limit: max 5 OTPs per phone per hour
+        locked = OTPCode.objects.filter(
+            phone=phone, locked_until__gt=timezone.now()
+        ).first()
+        if locked:
+            return Response({'detail': 'Too many attempts. Try later.'}, status=429)
+
         recent = OTPCode.objects.filter(
-            phone=phone,
-            created_at__gte=timezone.now() - timedelta(hours=1),
+            phone=phone, created_at__gte=timezone.now() - timedelta(hours=1)
         ).count()
         if recent >= 5:
-            return Response({'detail': 'Too many OTP requests. Try again later.'}, status=429)
+            return Response({'detail': 'Too many OTP requests.'}, status=429)
 
         code = '123456' if settings.MOCK_OTP else f'{random.randint(100000, 999999)}'
         OTPCode.objects.create(
-            phone=phone,
-            code=code,
+            phone=phone, code=code,
             expires_at=timezone.now() + timedelta(minutes=5),
         )
-
-        # In production: send SMS via Africa's Talking / Twilio
         payload = {'detail': 'OTP sent', 'phone': phone}
         if settings.MOCK_OTP:
-            payload['mock_otp'] = code  # visible only in dev
+            payload['mock_otp'] = code
         return Response(payload)
 
 
@@ -66,13 +66,12 @@ class VerifyOTPView(APIView):
         otp = OTPCode.objects.filter(
             phone=phone, is_used=False, expires_at__gte=timezone.now()
         ).order_by('-created_at').first()
-
         if not otp:
             return Response({'detail': 'OTP expired or not found.'}, status=400)
-
         if otp.attempts >= 3:
-            return Response({'detail': 'Too many incorrect attempts. Request a new OTP.'}, status=400)
-
+            otp.locked_until = timezone.now() + timedelta(minutes=15)
+            otp.save(update_fields=['locked_until'])
+            return Response({'detail': 'Too many incorrect attempts. Locked 15 minutes.'}, status=400)
         if otp.code != code:
             otp.attempts += 1
             otp.save(update_fields=['attempts'])
@@ -81,10 +80,11 @@ class VerifyOTPView(APIView):
         otp.is_used = True
         otp.save(update_fields=['is_used'])
 
+        role = data.get('role', 'miner')
         user, created = User.objects.get_or_create(
             phone=phone,
             defaults={
-                'role': data.get('role', 'miner'),
+                'role': role,
                 'full_name': data.get('full_name', ''),
                 'region': data.get('region', ''),
                 'mining_site': data.get('mining_site', ''),
@@ -97,10 +97,11 @@ class VerifyOTPView(APIView):
                 user.full_name = data['full_name']
             if data.get('region'):
                 user.region = data['region']
+            if data.get('mining_site'):
+                user.mining_site = data['mining_site']
             user.save()
 
-        # Create dealer profile if role is dealer
-        if user.role == 'dealer' or data.get('role') == 'dealer':
+        if role == 'dealer' or user.role == 'dealer':
             user.role = 'dealer'
             user.save(update_fields=['role'])
             DealerProfile.objects.get_or_create(
@@ -111,11 +112,11 @@ class VerifyOTPView(APIView):
                 },
             )
 
-        tokens = get_tokens_for_user(user)
+        t = tokens_for(user)
         return Response({
             'user': UserSerializer(user).data,
-            'access': tokens['access'],
-            'refresh': tokens['refresh'],
+            'access': t['access'],
+            'refresh': t['refresh'],
             'is_new': created,
         })
 
@@ -144,6 +145,16 @@ class DealerProfileView(generics.RetrieveUpdateAPIView):
         return profile
 
 
+class PendingDealersView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = DealerProfileSerializer
+
+    def get_queryset(self):
+        if self.request.user.role != 'admin' and not self.request.user.is_staff:
+            return DealerProfile.objects.none()
+        return DealerProfile.objects.filter(verification_status='pending').select_related('user')
+
+
 class AdminVerifyDealerView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -161,16 +172,18 @@ class AdminVerifyDealerView(APIView):
             profile.rejection_reason = ''
         else:
             profile.verification_status = 'rejected'
-            profile.rejection_reason = request.data.get('reason', 'Documents incomplete')
+            profile.rejection_reason = request.data.get('reason', 'Incomplete documents')
         profile.save()
         return Response(DealerProfileSerializer(profile).data)
 
 
-class PendingDealersView(generics.ListAPIView):
+class SetPinView(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = DealerProfileSerializer
 
-    def get_queryset(self):
-        if self.request.user.role != 'admin' and not self.request.user.is_staff:
-            return DealerProfile.objects.none()
-        return DealerProfile.objects.filter(verification_status='pending').select_related('user')
+    def post(self, request):
+        pin = str(request.data.get('pin', '')).strip()
+        if len(pin) < 4:
+            return Response({'detail': 'PIN must be at least 4 digits.'}, status=400)
+        request.user.pin_set = True
+        request.user.save(update_fields=['pin_set'])
+        return Response({'detail': 'PIN set', 'pin_set': True})

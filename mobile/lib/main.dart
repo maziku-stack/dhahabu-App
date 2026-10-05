@@ -1,10 +1,13 @@
-import 'package:dhahabu/screens/landing_screens.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'theme/app_theme.dart';
 import 'providers/auth_provider.dart';
-import 'screens/splash_screen.dart';
-import 'screens/login_screen.dart';
-import 'screens/home_shell.dart';
+import 'screens/auth/splash_screen.dart';
+import 'screens/auth/landing_screen.dart';
+import 'screens/auth/login_screen.dart';
+import 'screens/auth/register_screen.dart';
+import 'screens/auth/set_pin_screen.dart';
+import 'screens/shells/role_router.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,33 +24,14 @@ class DhahabuApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Dhahabu',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFFD4A017), // gold
-            primary: const Color(0xFFB8860B),
-            secondary: const Color(0xFF1A1A2E),
-            brightness: Brightness.light,
-          ),
-          textTheme: ThemeData.light().textTheme,
-          useMaterial3: true,
-          appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
-          inputDecorationTheme: InputDecorationTheme(
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            filled: true,
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-            ),
-          ),
-        ),
+        theme: buildDhahabuTheme(),
         home: const SplashScreen(),
         routes: {
-          '/Landing': (_) => const LandingScreens(),
+          '/landing': (_) => const LandingScreen(),
           '/login': (_) => const LoginScreen(),
-          '/home': (_) => const HomeShell(),
+          '/register': (_) => const RegisterScreen(),
+          '/set-pin': (_) => const SetPinScreen(),
+          '/home': (_) => const RoleRouter(),
         },
       ),
     );

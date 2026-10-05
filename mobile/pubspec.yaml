@@ -1,5 +1,5 @@
 name: dhahabu
-description: Gold trade platform for Miners, Dealers & Government
+description: Gold trade platform - Miners, Dealers, Government
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -14,7 +14,6 @@ dependencies:
   shared_preferences: ^2.3.3
   provider: ^6.1.2
   intl: ^0.20.3
-  google_fonts: ^9.0.0
 
 dev_dependencies:
   flutter_test:

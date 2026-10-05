@@ -7,9 +7,8 @@ from django.utils import timezone
 class UserManager(BaseUserManager):
     def create_user(self, phone, password=None, **extra):
         if not phone:
-            raise ValueError('Phone number is required')
-        phone = phone.strip()
-        user = self.model(phone=phone, **extra)
+            raise ValueError('Phone is required')
+        user = self.model(phone=phone.strip(), **extra)
         if password:
             user.set_password(password)
         else:
@@ -26,23 +25,20 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    ROLE_CHOICES = [
-        ('miner', 'Small-Scale Miner'),
-        ('dealer', 'Licensed Gold Dealer'),
-        ('admin', 'Government Admin'),
-    ]
-
+    ROLE_CHOICES = [('miner', 'Miner'), ('dealer', 'Dealer'), ('admin', 'Admin')]
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     phone = models.CharField(max_length=20, unique=True, db_index=True)
     email = models.EmailField(blank=True)
     full_name = models.CharField(max_length=150, blank=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='miner')
     phone_verified = models.BooleanField(default=False)
+    pin_set = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
     region = models.CharField(max_length=100, blank=True)
-    mining_site = models.CharField(max_length=200, blank=True)  # for miners
+    mining_site = models.CharField(max_length=200, blank=True)
+    preferred_language = models.CharField(max_length=5, default='en')
 
     objects = UserManager()
     USERNAME_FIELD = 'phone'
@@ -63,6 +59,7 @@ class OTPCode(models.Model):
     expires_at = models.DateTimeField()
     attempts = models.PositiveSmallIntegerField(default=0)
     is_used = models.BooleanField(default=False)
+    locked_until = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = 'otp_codes'
@@ -70,18 +67,13 @@ class OTPCode(models.Model):
 
 
 class DealerProfile(models.Model):
-    STATUS_CHOICES = [
-        ('pending', 'Pending Review'),
-        ('verified', 'Verified'),
-        ('rejected', 'Rejected'),
-    ]
-
+    STATUS = [('pending', 'Pending'), ('verified', 'Verified'), ('rejected', 'Rejected')]
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='dealer_profile')
     business_name = models.CharField(max_length=200)
     license_number = models.CharField(max_length=100, blank=True)
     license_document = models.FileField(upload_to='licenses/%Y/%m/', blank=True, null=True)
-    verification_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    verification_status = models.CharField(max_length=20, choices=STATUS, default='pending')
     rejection_reason = models.TextField(blank=True)
     verified_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

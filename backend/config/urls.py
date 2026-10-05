@@ -12,9 +12,9 @@ urlpatterns = [
     path('api/auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/auth/', include('accounts.urls')),
     path('api/pricing/', include('pricing.urls')),
+    path('api/listings/', include('listings.urls')),
     path('api/transactions/', include('transactions.urls')),
     path('api/feedback/', include('feedback.urls')),
 ]
-
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

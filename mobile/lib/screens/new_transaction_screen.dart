@@ -28,7 +28,7 @@ class _NewTransactionScreenState extends State<NewTransactionScreen> {
       final price = double.parse(_priceCtrl.text);
       final txn = await ApiService().createTransaction(
         counterpartyPhone: _phoneCtrl.text.trim(),
-        weightGrams: weight,
+        weight: weight,
         karat: _karat,
         pricePerGram: price,
         notes: _notesCtrl.text.trim(),
@@ -114,7 +114,7 @@ class _NewTransactionScreenState extends State<NewTransactionScreen> {
           ),
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
-            initialValue: _karat,
+            value: _karat,
             decoration: const InputDecoration(labelText: 'Karat purity'),
             items: const [
               DropdownMenuItem(value: '24K', child: Text('24K')),

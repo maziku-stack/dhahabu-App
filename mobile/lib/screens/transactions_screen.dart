@@ -25,9 +25,11 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   Future<void> _load() async {
     setState(() => _loading = true);
     try {
-      final data = await ApiService().getMyTransactions();
+      final data = await ApiService().getTransactions();
       setState(() {
-        _txns = data.map((e) => GoldTransaction.fromJson(e as Map<String, dynamic>)).toList();
+        _txns = data
+            .map((e) => GoldTransaction.fromJson(e as Map<String, dynamic>))
+            .toList();
         _loading = false;
       });
     } catch (_) {
@@ -40,13 +42,15 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       await ApiService().confirmTransaction(t.id);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sale confirmed. Tax/royalty recorded.')),
+          const SnackBar(
+              content: Text('Sale confirmed. Tax/royalty recorded.')),
         );
       }
       _load();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('$e')));
       }
     }
   }
@@ -84,10 +88,13 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                               children: [
                                 Text(
                                   '${t.weightGrams} g • ${t.karat}',
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
                                 ),
                                 Chip(
-                                  label: Text(t.status, style: const TextStyle(fontSize: 11)),
+                                  label: Text(t.status,
+                                      style: const TextStyle(fontSize: 11)),
                                   backgroundColor: t.isConfirmed
                                       ? Colors.green.shade50
                                       : Colors.orange.shade50,
@@ -101,14 +108,17 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                               isMiner
                                   ? 'Dealer: ${t.dealerName.isNotEmpty ? t.dealerName : t.dealerPhone}'
                                   : 'Miner: ${t.minerName.isNotEmpty ? t.minerName : t.minerPhone}',
-                              style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                              style: TextStyle(
+                                  color: Colors.grey[600], fontSize: 13),
                             ),
                             if (t.taxRecord != null) ...[
                               const SizedBox(height: 6),
                               Text(
                                 'Royalty (${(t.taxRecord!.royaltyRate * 100).toStringAsFixed(1)}%): '
                                 'TZS ${_fmt.format(t.taxRecord!.royaltyAmount)}',
-                                style: TextStyle(color: Colors.blue[800], fontWeight: FontWeight.w500),
+                                style: TextStyle(
+                                    color: Colors.blue[800],
+                                    fontWeight: FontWeight.w500),
                               ),
                             ],
                             if (t.isPending && isMiner) ...[

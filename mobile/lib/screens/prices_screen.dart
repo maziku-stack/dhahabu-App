@@ -68,8 +68,8 @@ class _PricesScreenState extends State<PricesScreen> {
     if (ok == true && ctrl.text.isNotEmpty) {
       try {
         await ApiService().setPrice(
-          karat: karat,
-          pricePerGram: double.parse(ctrl.text),
+          karat,
+          double.parse(ctrl.text),
         );
         _load();
       } catch (e) {
@@ -118,7 +118,7 @@ class _PricesScreenState extends State<PricesScreen> {
                               horizontal: 20, vertical: 12),
                           leading: CircleAvatar(
                             backgroundColor:
-                                const Color(0xFFD4A017).withValues(alpha: 0.2),
+                                const Color(0xFFD4A017).withOpacity(0.2),
                             child: Text(p.karat,
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold,

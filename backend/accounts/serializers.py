@@ -7,15 +7,16 @@ User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
     dealer_verified = serializers.SerializerMethodField()
+    verification_status = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = (
-            'id', 'phone', 'email', 'full_name', 'role',
-            'phone_verified', 'region', 'mining_site',
-            'dealer_verified', 'date_joined',
+            'id', 'phone', 'email', 'full_name', 'role', 'phone_verified',
+            'pin_set', 'region', 'mining_site', 'preferred_language',
+            'dealer_verified', 'verification_status', 'date_joined',
         )
-        read_only_fields = ('id', 'phone_verified', 'date_joined')
+        read_only_fields = fields
 
     def get_dealer_verified(self, obj):
         if obj.role != 'dealer':
@@ -24,6 +25,14 @@ class UserSerializer(serializers.ModelSerializer):
             return obj.dealer_profile.verification_status == 'verified'
         except DealerProfile.DoesNotExist:
             return False
+
+    def get_verification_status(self, obj):
+        if obj.role != 'dealer':
+            return None
+        try:
+            return obj.dealer_profile.verification_status
+        except DealerProfile.DoesNotExist:
+            return 'pending'
 
 
 class RequestOTPSerializer(serializers.Serializer):
@@ -45,7 +54,7 @@ class VerifyOTPSerializer(serializers.Serializer):
 class ProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('full_name', 'email', 'region', 'mining_site')
+        fields = ('full_name', 'email', 'region', 'mining_site', 'preferred_language', 'pin_set')
 
 
 class DealerProfileSerializer(serializers.ModelSerializer):

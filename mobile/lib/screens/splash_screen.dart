@@ -16,44 +16,48 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _go() async {
-    await Future.delayed(const Duration(milliseconds: 600));
+    await Future.delayed(const Duration(milliseconds: 800));
     if (!mounted) return;
     final auth = context.read<AuthProvider>();
-    while (auth.isLoading) {
+    var tries = 0;
+    while (auth.isLoading && tries < 30) {
       await Future.delayed(const Duration(milliseconds: 100));
+      tries++;
       if (!mounted) return;
     }
     if (!mounted) return;
-    Navigator.pushReplacementNamed(
-      context,
-      auth.isAuthenticated ? '/home' : '/login',
-    );
+    if (auth.isAuthenticated) {
+      Navigator.pushReplacementNamed(context, '/home');
+    } else {
+      Navigator.pushReplacementNamed(context, '/welcome');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
+    return const Scaffold(
+      backgroundColor: Color(0xFF1A1A2E),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.diamond, size: 72, color: Color(0xFFD4A017)),
-            const SizedBox(height: 16),
+            Icon(Icons.diamond, size: 72, color: Color(0xFFD4A017)),
+            SizedBox(height: 16),
             Text(
               'Dhahabu',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: const Color(0xFFD4A017),
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: TextStyle(
+                color: Color(0xFFD4A017),
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 8),
-            const Text(
+            SizedBox(height: 8),
+            Text(
               'Gold Trade • Transparent • Auditable',
               style: TextStyle(color: Colors.white70),
             ),
-            const SizedBox(height: 32),
-            const CircularProgressIndicator(color: Color(0xFFD4A017)),
+            SizedBox(height: 32),
+            CircularProgressIndicator(color: Color(0xFFD4A017)),
           ],
         ),
       ),

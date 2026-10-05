@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 
+/// Login for existing users (Miner, Dealer, or Admin).
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -12,31 +14,16 @@ class _LoginScreenState extends State<LoginScreen> {
   final _phoneCtrl = TextEditingController();
   final _otpCtrl = TextEditingController();
   final _nameCtrl = TextEditingController();
-  final _regionCtrl = TextEditingController();
-  final _businessCtrl = TextEditingController();
 
-  String _role = 'miner';
   bool _otpSent = false;
   bool _loading = false;
   String? _error;
   String? _mockOtp;
-
-  /// Quick-fill for demo admin (created via: python manage.py create_admin)
-  void _fillAdminDemo() {
-    setState(() {
-      _role = 'admin';
-      _phoneCtrl.text = '0700000001';
-      _nameCtrl.text = 'Government Admin';
-      _regionCtrl.text = 'National';
-      _otpSent = false;
-      _mockOtp = null;
-      _error = null;
-    });
-  }
+  String _role = 'miner';
 
   Future<void> _requestOtp() async {
     if (_phoneCtrl.text.trim().length < 9) {
-      setState(() => _error = 'Enter a valid phone number (at least 9 digits)');
+      setState(() => _error = 'Enter a valid phone number');
       return;
     }
     setState(() {
@@ -74,11 +61,9 @@ class _LoginScreenState extends State<LoginScreen> {
             code: _otpCtrl.text.trim(),
             role: _role,
             fullName: _nameCtrl.text.trim(),
-            region: _regionCtrl.text.trim(),
-            businessName: _businessCtrl.text.trim(),
           );
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushNamedAndRemoveUntil(context, '/home', (_) => false);
     } catch (e) {
       setState(() => _error = e.toString().replaceFirst('Exception: ', ''));
     } finally {
@@ -91,34 +76,46 @@ class _LoginScreenState extends State<LoginScreen> {
     _phoneCtrl.dispose();
     _otpCtrl.dispose();
     _nameCtrl.dispose();
-    _regionCtrl.dispose();
-    _businessCtrl.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    const gold = Color(0xFFB8860B);
+
     return Scaffold(
+      backgroundColor: const Color(0xFFFFFBF5),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: const Text('Login'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pushReplacementNamed(context, '/welcome');
+            }
+          },
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 16),
-              const Icon(Icons.diamond, size: 56, color: Color(0xFFB8860B)),
+              const Icon(Icons.diamond, size: 48, color: gold),
               const SizedBox(height: 8),
               Text(
-                'Dhahabu',
+                'Welcome back',
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFFB8860B),
-                    ),
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 4),
               Text(
-                'Miners • Dealers • Government',
+                'Enter the phone number you registered with.',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.grey[600]),
               ),
@@ -131,68 +128,33 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: Colors.red.shade50,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(_error!,
-                      style: TextStyle(color: Colors.red.shade800)),
+                  child: Text(_error!, style: TextStyle(color: Colors.red.shade800)),
                 ),
               if (!_otpSent) ...[
-                Text('Login as', style: Theme.of(context).textTheme.titleSmall),
-                const SizedBox(height: 10),
-                // Role cards
-                Row(
-                  children: [
-                    _RoleCard(
-                      label: 'Miner',
-                      icon: Icons.construction,
-                      selected: _role == 'miner',
-                      onTap: () => setState(() => _role = 'miner'),
-                    ),
-                    const SizedBox(width: 8),
-                    _RoleCard(
-                      label: 'Dealer',
-                      icon: Icons.store,
-                      selected: _role == 'dealer',
-                      onTap: () => setState(() => _role = 'dealer'),
-                    ),
-                    const SizedBox(width: 8),
-                    _RoleCard(
-                      label: 'Admin',
-                      icon: Icons.account_balance,
-                      selected: _role == 'admin',
-                      onTap: () => setState(() => _role = 'admin'),
-                      highlight: true,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                if (_role == 'admin')
-                  TextButton.icon(
-                    onPressed: _fillAdminDemo,
-                    icon: const Icon(Icons.bolt, size: 18),
-                    label: const Text('Use demo admin (0700000001)'),
-                  ),
-                const SizedBox(height: 8),
                 TextField(
                   controller: _phoneCtrl,
                   keyboardType: TextInputType.phone,
                   decoration: const InputDecoration(
                     labelText: 'Phone number',
-                    prefixIcon: Icon(Icons.phone),
                     hintText: '07XXXXXXXX',
+                    prefixIcon: Icon(Icons.phone),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _loading ? null : _requestOtp,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: gold,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
                   child: _loading
                       ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Colors.white),
+                          height: 22,
+                          width: 22,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                         )
-                      : Text(_role == 'admin'
-                          ? 'Admin Login — Send OTP'
-                          : 'Send OTP'),
+                      : const Text('Send OTP'),
                 ),
               ] else ...[
                 if (_mockOtp != null)
@@ -202,26 +164,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: BoxDecoration(
                       color: Colors.amber.shade50,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.amber.shade200),
                     ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.info_outline, color: Colors.amber),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Dev OTP: $_mockOtp',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ],
-                    ),
+                    child: Text('Dev OTP: $_mockOtp', style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 TextField(
                   controller: _otpCtrl,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
-                    labelText: 'Enter 6-digit OTP',
+                    labelText: '6-digit OTP',
                     prefixIcon: Icon(Icons.lock),
                   ),
                 ),
@@ -229,113 +179,40 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextField(
                   controller: _nameCtrl,
                   decoration: const InputDecoration(
-                    labelText: 'Full name',
+                    labelText: 'Full name (optional)',
                     prefixIcon: Icon(Icons.person),
                   ),
                 ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _regionCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Region',
-                    prefixIcon: Icon(Icons.location_on),
-                  ),
-                ),
-                if (_role == 'dealer') ...[
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _businessCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'Business name',
-                      prefixIcon: Icon(Icons.business),
-                    ),
-                  ),
-                ],
-                if (_role == 'admin')
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      'You will access the Government Dashboard after login.',
-                      style: TextStyle(color: Colors.blue[800], fontSize: 13),
-                    ),
-                  ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _loading ? null : _verify,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: gold,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
                   child: _loading
                       ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Colors.white),
+                          height: 22,
+                          width: 22,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                         )
-                      : const Text('Verify & Continue'),
+                      : const Text('Login'),
                 ),
                 TextButton(
                   onPressed: () => setState(() {
                     _otpSent = false;
                     _mockOtp = null;
-                    _error = null;
                   }),
-                  child: const Text('Change phone / role'),
+                  child: const Text('Change phone number'),
                 ),
               ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _RoleCard extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final bool selected;
-  final VoidCallback onTap;
-  final bool highlight;
-
-  const _RoleCard({
-    required this.label,
-    required this.icon,
-    required this.selected,
-    required this.onTap,
-    this.highlight = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final color = highlight ? const Color(0xFF1A1A2E) : const Color(0xFFB8860B);
-    return Expanded(
-      child: Material(
-        color: selected ? color.withValues(alpha: 0.12) : Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(12),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: selected ? color : Colors.transparent,
-                width: 2,
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: () => Navigator.pushReplacementNamed(context, '/register'),
+                child: const Text('New user? Create account'),
               ),
-            ),
-            child: Column(
-              children: [
-                Icon(icon, color: selected ? color : Colors.grey[600]),
-                const SizedBox(height: 4),
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontWeight: selected ? FontWeight.bold : FontWeight.normal,
-                    color: selected ? color : Colors.grey[700],
-                    fontSize: 13,
-                  ),
-                ),
-              ],
-            ),
+            ],
           ),
         ),
       ),
