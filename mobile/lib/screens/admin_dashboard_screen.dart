@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import '../services/api_service.dart';
 
@@ -42,14 +43,27 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text('Government Dashboard', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+          Text('Government Dashboard',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
-          Text('Real-time sector visibility', style: TextStyle(color: Colors.grey[600])),
+          Text('Real-time sector visibility',
+              style: TextStyle(color: Colors.grey[600])),
           const SizedBox(height: 16),
-          _metricCard('Confirmed Transactions', '${s['transaction_count'] ?? 0}', Icons.receipt),
-          _metricCard('Total Volume', '${s['total_volume_grams'] ?? 0} g', Icons.scale),
-          _metricCard('Total Value', 'TZS ${_fmt.format(double.tryParse('${s['total_value_tzs']}') ?? 0)}', Icons.payments),
-          _metricCard('Royalty Collected', 'TZS ${_fmt.format(double.tryParse('${s['total_royalty_tzs']}') ?? 0)}', Icons.account_balance),
+          _metricCard('Confirmed Transactions',
+              '${s['transaction_count'] ?? 0}', Icons.receipt),
+          _metricCard(
+              'Total Volume', '${s['total_volume_grams'] ?? 0} g', Icons.scale),
+          _metricCard(
+              'Total Value',
+              'TZS ${_fmt.format(double.tryParse('${s['total_value_tzs']}') ?? 0)}',
+              Icons.payments),
+          _metricCard(
+              'Royalty Collected',
+              'TZS ${_fmt.format(double.tryParse('${s['total_royalty_tzs']}') ?? 0)}',
+              Icons.account_balance),
         ],
       ),
     );
@@ -60,11 +74,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: const Color(0xFFD4A017).withOpacity(0.2),
+          backgroundColor: const Color(0xFFD4A017).withValues.call(),
           child: Icon(icon, color: const Color(0xFFB8860B)),
         ),
-        title: Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 13)),
-        subtitle: Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black87)),
+        title: Text(label,
+            style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+        subtitle: Text(value,
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: Colors.black87)),
       ),
     );
   }
