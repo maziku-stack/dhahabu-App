@@ -23,10 +23,18 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => _error = 'Enter a valid phone number');
       return;
     }
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
-      final res = await context.read<AuthProvider>().requestOtp(_phone.text.trim(), 'miner');
-      setState(() { _otpSent = true; _mockOtp = res['mock_otp']?.toString(); });
+      final res = await context
+          .read<AuthProvider>()
+          .requestOtp(_phone.text.trim(), 'miner');
+      setState(() {
+        _otpSent = true;
+        _mockOtp = res['mock_otp']?.toString();
+      });
     } catch (e) {
       setState(() => _error = e.toString().replaceFirst('Exception: ', ''));
     } finally {
@@ -35,7 +43,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _verify() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       await context.read<AuthProvider>().verifyOtp(
             phone: _phone.text.trim(),
@@ -82,29 +93,55 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('Welcome back', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const Text('Welcome back',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Text('Use the phone number you registered with. Admin: 0700000001', style: TextStyle(color: Colors.grey[400])),
+            Text('Use the phone number you registered with.  +255xxxxxxxxx',
+                style: TextStyle(color: Colors.grey[400])),
             const SizedBox(height: 24),
             if (_error != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: Text(_error!, style: const TextStyle(color: AppColors.error)),
+                child: Text(_error!,
+                    style: const TextStyle(color: AppColors.error)),
               ),
             if (!_otpSent) ...[
-              TextField(controller: _phone, keyboardType: TextInputType.phone, decoration: const InputDecoration(labelText: 'Phone number', prefixIcon: Icon(Icons.phone))),
+              TextField(
+                  controller: _phone,
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(
+                      labelText: 'Phone number',
+                      prefixIcon: Icon(Icons.phone))),
               const SizedBox(height: 20),
-              ElevatedButton(onPressed: _loading ? null : _request, child: Text(_loading ? '…' : 'Send OTP')),
+              ElevatedButton(
+                  onPressed: _loading ? null : _request,
+                  child: Text(_loading ? '…' : 'Send OTP')),
             ] else ...[
-              if (_mockOtp != null) Text('Dev OTP: $_mockOtp', style: const TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold)),
+              if (_mockOtp != null)
+                Text('Dev OTP: $_mockOtp',
+                    style: const TextStyle(
+                        color: AppColors.gold, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              TextField(controller: _otp, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'OTP', prefixIcon: Icon(Icons.lock))),
+              TextField(
+                  controller: _otp,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                      labelText: 'OTP', prefixIcon: Icon(Icons.lock))),
               const SizedBox(height: 12),
-              TextField(controller: _name, decoration: const InputDecoration(labelText: 'Full name (optional)', prefixIcon: Icon(Icons.person))),
+              TextField(
+                  controller: _name,
+                  decoration: const InputDecoration(
+                      labelText: 'Full name (optional)',
+                      prefixIcon: Icon(Icons.person))),
               const SizedBox(height: 20),
-              ElevatedButton(onPressed: _loading ? null : _verify, child: Text(_loading ? '…' : 'Sign in')),
+              ElevatedButton(
+                  onPressed: _loading ? null : _verify,
+                  child: Text(_loading ? '…' : 'Sign in')),
             ],
-            TextButton(onPressed: () => Navigator.pushReplacementNamed(context, '/register'), child: const Text('New user? Create account')),
+            TextButton(
+                onPressed: () =>
+                    Navigator.pushReplacementNamed(context, '/register'),
+                child: const Text('New user? Create account')),
           ],
         ),
       ),
