@@ -27,8 +27,10 @@ class ConfirmSaleScreen extends StatefulWidget {
 
 class _ConfirmSaleScreenState extends State<ConfirmSaleScreen> {
   late final _phone = TextEditingController(text: widget.counterpartyPhone);
-  late final _weight = TextEditingController(text: widget.weight > 0 ? widget.weight.toString() : '');
-  late final _price = TextEditingController(text: widget.pricePerGram > 0 ? widget.pricePerGram.toString() : '');
+  late final _weight = TextEditingController(
+      text: widget.weight > 0 ? widget.weight.toString() : '');
+  late final _price = TextEditingController(
+      text: widget.pricePerGram > 0 ? widget.pricePerGram.toString() : '');
   String _karat = '24K';
   bool _loading = false;
   String? _error;
@@ -50,7 +52,10 @@ class _ConfirmSaleScreenState extends State<ConfirmSaleScreen> {
   double get _net => _agreed - _royalty;
 
   Future<void> _submit() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final txn = await ApiService().createTransaction(
         counterpartyPhone: _phone.text.trim(),
@@ -61,7 +66,8 @@ class _ConfirmSaleScreenState extends State<ConfirmSaleScreen> {
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Sale created. Miner must confirm to finalize tax.')),
+        const SnackBar(
+            content: Text('Sale created. Miner must confirm to finalize tax.')),
       );
       Navigator.pushReplacement(
         context,
@@ -91,13 +97,21 @@ class _ConfirmSaleScreenState extends State<ConfirmSaleScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (_error != null) Text(_error!, style: const TextStyle(color: AppColors.error)),
-            TextField(controller: _phone, decoration: const InputDecoration(labelText: 'Counterparty phone')),
+            if (_error != null)
+              Text(_error!, style: const TextStyle(color: AppColors.error)),
+            TextField(
+                controller: _phone,
+                decoration:
+                    const InputDecoration(labelText: 'Counterparty phone')),
             const SizedBox(height: 12),
-            TextField(controller: _weight, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Weight (grams)')),
+            TextField(
+                controller: _weight,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(labelText: 'Weight (grams)')),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              value: _karat,
+              initialValue: _karat,
               items: const [
                 DropdownMenuItem(value: '24K', child: Text('24K')),
                 DropdownMenuItem(value: '22K', child: Text('22K')),
@@ -109,8 +123,10 @@ class _ConfirmSaleScreenState extends State<ConfirmSaleScreen> {
             const SizedBox(height: 12),
             TextField(
               controller: _price,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(labelText: 'Price per gram (TZS)'),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              decoration:
+                  const InputDecoration(labelText: 'Price per gram (TZS)'),
               onChanged: (_) => setState(() {}),
             ),
             const SizedBox(height: 20),
@@ -118,11 +134,13 @@ class _ConfirmSaleScreenState extends State<ConfirmSaleScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Tax & Royalty (estimate)', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Text('Tax & Royalty (estimate)',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   Text('Agreed: TSh ${_fmt.format(_agreed)}'),
                   const Text('Statutory rate: 7%'),
-                  Text('Withheld: TSh ${_fmt.format(_royalty)}', style: const TextStyle(color: AppColors.gold)),
+                  Text('Withheld: TSh ${_fmt.format(_royalty)}',
+                      style: const TextStyle(color: AppColors.gold)),
                   Text('Net to miner: TSh ${_fmt.format(_net)}'),
                 ],
               ),
@@ -130,7 +148,8 @@ class _ConfirmSaleScreenState extends State<ConfirmSaleScreen> {
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: _loading ? null : _submit,
-              child: Text(_loading ? '…' : 'Submit sale (pending miner confirm)'),
+              child:
+                  Text(_loading ? '…' : 'Submit sale (pending miner confirm)'),
             ),
           ],
         ),

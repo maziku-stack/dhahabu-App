@@ -117,7 +117,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pushNamed(context, '/login'),
-            child: Text('Login', style: TextStyle(color: gold, fontWeight: FontWeight.w600)),
+            child: Text('Login',
+                style: TextStyle(color: gold, fontWeight: FontWeight.w600)),
           ),
           const SizedBox(width: 8),
         ],
@@ -141,7 +142,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 style: TextStyle(color: Colors.grey[600], height: 1.4),
               ),
               const SizedBox(height: 24),
-
               if (_error != null)
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -150,9 +150,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     color: Colors.red.shade50,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(_error!, style: TextStyle(color: Colors.red.shade800)),
+                  child: Text(_error!,
+                      style: TextStyle(color: Colors.red.shade800)),
                 ),
-
               if (!_otpSent) ...[
                 Text('I am a…', style: Theme.of(context).textTheme.titleSmall),
                 const SizedBox(height: 12),
@@ -201,7 +201,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ? const SizedBox(
                           height: 22,
                           width: 22,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.white),
                         )
                       : const Text('Send OTP'),
                 ),
@@ -214,7 +215,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       color: Colors.amber.shade50,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Text('Dev OTP: $_mockOtp', style: const TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text('Dev OTP: $_mockOtp',
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 TextField(
                   controller: _otpCtrl,
@@ -262,7 +264,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ? const SizedBox(
                           height: 22,
                           width: 22,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.white),
                         )
                       : const Text('Verify & register'),
                 ),
@@ -294,7 +297,7 @@ class _ChoiceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final gold = const Color(0xFFB8860B);
     return Material(
-      color: selected ? gold.withOpacity(0.12) : Colors.grey.shade100,
+      color: selected ? gold.withValues(alpha: 0.12) : Colors.grey.shade100,
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
         onTap: onTap,
@@ -303,14 +306,19 @@ class _ChoiceCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: selected ? gold : Colors.transparent, width: 2),
+            border: Border.all(
+                color: selected ? gold : Colors.transparent, width: 2),
           ),
           child: Column(
             children: [
               Icon(icon, size: 36, color: selected ? gold : Colors.grey[600]),
               const SizedBox(height: 8),
-              Text(label, style: TextStyle(fontWeight: FontWeight.bold, color: selected ? gold : Colors.black87)),
-              Text(subtitle, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+              Text(label,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: selected ? gold : Colors.black87)),
+              Text(subtitle,
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600])),
             ],
           ),
         ),

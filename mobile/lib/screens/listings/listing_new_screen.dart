@@ -17,7 +17,10 @@ class _ListingNewScreenState extends State<ListingNewScreen> {
   String? _error;
 
   Future<void> _submit() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final w = double.parse(_weight.text);
       final asking = double.parse(_price.text);
@@ -54,11 +57,16 @@ class _ListingNewScreenState extends State<ListingNewScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (_error != null) Text(_error!, style: const TextStyle(color: AppColors.error)),
-            TextField(controller: _weight, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Weight (grams)')),
+            if (_error != null)
+              Text(_error!, style: const TextStyle(color: AppColors.error)),
+            TextField(
+                controller: _weight,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(labelText: 'Weight (grams)')),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              value: _karat,
+              initialValue: _karat,
               items: const [
                 DropdownMenuItem(value: '24K', child: Text('24K')),
                 DropdownMenuItem(value: '22K', child: Text('22K')),
@@ -68,11 +76,21 @@ class _ListingNewScreenState extends State<ListingNewScreen> {
               decoration: const InputDecoration(labelText: 'Karat'),
             ),
             const SizedBox(height: 12),
-            TextField(controller: _price, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Asking price (TZS total)')),
+            TextField(
+                controller: _price,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(
+                    labelText: 'Asking price (TZS total)')),
             const SizedBox(height: 12),
-            TextField(controller: _notes, maxLines: 2, decoration: const InputDecoration(labelText: 'Notes')),
+            TextField(
+                controller: _notes,
+                maxLines: 2,
+                decoration: const InputDecoration(labelText: 'Notes')),
             const SizedBox(height: 24),
-            ElevatedButton(onPressed: _loading ? null : _submit, child: Text(_loading ? '…' : 'Publish listing')),
+            ElevatedButton(
+                onPressed: _loading ? null : _submit,
+                child: Text(_loading ? '…' : 'Publish listing')),
           ],
         ),
       ),

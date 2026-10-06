@@ -114,7 +114,7 @@ class _NewTransactionScreenState extends State<NewTransactionScreen> {
           ),
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
-            value: _karat,
+            initialValue: _karat,
             decoration: const InputDecoration(labelText: 'Karat purity'),
             items: const [
               DropdownMenuItem(value: '24K', child: Text('24K')),

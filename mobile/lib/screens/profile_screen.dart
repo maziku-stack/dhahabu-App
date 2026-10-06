@@ -18,14 +18,19 @@ class ProfileScreen extends StatelessWidget {
         Text(
           user.fullName.isNotEmpty ? user.fullName : 'User',
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge
+              ?.copyWith(fontWeight: FontWeight.bold),
         ),
-        Text(user.phone, textAlign: TextAlign.center, style: TextStyle(color: Colors.grey[600])),
+        Text(user.phone,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.grey[600])),
         const SizedBox(height: 8),
         Center(
           child: Chip(
             label: Text(user.role.toUpperCase()),
-            backgroundColor: const Color(0xFFD4A017).withOpacity(0.2),
+            backgroundColor: const Color(0xFFD4A017).withValues(alpha: 0.2),
           ),
         ),
         if (user.region.isNotEmpty) ...[

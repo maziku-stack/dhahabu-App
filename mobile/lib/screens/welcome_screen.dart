@@ -22,15 +22,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     _Slide(
       icon: Icons.price_change,
       title: 'Know the fair price',
-      body:
-          'See today\'s gold price by karat (24K, 22K, 18K) before you sell. '
+      body: 'See today\'s gold price by karat (24K, 22K, 18K) before you sell. '
           'No more guessing or relying only on word of mouth.',
     ),
     _Slide(
       icon: Icons.receipt_long,
       title: 'Record every sale',
-      body:
-          'Both miner and dealer share one digital receipt. '
+      body: 'Both miner and dealer share one digital receipt. '
           'Royalties and taxes are calculated automatically for compliance.',
     ),
     _Slide(
@@ -104,7 +102,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           width: 100,
                           height: 100,
                           decoration: BoxDecoration(
-                            color: gold.withOpacity(0.12),
+                            color: gold.withValues(alpha: 0.12),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(s.icon, size: 52, color: gold),
@@ -168,7 +166,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ),
                   child: Text(
                     _page < _slides.length - 1 ? 'Next' : 'Create account',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),

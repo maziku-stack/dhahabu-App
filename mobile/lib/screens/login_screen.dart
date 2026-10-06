@@ -19,7 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _loading = false;
   String? _error;
   String? _mockOtp;
-  String _role = 'miner';
+  final String _role = 'miner';
 
   Future<void> _requestOtp() async {
     if (_phoneCtrl.text.trim().length < 9) {
@@ -111,7 +111,10 @@ class _LoginScreenState extends State<LoginScreen> {
               Text(
                 'Welcome back',
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 4),
               Text(
@@ -128,7 +131,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: Colors.red.shade50,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(_error!, style: TextStyle(color: Colors.red.shade800)),
+                  child: Text(_error!,
+                      style: TextStyle(color: Colors.red.shade800)),
                 ),
               if (!_otpSent) ...[
                 TextField(
@@ -152,7 +156,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       ? const SizedBox(
                           height: 22,
                           width: 22,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.white),
                         )
                       : const Text('Send OTP'),
                 ),
@@ -165,7 +170,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: Colors.amber.shade50,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Text('Dev OTP: $_mockOtp', style: const TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text('Dev OTP: $_mockOtp',
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 TextField(
                   controller: _otpCtrl,
@@ -195,7 +201,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       ? const SizedBox(
                           height: 22,
                           width: 22,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.white),
                         )
                       : const Text('Login'),
                 ),
@@ -209,7 +216,8 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
               const SizedBox(height: 16),
               TextButton(
-                onPressed: () => Navigator.pushReplacementNamed(context, '/register'),
+                onPressed: () =>
+                    Navigator.pushReplacementNamed(context, '/register'),
                 child: const Text('New user? Create account'),
               ),
             ],

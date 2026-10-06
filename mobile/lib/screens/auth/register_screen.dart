@@ -164,7 +164,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget _card(String label, IconData icon, bool sel, VoidCallback onTap) {
     return Material(
-      color: sel ? AppColors.gold.withOpacity(0.15) : AppColors.surfaceDark,
+      color:
+          sel ? AppColors.gold.withValues(alpha: 0.15) : AppColors.surfaceDark,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
