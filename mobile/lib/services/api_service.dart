@@ -28,12 +28,31 @@ class ApiService {
   }
 
   Future<Map<String, String>> _headers({bool auth = true}) async {
-    final h = {'Content-Type': 'application/json'};
+    final h = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
     if (auth) {
       final t = await _token();
       if (t != null) h['Authorization'] = 'Bearer $t';
     }
     return h;
+  }
+
+  Map<String, dynamic> _decodeApiResponse(http.Response response) {
+    final body = response.body.trim();
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is Map<String, dynamic>) return decoded;
+      throw const FormatException('Expected a JSON object');
+    } on FormatException {
+      final isHtml = body.toLowerCase().startsWith('<!doctype html') ||
+          body.toLowerCase().startsWith('<html');
+      final hint = isHtml
+          ? 'The server returned an HTML page. Check API_BASE_URL and confirm the backend is running.'
+          : 'The server returned a non-JSON response.';
+      throw Exception('$hint (HTTP ${response.statusCode})');
+    }
   }
 
   Future<Map<String, dynamic>> requestOtp(String phone, String role) async {
@@ -42,7 +61,7 @@ class ApiService {
       headers: await _headers(auth: false),
       body: jsonEncode({'phone': phone, 'role': role}),
     );
-    final data = jsonDecode(res.body);
+    final data = _decodeApiResponse(res);
     if (res.statusCode == 200) return data as Map<String, dynamic>;
     throw Exception(data['detail'] ?? 'OTP failed');
   }
@@ -69,7 +88,7 @@ class ApiService {
         'business_name': businessName,
       }),
     );
-    final data = jsonDecode(res.body) as Map<String, dynamic>;
+    final data = _decodeApiResponse(res);
     if (res.statusCode == 200) {
       await saveTokens(data['access'], data['refresh']);
       return data;

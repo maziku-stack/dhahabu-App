@@ -64,9 +64,12 @@ flutter create .
 flutter pub get
 ```
 
-1. Edit `lib/utils/constants.dart` → your PC IP for real device  
-2. AndroidManifest: `android:usesCleartextTraffic="true"`  
-3. `flutter run` / `flutter run -d chrome`
+1. Run the backend with `python manage.py runserver 0.0.0.0:8000`.
+2. Set the API address for your device when starting Flutter:
+   - Android emulator: `flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000/api`
+   - Physical phone: `flutter run --dart-define=API_BASE_URL=http://<PC-IP>:8000/api`
+   - Chrome on the same PC: `flutter run -d chrome --dart-define=API_BASE_URL=http://127.0.0.1:8000/api`
+3. `192.168.1.182` is only the default LAN address; replace it with the computer's current IP when it changes. Keep the phone and computer on the same network.
 
 ---
 
