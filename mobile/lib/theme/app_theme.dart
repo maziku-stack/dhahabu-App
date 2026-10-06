@@ -60,3 +60,47 @@ ThemeData buildDhahabuTheme() {
     ),
   );
 }
+
+ThemeData buildDhahabuLightTheme() {
+  return ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.light,
+    scaffoldBackgroundColor: AppColors.warmWhite,
+    colorScheme: const ColorScheme.light(
+      primary: AppColors.gold,
+      secondary: AppColors.navy,
+      surface: Colors.white,
+      error: AppColors.error,
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppColors.warmWhite,
+      foregroundColor: AppColors.textOnLight,
+      elevation: 0,
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: Colors.white,
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: AppColors.gold, width: 2),
+      ),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.gold,
+        foregroundColor: AppColors.navy,
+        minimumSize: const Size(double.infinity, 48),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppColors.navy,
+        minimumSize: const Size(0, 48),
+        side: const BorderSide(color: AppColors.border),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    ),
+  );
+}
