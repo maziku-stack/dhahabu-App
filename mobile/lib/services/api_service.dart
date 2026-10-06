@@ -62,7 +62,7 @@ class ApiService {
       body: jsonEncode({'phone': phone, 'role': role}),
     );
     final data = _decodeApiResponse(res);
-    if (res.statusCode == 200) return data as Map<String, dynamic>;
+    if (res.statusCode == 200) return data;
     throw Exception(data['detail'] ?? 'OTP failed');
   }
 

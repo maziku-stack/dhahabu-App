@@ -30,7 +30,7 @@ class DhahabuApp extends StatelessWidget {
           title: 'Dhahabu',
           debugShowCheckedModeBanner: false,
           theme: buildDhahabuTheme(),
-          lightTheme: buildDhahabuLightTheme(),
+          darkTheme: buildDhahabuLightTheme(),
           themeMode: settings.themeMode,
           locale: settings.locale,
           home: const SplashScreen(),
