@@ -39,7 +39,7 @@ python -m venv venv
 .\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 
-$env:USE_SQLITE="True"
+$env:USE_SQLITE="False"
 $env:DEBUG="True"
 $env:SECRET_KEY="dev-secret"
 $env:MOCK_OTP="True"
@@ -53,9 +53,6 @@ python manage.py runserver 0.0.0.0:8000
 API docs: http://127.0.0.1:8000/api/docs/
 
 **PostgreSQL:** set `USE_SQLITE=False` and `POSTGRES_*` env vars.
-
----
-
 ## Flutter setup
 
 ```powershell
