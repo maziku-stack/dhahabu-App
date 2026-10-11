@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// A compact, scalable Dhahabu mark inspired by the gold bars in OIP.webp.
+/// A compact Dhahabu brand mark: a faceted gold ingot with an engraved D.
 class DhahabuLogo extends StatelessWidget {
   final double size;
 
@@ -8,91 +8,91 @@ class DhahabuLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Semantics(
-        label: 'Dhahabu gold bar logo',
+        label: 'Dhahabu gold ingot logo',
         image: true,
         child: SizedBox.square(
           dimension: size,
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: const Color(0xFF0B1F3A),
-              borderRadius: BorderRadius.circular(size * 0.24),
-              border: Border.all(color: const Color(0xFFC9A227), width: 1.4),
+              color: const Color(0xFF09182B),
+              borderRadius: BorderRadius.circular(size * 0.23),
             ),
-            child: CustomPaint(painter: _GoldBarMarkPainter()),
+            child: CustomPaint(painter: _DhahabuMarkPainter()),
           ),
         ),
       );
 }
 
-class _GoldBarMarkPainter extends CustomPainter {
+class _DhahabuMarkPainter extends CustomPainter {
+  static const _navy = Color(0xFF09182B);
+
   @override
   void paint(Canvas canvas, Size size) {
-    final scale = size.shortestSide;
-    Offset p(double x, double y) => Offset(x * scale, y * scale);
+    final unit = size.shortestSide;
+    Offset p(double x, double y) => Offset(x * unit, y * unit);
     Path polygon(List<Offset> points) => Path()
       ..moveTo(points.first.dx, points.first.dy)
       ..addPolygon(points.skip(1).toList(), true);
+    final bounds = Rect.fromLTWH(0, 0, size.width, size.height);
 
-    final glow = Paint()
-      ..color = const Color(0xFFC9A227).withValues(alpha: 0.14)
-      ..maskFilter = MaskFilter.blur(BlurStyle.normal, scale * 0.12);
-    canvas.drawCircle(p(0.5, 0.5), scale * 0.3, glow);
-
-    final back = polygon([
-      p(0.25, 0.36),
-      p(0.38, 0.25),
-      p(0.72, 0.25),
-      p(0.82, 0.35),
-      p(0.69, 0.47),
-      p(0.34, 0.47),
-    ]);
-    canvas.drawPath(back, Paint()..color = const Color(0xFFE8BD4B));
-
+    // Low, broad ingot silhouette stays legible at launcher-icon scale.
     final top = polygon([
-      p(0.18, 0.48),
-      p(0.34, 0.34),
-      p(0.79, 0.34),
-      p(0.86, 0.46),
-      p(0.70, 0.57),
-      p(0.25, 0.57),
-    ]);
-    final topPaint = Paint()
-      ..shader = const LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [Color(0xFFFFE58A), Color(0xFFD4A52F)],
-      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
-    canvas.drawPath(top, topPaint);
-
-    final front = polygon([
-      p(0.25, 0.57),
-      p(0.70, 0.57),
-      p(0.65, 0.75),
-      p(0.30, 0.75),
+      p(.19, .37), p(.34, .25), p(.70, .25), p(.83, .37),
+      p(.72, .47), p(.28, .47),
     ]);
     canvas.drawPath(
-      front,
+      top,
+      Paint()
+        ..shader = const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFFFE9A3), Color(0xFFE1B84C), Color(0xFFB77C19)],
+        ).createShader(bounds),
+    );
+
+    final face = polygon([
+      p(.28, .47), p(.72, .47), p(.67, .73), p(.34, .73),
+    ]);
+    canvas.drawPath(
+      face,
       Paint()
         ..shader = const LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFFD6A632), Color(0xFF9B6813)],
-        ).createShader(Rect.fromLTWH(0, 0, size.width, size.height)),
+          colors: [Color(0xFFEBC85F), Color(0xFFC28B27), Color(0xFF9B671A)],
+        ).createShader(bounds),
     );
 
     final side = polygon([
-      p(0.70, 0.57),
-      p(0.86, 0.46),
-      p(0.80, 0.65),
-      p(0.65, 0.75),
+      p(.72, .47), p(.83, .37), p(.78, .64), p(.67, .73),
     ]);
-    canvas.drawPath(side, Paint()..color = const Color(0xFFB77B16));
+    canvas.drawPath(side, Paint()..color = const Color(0xFFB77A1B));
 
-    final shine = Paint()
-      ..color = const Color(0xFFFFF1B9)
-      ..strokeWidth = scale * 0.018
+    // One restrained highlight gives the upper bevel a crafted metal edge.
+    final edge = Paint()
+      ..color = const Color(0xFFFFF2C5).withValues(alpha: .78)
+      ..strokeWidth = unit * .018
       ..strokeCap = StrokeCap.round;
-    canvas.drawLine(p(0.36, 0.39), p(0.75, 0.39), shine);
+    canvas.drawLine(p(.36, .29), p(.68, .29), edge);
+
+    // Engraved D: a simple monoline, with enough weight to survive small sizes.
+    final d = Path()
+      ..moveTo(p(.43, .54).dx, p(.54, .54).dy)
+      ..lineTo(p(.43, .66).dx, p(.66, .66).dy)
+      ..cubicTo(
+        p(.61, .66).dx, p(.66, .66).dy,
+        p(.63, .54).dx, p(.54, .54).dy,
+        p(.43, .54).dx, p(.54, .54).dy,
+      );
+    canvas.drawPath(
+      d,
+      Paint()
+        ..color = _navy.withValues(alpha: .82)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = unit * .028
+        ..strokeCap = StrokeCap.round
+        ..strokeJoin = StrokeJoin.round,
+    );
   }
 
   @override
