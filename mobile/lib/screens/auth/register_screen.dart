@@ -134,7 +134,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 children: [
             const Text(
               'Choose the account type that fits you',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 16),
             if (_error != null)
@@ -189,6 +193,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 fillColor: Colors.black,
                 labelText: 'Password (at least 8 characters)',
                 labelStyle: const TextStyle(color: Colors.white),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
                 prefixIcon: const Icon(Icons.lock_outline, color: Colors.white70),
                 suffixIcon: IconButton(
                   tooltip: _passwordVisible ? 'Hide password' : 'Show password',
@@ -216,6 +224,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 fillColor: Colors.black,
                 labelText: 'Confirm password',
                 labelStyle: const TextStyle(color: Colors.white),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
                 prefixIcon: const Icon(Icons.lock_reset_outlined, color: Colors.white70),
                 suffixIcon: IconButton(
                   tooltip: _passwordConfirmationVisible
