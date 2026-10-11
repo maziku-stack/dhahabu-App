@@ -88,7 +88,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        scrolledUnderElevation: 0,
         title: const Text('Create account'),
         actions: [
           TextButton(
@@ -97,28 +100,59 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: TextStyle(color: AppColors.gold))),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text('Register as Miner or Dealer ',
-                style: TextStyle(color: Colors.grey[400])),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            'lib/assets/images/Purified_gold.webp',
+            fit: BoxFit.cover,
+          ),
+          const DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xB80B1F3A),
+                  Color(0xD9101115),
+                  Color(0xE6101115),
+                ],
+              ),
+            ),
+          ),
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(24, 76, 24, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+            Text('Choose the account type that fits you',
+                style: TextStyle(color: Theme.of(context).hintColor)),
             const SizedBox(height: 16),
             if (_error != null)
               Text(_error!, style: const TextStyle(color: AppColors.error)),
             if (!_otpSent) ...[
-              const Text('Account for a ',
-                  style: TextStyle(fontWeight: FontWeight.w600)),
+              const Text('I am registering as',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
               const SizedBox(height: 12),
               Row(children: [
                 Expanded(
-                    child: _card('Miner', Icons.construction, _role == 'miner',
-                        () => setState(() => _role = 'miner'))),
+                    child: _card(
+                  'Miner',
+                  'Small-scale gold seller',
+                  Icons.hiking_outlined,
+                  _role == 'miner',
+                  () => setState(() => _role = 'miner'),
+                )),
                 const SizedBox(width: 12),
                 Expanded(
-                    child: _card('Dealer', Icons.store, _role == 'dealer',
-                        () => setState(() => _role = 'dealer'))),
+                    child: _card(
+                  'Dealer',
+                  'Licensed gold buyer',
+                  Icons.storefront_outlined,
+                  _role == 'dealer',
+                  () => setState(() => _role = 'dealer'),
+                )),
               ]),
               const SizedBox(height: 20),
               TextField(
@@ -164,35 +198,85 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   onPressed: _loading ? null : _verify,
                   child: Text(_loading ? '…' : 'Verify & continue')),
             ],
-          ],
-        ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _card(String label, IconData icon, bool sel, VoidCallback onTap) {
-    return Material(
-      color:
-          sel ? AppColors.gold.withValues(alpha: 0.15) : AppColors.surfaceDark,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-                color: sel ? AppColors.gold : AppColors.border, width: 2),
+  Widget _card(
+    String label,
+    String subtitle,
+    IconData icon,
+    bool selected,
+    VoidCallback onTap,
+  ) {
+    final theme = Theme.of(context);
+    final foreground = selected ? AppColors.navy : theme.colorScheme.onSurface;
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: '$label, $subtitle',
+      child: Material(
+        color: selected ? AppColors.gold : theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(18),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(18),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            constraints: const BoxConstraints(minHeight: 148),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: selected ? AppColors.gold : AppColors.border,
+                width: selected ? 2 : 1,
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Stack(
+                  alignment: Alignment.topRight,
+                  children: [
+                    Icon(icon, size: 34, color: foreground),
+                    if (selected)
+                      const Padding(
+                        padding: EdgeInsets.only(left: 28, bottom: 24),
+                        child: Icon(Icons.check_circle,
+                            size: 17, color: AppColors.navy),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: foreground,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: selected
+                        ? AppColors.navy.withValues(alpha: 0.82)
+                        : theme.hintColor,
+                    fontSize: 12,
+                    height: 1.2,
+                  ),
+                ),
+              ],
+            ),
           ),
-          child: Column(children: [
-            Icon(icon, color: sel ? AppColors.gold : Colors.grey),
-            const SizedBox(height: 8),
-            Text(label,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: sel ? AppColors.gold : null)),
-          ]),
         ),
       ),
     );
