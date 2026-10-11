@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/app_settings_provider.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/app_card.dart';
+import '../../widgets/dhahabu_logo.dart';
 
 class LandingScreen extends StatelessWidget {
   const LandingScreen({super.key});
@@ -19,7 +20,7 @@ class LandingScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(children: [
-                const Icon(Icons.diamond, color: AppColors.gold),
+                const DhahabuLogo(size: 32),
                 const SizedBox(width: 8),
                 const Text('Dhahabu',
                     style: TextStyle(

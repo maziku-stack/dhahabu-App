@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../theme/app_colors.dart';
+import '../../widgets/dhahabu_logo.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -41,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.diamond, size: 72, color: AppColors.gold),
+            DhahabuLogo(size: 72),
             SizedBox(height: 16),
             Text('Dhahabu', style: TextStyle(color: AppColors.gold, fontSize: 28, fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
