@@ -52,7 +52,9 @@ class LandingScreen extends StatelessWidget {
                   child: Text(sw ? 'Ingia' : 'Sign in'),
                 ),
               ]),
-              const SizedBox(height: 32),
+              const SizedBox(height: 20),
+              _goldPhotoCollage(),
+              const SizedBox(height: 28),
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -149,6 +151,64 @@ class LandingScreen extends StatelessWidget {
       ),
     );
   }
+
+  Widget _goldPhotoCollage() => SizedBox(
+        height: 190,
+        child: Row(
+          children: [
+            Expanded(
+              flex: 6,
+              child: _goldPhoto(
+                'lib/assets/images/gold1.jpg',
+                borderRadius: const BorderRadius.horizontal(
+                  left: Radius.circular(20),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              flex: 5,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: _goldPhoto(
+                      'lib/assets/images/gold2.jpg',
+                      borderRadius: const BorderRadius.only(
+                        topRight: Radius.circular(20),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: _goldPhoto(
+                      'lib/assets/images/gold3.jpg',
+                      borderRadius: const BorderRadius.only(
+                        bottomRight: Radius.circular(20),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+
+  Widget _goldPhoto(String path, {required BorderRadius borderRadius}) =>
+      ClipRRect(
+        borderRadius: borderRadius,
+        child: SizedBox.expand(
+          child: Image.asset(
+            path,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => Container(
+              color: AppColors.gold.withValues(alpha: 0.12),
+              child: const Icon(Icons.image_not_supported_outlined,
+                  color: AppColors.gold),
+            ),
+          ),
+        ),
+      );
 
   Widget _stat(String value, String label) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
