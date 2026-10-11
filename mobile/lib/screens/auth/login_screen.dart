@@ -169,13 +169,24 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
             const Text('Welcome back',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  shadows: [
+                    Shadow(color: Colors.black87, blurRadius: 8),
+                  ],
+                )),
             const SizedBox(height: 8),
             const Text(
               'Sign in with your email and password, or use a phone code.',
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
+                fontSize: 16,
+                shadows: [
+                  Shadow(color: Colors.black87, blurRadius: 8),
+                ],
               ),
             ),
             const SizedBox(height: 24),
