@@ -179,8 +179,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 style: const TextStyle(color: Colors.white),
                 keyboardType: TextInputType.phone,
                 decoration: const InputDecoration(
+                  filled: true,
+                  fillColor: Colors.black,
                   labelText: 'Phone number',
                   labelStyle: TextStyle(color: Colors.white),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                   prefixIcon: Icon(Icons.phone, color: Colors.white70),
                 ),
               ),
