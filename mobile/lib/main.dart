@@ -29,6 +29,15 @@ class DhahabuApp extends StatelessWidget {
         builder: (context, settings, _) => MaterialApp(
           title: 'Dhahabu',
           debugShowCheckedModeBanner: false,
+          builder: (context, child) {
+            final mediaQuery = MediaQuery.of(context);
+            return MediaQuery(
+              data: mediaQuery.copyWith(
+                textScaler: _AppTextScaler(mediaQuery.textScaler, 1.1),
+              ),
+              child: child!,
+            );
+          },
           theme: buildDhahabuTheme(),
           darkTheme: buildDhahabuLightTheme(),
           themeMode: settings.themeMode,
@@ -45,4 +54,28 @@ class DhahabuApp extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Gives app text a modest 10% size increase while retaining the user's
+/// platform text scaling preference, including nonlinear accessibility scaling.
+class _AppTextScaler extends TextScaler {
+  const _AppTextScaler(this.platformScaler, this.factor);
+
+  final TextScaler platformScaler;
+  final double factor;
+
+  @override
+  double scale(double fontSize) => platformScaler.scale(fontSize) * factor;
+
+  @override
+  double get textScaleFactor => platformScaler.textScaleFactor * factor;
+
+  @override
+  bool operator ==(Object other) =>
+      other is _AppTextScaler &&
+      other.platformScaler == platformScaler &&
+      other.factor == factor;
+
+  @override
+  int get hashCode => Object.hash(platformScaler, factor);
 }
