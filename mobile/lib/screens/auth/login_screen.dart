@@ -124,9 +124,27 @@ class _LoginScreenState extends State<LoginScreen> {
               : Navigator.pushReplacementNamed(context, '/landing'),
         ),
       ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
+      body: Theme(
+        data: Theme.of(context).copyWith(
+          inputDecorationTheme: Theme.of(context).inputDecorationTheme.copyWith(
+            filled: true,
+            fillColor: const Color(0xFF30343B),
+            labelStyle: const TextStyle(color: Colors.white),
+            hintStyle: const TextStyle(color: Colors.white70),
+            prefixIconColor: Colors.white,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Colors.white54),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: AppColors.gold, width: 2),
+            ),
+          ),
+        ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
           Image.asset(
             'lib/assets/images/OIP.webp',
             fit: BoxFit.cover,
@@ -245,7 +263,8 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-        ],
+          ],
+        ),
       ),
     );
   }
