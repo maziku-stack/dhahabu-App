@@ -174,7 +174,7 @@ class LandingScreen extends StatelessWidget {
   Widget _goldPhoto(String filename) => ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: Image.asset(
-          'lib/assets/images/$filename',
+          'assets/images/$filename',
           fit: BoxFit.cover,
           errorBuilder: (_, __, ___) => Container(
             color: AppColors.gold.withValues(alpha: 0.12),

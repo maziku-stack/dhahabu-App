@@ -149,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
           fit: StackFit.expand,
           children: [
           Image.asset(
-            'lib/assets/images/OIP.webp',
+            'assets/images/OIP.webp',
             fit: BoxFit.cover,
           ),
           const DecoratedBox(

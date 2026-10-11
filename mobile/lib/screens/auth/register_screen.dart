@@ -110,7 +110,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           fit: StackFit.expand,
           children: [
           Image.asset(
-            'lib/assets/images/Purified_gold.webp',
+            'assets/images/Purified_gold.webp',
             fit: BoxFit.cover,
           ),
           const DecoratedBox(
