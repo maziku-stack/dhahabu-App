@@ -83,15 +83,29 @@ class LandingScreen extends StatelessWidget {
                       height: 1.45,
                       fontSize: 16)),
               const SizedBox(height: 24),
-              ElevatedButton(
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(52),
+                  ),
                   onPressed: () => Navigator.pushNamed(context, '/register'),
-                  child: Text(sw ? 'Fungua akaunti →' : 'Create account →')),
-              const SizedBox(height: 12),
-              OutlinedButton(
+                  child: Text(sw ? 'Fungua akaunti →' : 'Create account →'),
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(52),
+                  ),
                   onPressed: () => Navigator.pushNamed(context, '/login'),
                   child: Text(sw
                       ? 'Ingia kama mtumiaji aliyesajiliwa'
-                      : 'Explore as returning user')),
+                      : 'Explore as returning user'),
+                ),
+              ),
               const SizedBox(height: 12),
               Text(
                   sw
