@@ -154,58 +154,32 @@ class LandingScreen extends StatelessWidget {
 
   Widget _goldPhotoCollage() => SizedBox(
         height: 190,
-        child: Row(
+        child: GridView.count(
+          crossAxisCount: 3,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
+          childAspectRatio: 1.15,
+          physics: const NeverScrollableScrollPhysics(),
           children: [
-            Expanded(
-              flex: 6,
-              child: _goldPhoto(
-                'lib/assets/images/gold1.jpg',
-                borderRadius: const BorderRadius.horizontal(
-                  left: Radius.circular(20),
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              flex: 5,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: _goldPhoto(
-                      'lib/assets/images/gold2.jpg',
-                      borderRadius: const BorderRadius.only(
-                        topRight: Radius.circular(20),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Expanded(
-                    child: _goldPhoto(
-                      'lib/assets/images/gold3.jpg',
-                      borderRadius: const BorderRadius.only(
-                        bottomRight: Radius.circular(20),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            'gold1.jpg',
+            'gold2.jpg',
+            'gold3.jpg',
+            'depositphotos_9221392-stock-photo-stacked-gold-bars.jpg',
+            'OIP.webp',
+            'Purified_gold.webp',
+          ].map(_goldPhoto).toList(),
         ),
       );
 
-  Widget _goldPhoto(String path, {required BorderRadius borderRadius}) =>
-      ClipRRect(
-        borderRadius: borderRadius,
-        child: SizedBox.expand(
-          child: Image.asset(
-            path,
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(
-              color: AppColors.gold.withValues(alpha: 0.12),
-              child: const Icon(Icons.image_not_supported_outlined,
-                  color: AppColors.gold),
-            ),
+  Widget _goldPhoto(String filename) => ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Image.asset(
+          'lib/assets/images/$filename',
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => Container(
+            color: AppColors.gold.withValues(alpha: 0.12),
+            child: const Icon(Icons.image_not_supported_outlined,
+                color: AppColors.gold),
           ),
         ),
       );
