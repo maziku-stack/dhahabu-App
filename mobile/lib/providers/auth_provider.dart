@@ -7,20 +7,27 @@ class AuthProvider with ChangeNotifier {
   User? _user;
   bool _loading = true;
   bool _authenticated = false;
+  late final Future<void> _initialization;
 
   User? get user => _user;
   bool get isLoading => _loading;
   bool get isAuthenticated => _authenticated;
 
   AuthProvider() {
-    _tryAutoLogin();
+    _initialization = _tryAutoLogin();
   }
+
+  Future<void> get initialized => _initialization;
 
   Future<void> _tryAutoLogin() async {
     try {
-      final data = await _api.getMe();
-      _user = User.fromJson(data);
-      _authenticated = true;
+      // A fresh install has no session. Avoid a pointless network request so
+      // the landing screen opens immediately even while the API is offline.
+      if (await _api.hasAccessToken()) {
+        final data = await _api.getMe();
+        _user = User.fromJson(data);
+        _authenticated = true;
+      }
     } catch (_) {
       _user = null;
       _authenticated = false;
@@ -41,6 +48,7 @@ class AuthProvider with ChangeNotifier {
     String region = '',
     String miningSite = '',
     String businessName = '',
+    String licenseNumber = '',
   }) async {
     final data = await _api.verifyOtp(
       phone: phone,
@@ -50,6 +58,7 @@ class AuthProvider with ChangeNotifier {
       region: region,
       miningSite: miningSite,
       businessName: businessName,
+      licenseNumber: licenseNumber,
     );
     _user = User.fromJson(data['user'] as Map<String, dynamic>);
     _authenticated = true;

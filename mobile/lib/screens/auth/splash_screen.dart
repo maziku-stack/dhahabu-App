@@ -20,12 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(milliseconds: 900));
     if (!mounted) return;
     final auth = context.read<AuthProvider>();
-    var n = 0;
-    while (auth.isLoading && n < 40) {
-      await Future.delayed(const Duration(milliseconds: 100));
-      n++;
-      if (!mounted) return;
-    }
+    await auth.initialized;
     if (!mounted) return;
     if (auth.isAuthenticated) {
       if (auth.user?.pinSet != true) {

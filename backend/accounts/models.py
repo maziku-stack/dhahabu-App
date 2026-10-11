@@ -33,6 +33,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='miner')
     phone_verified = models.BooleanField(default=False)
     pin_set = models.BooleanField(default=False)
+    pin_hash = models.CharField(max_length=128, blank=True, default='')
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)

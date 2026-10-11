@@ -47,6 +47,9 @@ class ListingListCreateView(generics.ListCreateAPIView):
 
 class ListingDetailView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
+    # Listing state changes are handled here only for cancellation. A sale is
+    # completed through the transaction confirmation flow.
+    http_method_names = ['get', 'patch', 'head', 'options']
     queryset = Listing.objects.select_related('miner')
     serializer_class = ListingSerializer
 
@@ -55,7 +58,10 @@ class ListingDetailView(generics.RetrieveUpdateAPIView):
         if request.user.id != listing.miner_id and request.user.role != 'admin':
             return Response({'detail': 'Forbidden'}, status=403)
         status_val = request.data.get('status')
-        if status_val in ('cancelled', 'open', 'sold'):
-            listing.status = status_val
-            listing.save(update_fields=['status', 'updated_at'])
+        if set(request.data.keys()) != {'status'} or status_val != 'cancelled':
+            return Response({'detail': 'Only cancellation is allowed here.'}, status=400)
+        if listing.status != 'open':
+            return Response({'detail': 'Only open listings can be cancelled.'}, status=409)
+        listing.status = 'cancelled'
+        listing.save(update_fields=['status', 'updated_at'])
         return Response(ListingSerializer(listing).data)

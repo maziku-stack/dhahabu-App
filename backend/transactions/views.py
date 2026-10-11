@@ -1,10 +1,13 @@
 from decimal import Decimal
+from django.contrib.auth.hashers import check_password
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
 from django.db.models import Q, Sum
+from django.db import transaction as db_transaction
 from django.utils import timezone
+from accounts.models import DealerProfile
 from .models import Transaction, TaxRecord, AuditLog
 from .serializers import TransactionSerializer, CreateTransactionSerializer, TaxRecordSerializer
 
@@ -24,13 +27,6 @@ class CreateTransactionView(APIView):
         counterparty = data['counterparty_phone']
         user = request.user
 
-        if user.role == 'dealer':
-            try:
-                if user.dealer_profile.verification_status != 'verified':
-                    return Response({'detail': 'Dealer not verified. Cannot transact.'}, status=403)
-            except Exception:
-                return Response({'detail': 'Dealer profile missing or not verified.'}, status=403)
-
         if user.role == 'miner':
             miner, dealer = user, counterparty
             if counterparty.role != 'dealer':
@@ -41,6 +37,15 @@ class CreateTransactionView(APIView):
                 return Response({'detail': 'Counterparty must be a miner.'}, status=400)
         else:
             return Response({'detail': 'Only miners and dealers can create transactions.'}, status=403)
+
+        if miner.id == dealer.id:
+            return Response({'detail': 'You cannot transact with your own account.'}, status=400)
+
+        try:
+            if dealer.dealer_profile.verification_status != 'verified':
+                return Response({'detail': 'Dealer not verified. Cannot transact.'}, status=403)
+        except DealerProfile.DoesNotExist:
+            return Response({'detail': 'Dealer profile missing or not verified.'}, status=403)
 
         weight = data['weight_grams']
         price_pg = data['price_per_gram']
@@ -56,6 +61,14 @@ class CreateTransactionView(APIView):
         if lid:
             from listings.models import Listing
             listing = Listing.objects.filter(id=lid).first()
+            if listing is None:
+                return Response({'detail': 'Listing not found.'}, status=404)
+            if listing.status != 'open':
+                return Response({'detail': 'This listing is no longer open.'}, status=409)
+            if listing.miner_id != miner.id:
+                return Response({'detail': 'The listing owner must be the miner in this sale.'}, status=400)
+            if listing.weight_grams != weight or listing.karat != data['karat']:
+                return Response({'detail': 'Sale weight and karat must match the listing.'}, status=400)
 
         txn = Transaction.objects.create(
             miner=miner, dealer=dealer, listing=listing,
@@ -71,21 +84,37 @@ class ConfirmTransactionView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, txn_id):
-        try:
-            txn = Transaction.objects.select_related('miner', 'dealer').get(id=txn_id)
-        except Transaction.DoesNotExist:
-            return Response({'detail': 'Not found.'}, status=404)
-        if request.user.id != txn.miner_id and request.user.role != 'admin':
-            return Response({'detail': 'Only the miner can confirm this sale.'}, status=403)
-        if txn.status == 'confirmed':
+        with db_transaction.atomic():
+            try:
+                txn = Transaction.objects.select_for_update().select_related(
+                    'miner', 'dealer'
+                ).get(id=txn_id)
+            except Transaction.DoesNotExist:
+                return Response({'detail': 'Not found.'}, status=404)
+            if request.user.id != txn.miner_id and request.user.role != 'admin' and not request.user.is_staff:
+                return Response({'detail': 'Only the miner can confirm this sale.'}, status=403)
+            if txn.status == 'confirmed':
+                return Response(TransactionSerializer(txn).data)
+            if txn.status != 'pending_confirm':
+                return Response({'detail': f'Transaction is {txn.status} and cannot be confirmed.'}, status=400)
+            if request.user.role != 'admin' and not request.user.is_staff:
+                pin = str(request.data.get('pin', '')).strip()
+                if not request.user.pin_hash or not check_password(pin, request.user.pin_hash):
+                    return Response({'detail': 'A valid account PIN is required to confirm this sale.'}, status=400)
+
+            if txn.listing_id:
+                from listings.models import Listing
+                listing = Listing.objects.select_for_update().get(id=txn.listing_id)
+                if listing.status != 'open':
+                    txn.status = 'rejected_conflict'
+                    txn.save(update_fields=['status'])
+                    return Response({'detail': 'This listing was already sold or closed.'}, status=409)
+
+            txn.confirm()
+            audit(request.user, 'transaction.confirmed', 'Transaction', txn.id, {
+                'royalty': str(txn.tax_record.royalty_amount) if hasattr(txn, 'tax_record') else None,
+            })
             return Response(TransactionSerializer(txn).data)
-        if txn.status == 'cancelled':
-            return Response({'detail': 'Cancelled.'}, status=400)
-        txn.confirm()
-        audit(request.user, 'transaction.confirmed', 'Transaction', txn.id, {
-            'royalty': str(txn.tax_record.royalty_amount) if hasattr(txn, 'tax_record') else None,
-        })
-        return Response(TransactionSerializer(txn).data)
 
 class MyTransactionsView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
@@ -105,7 +134,12 @@ class MyTransactionsView(generics.ListAPIView):
 class TransactionDetailView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = TransactionSerializer
-    queryset = Transaction.objects.select_related('miner', 'dealer').prefetch_related('tax_record')
+    def get_queryset(self):
+        user = self.request.user
+        qs = Transaction.objects.select_related('miner', 'dealer').prefetch_related('tax_record')
+        if user.role == 'admin' or user.is_staff:
+            return qs
+        return qs.filter(Q(miner=user) | Q(dealer=user))
 
 class TaxSummaryView(APIView):
     permission_classes = [IsAuthenticated]

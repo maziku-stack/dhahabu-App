@@ -15,6 +15,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _name = TextEditingController();
   final _region = TextEditingController();
   final _business = TextEditingController();
+  final _license = TextEditingController();
   String? _role;
   bool _otpSent = false;
   bool _loading = false;
@@ -62,6 +63,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             fullName: _name.text.trim(),
             region: _region.text.trim(),
             businessName: _business.text.trim(),
+            licenseNumber: _license.text.trim(),
           );
       if (!mounted) return;
       Navigator.pushNamedAndRemoveUntil(context, '/set-pin', (_) => false);
@@ -79,6 +81,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _otp.dispose();
     _region.dispose();
     _business.dispose();
+    _license.dispose();
     super.dispose();
   }
 
@@ -150,6 +153,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     controller: _business,
                     decoration:
                         const InputDecoration(labelText: 'Business name')),
+                const SizedBox(height: 12),
+                TextField(
+                    controller: _license,
+                    decoration:
+                        const InputDecoration(labelText: 'Dealer license number')),
               ],
               const SizedBox(height: 20),
               ElevatedButton(

@@ -54,6 +54,9 @@ class _DealerQueueScreenState extends State<DealerQueueScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(d['business_name'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold)),
+                            Text('Owner: ${d['owner_name'] ?? '—'}'),
+                            Text('Phone: ${d['owner_phone'] ?? '—'}'),
+                            Text('License: ${d['license_number'] ?? 'Not provided'}'),
                             StatusBadge.pending(),
                             const SizedBox(height: 12),
                             Row(

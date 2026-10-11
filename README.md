@@ -78,8 +78,9 @@ flutter pub get
 
 3. Other launch options:
 
+   - Physical phone on the Rafiki/Dhahabu network: `flutter run` (default API is `http://192.168.1.182:8000/api`)
+   - Physical phone if the computer's IP differs: `flutter run --dart-define=API_BASE_URL=http://<PC-IP>:8000/api`
    - Android emulator: `flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000/api`
-   - Physical phone: `flutter run --dart-define=API_BASE_URL=http://<PC-IP>:8000/api`
    - Chrome on the same PC: `flutter run -d chrome --dart-define=API_BASE_URL=http://127.0.0.1:8000/api`
 
 Android already allows local HTTP traffic for development. If the phone cannot connect, check that Windows Firewall allows Python/Django on private networks and that both devices are on the same Wi-Fi. The development `.env` accepts LAN hostnames; do not use `ALLOWED_HOSTS=*` with `DEBUG=False` in production.

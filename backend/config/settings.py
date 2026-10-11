@@ -1,14 +1,26 @@
 import os
 from pathlib import Path
 from datetime import timedelta
+from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
-load_dotenv()
-
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dhahabu-dev-change-me')
-DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 'yes')
-ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS','*').split(',') if h.strip()]
+load_dotenv(BASE_DIR / '.env')
+
+DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
+SECRET_KEY = os.getenv('SECRET_KEY') or (
+    'django-insecure-dhahabu-dev-change-me' if DEBUG else None
+)
+if not SECRET_KEY:
+    raise ImproperlyConfigured('Set SECRET_KEY in the environment.')
+
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv('ALLOWED_HOSTS', '*' if DEBUG else '').split(',')
+    if host.strip()
+]
+if not ALLOWED_HOSTS or (not DEBUG and '*' in ALLOWED_HOSTS):
+    raise ImproperlyConfigured('Set explicit ALLOWED_HOSTS when DEBUG is False.')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -90,6 +102,11 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.User'
 CORS_ALLOW_ALL_ORIGINS = DEBUG
+CORS_ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv('CORS_ALLOWED_ORIGINS', '').split(',')
+    if origin.strip()
+]
 CORS_ALLOW_CREDENTIALS = True
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',),
@@ -111,5 +128,5 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 SPECTACULAR_SETTINGS = {'TITLE': 'Dhahabu API', 'VERSION': '1.0.0'}
-MOCK_OTP = os.getenv('MOCK_OTP', 'True').lower() in ('true', '1', 'yes')
+MOCK_OTP = DEBUG and os.getenv('MOCK_OTP', 'False').lower() in ('true', '1', 'yes')
 DEFAULT_ROYALTY_RATE = float(os.getenv('DEFAULT_ROYALTY_RATE', '0.07'))

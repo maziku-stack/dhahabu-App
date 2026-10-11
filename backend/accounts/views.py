@@ -1,8 +1,10 @@
-import random
+import secrets
 from datetime import timedelta
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
+from django.db import transaction
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -42,7 +44,7 @@ class RequestOTPView(APIView):
         if recent >= 5:
             return Response({'detail': 'Too many OTP requests.'}, status=429)
 
-        code = '123456' if settings.MOCK_OTP else f'{random.randint(100000, 999999)}'
+        code = '123456' if settings.MOCK_OTP else f'{secrets.randbelow(900000) + 100000}'
         OTPCode.objects.create(
             phone=phone, code=code,
             expires_at=timezone.now() + timedelta(minutes=5),
@@ -56,6 +58,7 @@ class RequestOTPView(APIView):
 class VerifyOTPView(APIView):
     permission_classes = [AllowAny]
 
+    @transaction.atomic
     def post(self, request):
         ser = VerifyOTPSerializer(data=request.data)
         ser.is_valid(raise_exception=True)
@@ -63,7 +66,7 @@ class VerifyOTPView(APIView):
         phone = data['phone'].strip()
         code = data['code'].strip()
 
-        otp = OTPCode.objects.filter(
+        otp = OTPCode.objects.select_for_update().filter(
             phone=phone, is_used=False, expires_at__gte=timezone.now()
         ).order_by('-created_at').first()
         if not otp:
@@ -101,9 +104,9 @@ class VerifyOTPView(APIView):
                 user.mining_site = data['mining_site']
             user.save()
 
-        if role == 'dealer' or user.role == 'dealer':
-            user.role = 'dealer'
-            user.save(update_fields=['role'])
+        # The requested role is only used when creating an account. Never let
+        # OTP verification change an existing account's privileges or role.
+        if user.role == 'dealer':
             DealerProfile.objects.get_or_create(
                 user=user,
                 defaults={
@@ -138,6 +141,9 @@ class DealerProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = DealerProfileSerializer
 
     def get_object(self):
+        if self.request.user.role != 'dealer':
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied('Dealer accounts only.')
         profile, _ = DealerProfile.objects.get_or_create(
             user=self.request.user,
             defaults={'business_name': self.request.user.full_name or 'My Business'},
@@ -166,6 +172,8 @@ class AdminVerifyDealerView(APIView):
         except DealerProfile.DoesNotExist:
             return Response({'detail': 'Not found.'}, status=404)
         action = request.data.get('action', 'approve')
+        if action not in ('approve', 'reject'):
+            return Response({'detail': 'Action must be approve or reject.'}, status=400)
         if action == 'approve':
             profile.verification_status = 'verified'
             profile.verified_at = timezone.now()
@@ -182,8 +190,9 @@ class SetPinView(APIView):
 
     def post(self, request):
         pin = str(request.data.get('pin', '')).strip()
-        if len(pin) < 4:
-            return Response({'detail': 'PIN must be at least 4 digits.'}, status=400)
+        if not pin.isdigit() or not 4 <= len(pin) <= 6:
+            return Response({'detail': 'PIN must contain 4 to 6 digits.'}, status=400)
         request.user.pin_set = True
-        request.user.save(update_fields=['pin_set'])
+        request.user.pin_hash = make_password(pin)
+        request.user.save(update_fields=['pin_set', 'pin_hash'])
         return Response({'detail': 'PIN set', 'pin_set': True})

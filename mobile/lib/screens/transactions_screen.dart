@@ -38,8 +38,34 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   }
 
   Future<void> _confirm(GoldTransaction t) async {
+    final pinController = TextEditingController();
+    final pin = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Confirm with your PIN'),
+        content: TextField(
+          controller: pinController,
+          obscureText: true,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(labelText: 'Account PIN'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(dialogContext, pinController.text),
+            child: const Text('Confirm sale'),
+          ),
+        ],
+      ),
+    );
+    pinController.dispose();
+    if (pin == null || pin.isEmpty || !mounted) return;
+
     try {
-      await ApiService().confirmTransaction(t.id);
+      await ApiService().confirmTransaction(t.id, pin: pin);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

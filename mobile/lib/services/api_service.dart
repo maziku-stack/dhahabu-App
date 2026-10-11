@@ -9,6 +9,19 @@ class ApiService {
   ApiService._();
 
   final baseUrl = AppConstants.baseUrl;
+  static const _requestTimeout = Duration(seconds: 12);
+
+  Future<bool> hasAccessToken() async => (await _token())?.isNotEmpty == true;
+
+  Future<http.Response> _get(Uri uri, {required Map<String, String> headers}) =>
+      http.get(uri, headers: headers).timeout(_requestTimeout);
+
+  Future<http.Response> _post(
+    Uri uri, {
+    required Map<String, String> headers,
+    String? body,
+  }) =>
+      http.post(uri, headers: headers, body: body).timeout(_requestTimeout);
 
   Future<String?> _token() async {
     final p = await SharedPreferences.getInstance();
@@ -56,7 +69,7 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> requestOtp(String phone, String role) async {
-    final res = await http.post(
+    final res = await _post(
       Uri.parse('$baseUrl/auth/otp/request/'),
       headers: await _headers(auth: false),
       body: jsonEncode({'phone': phone, 'role': role}),
@@ -74,8 +87,9 @@ class ApiService {
     String region = '',
     String miningSite = '',
     String businessName = '',
+    String licenseNumber = '',
   }) async {
-    final res = await http.post(
+    final res = await _post(
       Uri.parse('$baseUrl/auth/otp/verify/'),
       headers: await _headers(auth: false),
       body: jsonEncode({
@@ -86,6 +100,7 @@ class ApiService {
         'region': region,
         'mining_site': miningSite,
         'business_name': businessName,
+        'license_number': licenseNumber,
       }),
     );
     final data = _decodeApiResponse(res);
@@ -97,7 +112,7 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> getMe() async {
-    final res = await http.get(Uri.parse('$baseUrl/auth/me/'),
+    final res = await _get(Uri.parse('$baseUrl/auth/me/'),
         headers: await _headers());
     if (res.statusCode == 200) {
       return jsonDecode(res.body) as Map<String, dynamic>;
@@ -106,7 +121,7 @@ class ApiService {
   }
 
   Future<void> setPin(String pin) async {
-    final res = await http.post(
+    final res = await _post(
       Uri.parse('$baseUrl/auth/pin/'),
       headers: await _headers(),
       body: jsonEncode({'pin': pin}),
@@ -117,7 +132,7 @@ class ApiService {
   Future<void> logout() async => clearTokens();
 
   Future<List<dynamic>> getCurrentPrices() async {
-    final res = await http.get(Uri.parse('$baseUrl/pricing/current/'),
+    final res = await _get(Uri.parse('$baseUrl/pricing/current/'),
         headers: await _headers());
     if (res.statusCode == 200) {
       return (jsonDecode(res.body)['prices'] as List?) ?? [];
@@ -129,7 +144,7 @@ class ApiService {
     String karat,
     double price,
   ) async {
-    final res = await http.post(
+    final res = await _post(
       Uri.parse('$baseUrl/pricing/set/'),
       headers: await _headers(),
       body: jsonEncode({
@@ -149,7 +164,7 @@ class ApiService {
     if (mine) url += 'mine=1&';
     if (status != null) url += 'status=$status&';
     if (!mine) url += 'browse=1&';
-    final res = await http.get(Uri.parse(url), headers: await _headers());
+    final res = await _get(Uri.parse(url), headers: await _headers());
     if (res.statusCode == 200) {
       final data = jsonDecode(res.body);
       return data is List ? data : (data['results'] as List? ?? []);
@@ -165,7 +180,7 @@ class ApiService {
     String notes = '',
     String region = '',
   }) async {
-    final res = await http.post(
+    final res = await _post(
       Uri.parse('$baseUrl/listings/'),
       headers: await _headers(),
       body: jsonEncode({
@@ -198,7 +213,7 @@ class ApiService {
       'notes': notes,
     };
     if (listingId != null) body['listing_id'] = listingId;
-    final res = await http.post(
+    final res = await _post(
       Uri.parse('$baseUrl/transactions/create/'),
       headers: await _headers(),
       body: jsonEncode(body),
@@ -210,10 +225,12 @@ class ApiService {
     throw Exception(data['detail'] ?? data.toString());
   }
 
-  Future<Map<String, dynamic>> confirmTransaction(String id) async {
-    final res = await http.post(
+  Future<Map<String, dynamic>> confirmTransaction(
+      String id, {required String pin}) async {
+    final res = await _post(
       Uri.parse('$baseUrl/transactions/$id/confirm/'),
       headers: await _headers(),
+      body: jsonEncode({'pin': pin}),
     );
     final data = jsonDecode(res.body);
     if (res.statusCode == 200) return data as Map<String, dynamic>;
@@ -223,7 +240,7 @@ class ApiService {
   Future<List<dynamic>> getTransactions({String? status}) async {
     var url = '$baseUrl/transactions/';
     if (status != null) url += '?status=$status';
-    final res = await http.get(Uri.parse(url), headers: await _headers());
+    final res = await _get(Uri.parse(url), headers: await _headers());
     if (res.statusCode == 200) {
       final data = jsonDecode(res.body);
       return data is List ? data : (data['results'] as List? ?? []);
@@ -232,7 +249,7 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> getTaxSummary() async {
-    final res = await http.get(Uri.parse('$baseUrl/transactions/tax-summary/'),
+    final res = await _get(Uri.parse('$baseUrl/transactions/tax-summary/'),
         headers: await _headers());
     if (res.statusCode == 200) {
       return jsonDecode(res.body) as Map<String, dynamic>;
@@ -241,7 +258,7 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> getAdminDashboard() async {
-    final res = await http.get(
+    final res = await _get(
         Uri.parse('$baseUrl/transactions/admin/dashboard/'),
         headers: await _headers());
     if (res.statusCode == 200) {
@@ -251,7 +268,7 @@ class ApiService {
   }
 
   Future<List<dynamic>> getPendingDealers() async {
-    final res = await http.get(
+    final res = await _get(
         Uri.parse('$baseUrl/auth/admin/dealers/pending/'),
         headers: await _headers());
     if (res.statusCode == 200) {
@@ -263,7 +280,7 @@ class ApiService {
 
   Future<void> verifyDealer(String id,
       {bool approve = true, String reason = ''}) async {
-    final res = await http.post(
+    final res = await _post(
       Uri.parse('$baseUrl/auth/admin/dealers/$id/verify/'),
       headers: await _headers(),
       body: jsonEncode(
@@ -273,7 +290,7 @@ class ApiService {
   }
 
   Future<List<dynamic>> getFeedback() async {
-    final res = await http.get(Uri.parse('$baseUrl/feedback/'),
+    final res = await _get(Uri.parse('$baseUrl/feedback/'),
         headers: await _headers());
     if (res.statusCode == 200) {
       final data = jsonDecode(res.body);
@@ -286,7 +303,7 @@ class ApiService {
       {required String type,
       required String subject,
       required String body}) async {
-    final res = await http.post(
+    final res = await _post(
       Uri.parse('$baseUrl/feedback/'),
       headers: await _headers(),
       body: jsonEncode({'type': type, 'subject': subject, 'body': body}),
@@ -294,8 +311,21 @@ class ApiService {
     if (res.statusCode != 201) throw Exception('Submit failed');
   }
 
+  Future<void> respondToFeedback(
+      String id, String response, {String status = 'resolved'}) async {
+    final res = await _post(
+      Uri.parse('$baseUrl/feedback/$id/respond/'),
+      headers: await _headers(),
+      body: jsonEncode({'response': response, 'status': status}),
+    );
+    if (res.statusCode != 200) {
+      final data = _decodeApiResponse(res);
+      throw Exception(data['detail'] ?? 'Could not update feedback');
+    }
+  }
+
   Future<List<dynamic>> getAuditLogs() async {
-    final res = await http.get(Uri.parse('$baseUrl/transactions/admin/audit/'),
+    final res = await _get(Uri.parse('$baseUrl/transactions/admin/audit/'),
         headers: await _headers());
     if (res.statusCode == 200) return jsonDecode(res.body) as List;
     throw Exception('Audit failed');

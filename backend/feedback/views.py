@@ -31,7 +31,11 @@ class FeedbackRespondView(APIView):
             fb = Feedback.objects.get(id=pk)
         except Feedback.DoesNotExist:
             return Response({'detail': 'Not found.'}, status=404)
-        fb.admin_response = request.data.get('response', '')
-        fb.status = request.data.get('status', 'resolved')
+        allowed_statuses = {choice[0] for choice in Feedback.STATUS}
+        status_value = request.data.get('status', 'resolved')
+        if status_value not in allowed_statuses:
+            return Response({'detail': 'Invalid feedback status.'}, status=400)
+        fb.admin_response = str(request.data.get('response', ''))
+        fb.status = status_value
         fb.save()
         return Response(FeedbackSerializer(fb).data)

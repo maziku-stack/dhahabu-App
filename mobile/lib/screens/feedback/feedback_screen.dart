@@ -37,6 +37,44 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     _load();
   }
 
+  Future<void> _respond(String id) async {
+    final controller = TextEditingController();
+    final response = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Resolve feedback'),
+        content: TextField(
+          controller: controller,
+          minLines: 2,
+          maxLines: 4,
+          decoration: const InputDecoration(labelText: 'Response (optional)'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(dialogContext, controller.text),
+            child: const Text('Mark resolved'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (response == null || !mounted) return;
+    try {
+      await ApiService().respondToFeedback(id, response);
+      await _load();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+        );
+      }
+    }
+  }
+
   @override
   void dispose() {
     _subject.dispose();
@@ -85,6 +123,14 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       Text(f['body'] ?? ''),
                       if ((f['admin_response'] ?? '').toString().isNotEmpty)
                         Text('Reply: ${f['admin_response']}', style: TextStyle(color: Colors.grey[400])),
+                      if (widget.isAdmin && f['status'] != 'resolved')
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () => _respond(f['id'].toString()),
+                            child: const Text('Respond / resolve'),
+                          ),
+                        ),
                     ],
                   ),
                 ),
