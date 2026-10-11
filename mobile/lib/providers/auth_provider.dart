@@ -37,8 +37,12 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<Map<String, dynamic>> requestOtp(String phone, String role) =>
-      _api.requestOtp(phone, role);
+  Future<Map<String, dynamic>> requestOtp(
+    String phone,
+    String role, {
+    bool allowRegistration = true,
+  }) =>
+      _api.requestOtp(phone, role, allowRegistration: allowRegistration);
 
   Future<void> registerWithEmailPassword({
     required String fullName,

@@ -1,0 +1,41 @@
+{% extends "admin/base_site.html" %}
+{% load i18n dhahabu_admin %}
+{% block bodyclass %}{{ block.super }} dhahabu-admin-home{% endblock %}
+{% block breadcrumbs %}{% endblock %}
+{% block content %}
+{% dashboard_summary as summary %}
+<div class="dhahabu-dashboard">
+  <header class="dhahabu-dashboard__heading">
+    <div><p class="dhahabu-eyebrow">OVERVIEW</p><h1>Good day, {{ user.full_name|default:user.get_username }}</h1><p class="dhahabu-muted">A clear view of users, gold trade, and compliance activity.</p></div>
+    <a class="dhahabu-button" href="{% url 'admin:transactions_transaction_changelist' %}">View transactions <span aria-hidden="true">↗</span></a>
+  </header>
+  <section class="dhahabu-metrics" aria-label="Platform summary">
+    <a class="dhahabu-metric" href="{% url 'admin:accounts_user_changelist' %}"><span class="dhahabu-metric__icon dhahabu-icon--blue">♙</span><span class="dhahabu-metric__label">Miners</span><strong>{{ summary.miner_count }}</strong><small>Registered accounts</small></a>
+    <a class="dhahabu-metric" href="{% url 'admin:accounts_dealerprofile_changelist' %}"><span class="dhahabu-metric__icon dhahabu-icon--gold">◇</span><span class="dhahabu-metric__label">Dealers</span><strong>{{ summary.dealer_count }}</strong><small>{{ summary.pending_dealers }} awaiting verification</small></a>
+    <a class="dhahabu-metric" href="{% url 'admin:transactions_transaction_changelist' %}"><span class="dhahabu-metric__icon dhahabu-icon--green">↗</span><span class="dhahabu-metric__label">Confirmed trade</span><strong class="dhahabu-metric__amount">TZS {{ summary.confirmed_volume|floatformat:0 }}</strong><small>{{ summary.pending_transactions }} awaiting confirmation</small></a>
+    <a class="dhahabu-metric" href="{% url 'admin:listings_listing_changelist' %}"><span class="dhahabu-metric__icon dhahabu-icon--violet">▤</span><span class="dhahabu-metric__label">Open listings</span><strong>{{ summary.open_listings }}</strong><small>Gold offers in the marketplace</small></a>
+    <a class="dhahabu-metric" href="{% url 'admin:feedback_feedback_changelist' %}"><span class="dhahabu-metric__icon dhahabu-icon--orange">✉</span><span class="dhahabu-metric__label">Needs attention</span><strong>{{ summary.open_feedback }}</strong><small>Open feedback and grievances</small></a>
+    <a class="dhahabu-metric" href="{% url 'admin:pricing_goldprice_changelist' %}"><span class="dhahabu-metric__icon dhahabu-icon--gold">◉</span><span class="dhahabu-metric__label">Active gold prices</span><strong>{{ summary.active_prices }}</strong><small>Currently active price entries</small></a>
+  </section>
+  <section class="dhahabu-panels">
+    <div class="dhahabu-panel dhahabu-panel--wide">
+      <div class="dhahabu-panel__heading"><div><p class="dhahabu-eyebrow">LATEST ACTIVITY</p><h2>Recent transactions</h2></div><a href="{% url 'admin:transactions_transaction_changelist' %}">All transactions <span aria-hidden="true">→</span></a></div>
+      <div class="dhahabu-table-wrap"><table class="dhahabu-table">
+        <thead><tr><th>Participants</th><th>Gold</th><th>Value</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody>{% for transaction in summary.recent_transactions %}
+          <tr><td><a class="dhahabu-person" href="{% url 'admin:transactions_transaction_change' transaction.pk %}">{{ transaction.miner.full_name|default:transaction.miner.phone }} <span>to {{ transaction.dealer.full_name|default:transaction.dealer.phone }}</span></a></td><td>{{ transaction.weight_grams }} g <span class="dhahabu-table__sub">{{ transaction.karat }}</span></td><td class="dhahabu-table__value">TZS {{ transaction.agreed_price|floatformat:0 }}</td><td><span class="dhahabu-status dhahabu-status--{{ transaction.status }}">{{ transaction.get_status_display }}</span></td><td class="dhahabu-table__date">{{ transaction.created_at|date:"M j, Y" }}</td></tr>
+        {% empty %}<tr><td colspan="5" class="dhahabu-empty">No transactions yet. New activity will appear here.</td></tr>{% endfor %}</tbody>
+      </table></div>
+    </div>
+    <aside class="dhahabu-panel dhahabu-panel--quick"><p class="dhahabu-eyebrow">QUICK ACCESS</p><h2>Operations</h2>
+      <a class="dhahabu-quick-link" href="{% url 'admin:accounts_dealerprofile_changelist' %}"><span class="dhahabu-quick-link__icon">✓</span><span><strong>Review dealers</strong><small>{{ summary.pending_dealers }} pending verification</small></span><b>→</b></a>
+      <a class="dhahabu-quick-link" href="{% url 'admin:pricing_goldprice_changelist' %}"><span class="dhahabu-quick-link__icon">◇</span><span><strong>Manage gold prices</strong><small>Update market price records</small></span><b>→</b></a>
+      <a class="dhahabu-quick-link" href="{% url 'admin:feedback_feedback_changelist' %}"><span class="dhahabu-quick-link__icon">✉</span><span><strong>Review feedback</strong><small>{{ summary.open_feedback }} open items</small></span><b>→</b></a>
+      <a class="dhahabu-quick-link" href="{% url 'admin:transactions_auditlog_changelist' %}"><span class="dhahabu-quick-link__icon">⌕</span><span><strong>Audit trail</strong><small>Review recorded actions</small></span><b>→</b></a>
+    </aside>
+  </section>
+  <section class="dhahabu-data"><div class="dhahabu-panel__heading"><div><p class="dhahabu-eyebrow">DATA MANAGEMENT</p><h2>All areas</h2></div></div>
+    <div id="content-main">{% if app_list %}{% for app in app_list %}<div class="dhahabu-app-group"><h3>{{ app.name }}</h3><div class="dhahabu-app-links">{% for model in app.models %}{% if model.admin_url %}<a href="{{ model.admin_url }}">{{ model.name }} <span>→</span></a>{% endif %}{% endfor %}</div></div>{% endfor %}{% else %}<p>{% translate "You don’t have permission to view or edit anything." %}</p>{% endif %}</div>
+  </section>
+</div>
+{% endblock %}

@@ -82,6 +82,7 @@ class RequestOTPSerializer(serializers.Serializer):
     phone = serializers.CharField(max_length=20)
     # Admin accounts are provisioned by staff, never through public registration.
     role = serializers.ChoiceField(choices=['miner', 'dealer'], default='miner')
+    allow_registration = serializers.BooleanField(default=True)
 
 
 class VerifyOTPSerializer(serializers.Serializer):

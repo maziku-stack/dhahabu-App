@@ -59,9 +59,11 @@ class _LoginScreenState extends State<LoginScreen> {
       _error = null;
     });
     try {
-      final res = await context
-          .read<AuthProvider>()
-          .requestOtp(_phone.text.trim(), 'miner');
+      final res = await context.read<AuthProvider>().requestOtp(
+            _phone.text.trim(),
+            'miner',
+            allowRegistration: false,
+          );
       setState(() {
         _otpSent = true;
         _mockOtp = res['mock_otp']?.toString();
@@ -130,153 +132,155 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Theme(
         data: Theme.of(context).copyWith(
           inputDecorationTheme: Theme.of(context).inputDecorationTheme.copyWith(
-            filled: true,
-            fillColor: const Color(0xFF30343B),
-            labelStyle: const TextStyle(color: Colors.white),
-            hintStyle: const TextStyle(color: Colors.white70),
-            prefixIconColor: Colors.white,
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Colors.white54),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.gold, width: 2),
-            ),
-          ),
+                filled: true,
+                fillColor: const Color(0xFF30343B),
+                labelStyle: const TextStyle(color: Colors.white),
+                hintStyle: const TextStyle(color: Colors.white70),
+                prefixIconColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Colors.white54),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: AppColors.gold, width: 2),
+                ),
+              ),
         ),
         child: Stack(
           fit: StackFit.expand,
           children: [
-          Image.asset(
-            'assets/images/OIP.webp',
-            fit: BoxFit.cover,
-          ),
-          const DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xB80B1F3A),
-                  Color(0xD9101115),
-                  Color(0xE6101115),
-                ],
-              ),
+            Image.asset(
+              'assets/images/OIP.webp',
+              fit: BoxFit.cover,
             ),
-          ),
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(24, 76, 24, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-            const Text('Welcome back',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  shadows: [
-                    Shadow(color: Colors.black87, blurRadius: 8),
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xB80B1F3A),
+                    Color(0xD9101115),
+                    Color(0xE6101115),
                   ],
-                )),
-            const SizedBox(height: 8),
-            const Text(
-              'Sign in with your email and password, or use a phone code.',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                shadows: [
-                  Shadow(color: Colors.black87, blurRadius: 8),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            SegmentedButton<bool>(
-              segments: const [
-                ButtonSegment(value: true, label: Text('Email & password')),
-                ButtonSegment(value: false, label: Text('Phone code')),
-              ],
-              selected: {_usePassword},
-              onSelectionChanged: (selection) => setState(() {
-                _usePassword = selection.first;
-                _error = null;
-              }),
-            ),
-            const SizedBox(height: 20),
-            if (_error != null)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Text(_error!,
-                    style: const TextStyle(color: AppColors.error)),
-              ),
-            if (_usePassword) ...[
-              TextField(
-                controller: _email,
-                keyboardType: TextInputType.emailAddress,
-                autocorrect: false,
-                decoration: const InputDecoration(
-                  labelText: 'Email address',
-                  prefixIcon: Icon(Icons.email_outlined),
                 ),
               ),
-              const SizedBox(height: 14),
-              TextField(
-                controller: _password,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                  prefixIcon: Icon(Icons.lock_outline),
+            ),
+            SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(24, 76, 24, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Text('Welcome back',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          shadows: [
+                            Shadow(color: Colors.black87, blurRadius: 8),
+                          ],
+                        )),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Sign in with your email and password, or use a phone code.',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        shadows: [
+                          Shadow(color: Colors.black87, blurRadius: 8),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    SegmentedButton<bool>(
+                      segments: const [
+                        ButtonSegment(
+                            value: true, label: Text('Email & password')),
+                        ButtonSegment(value: false, label: Text('Phone code')),
+                      ],
+                      selected: {_usePassword},
+                      onSelectionChanged: (selection) => setState(() {
+                        _usePassword = selection.first;
+                        _error = null;
+                      }),
+                    ),
+                    const SizedBox(height: 20),
+                    if (_error != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Text(_error!,
+                            style: const TextStyle(color: AppColors.error)),
+                      ),
+                    if (_usePassword) ...[
+                      TextField(
+                        controller: _email,
+                        keyboardType: TextInputType.emailAddress,
+                        autocorrect: false,
+                        decoration: const InputDecoration(
+                          labelText: 'Email address',
+                          prefixIcon: Icon(Icons.email_outlined),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      TextField(
+                        controller: _password,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          labelText: 'Password',
+                          prefixIcon: Icon(Icons.lock_outline),
+                        ),
+                        onSubmitted: (_) => _loginWithPassword(),
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: _loading ? null : _loginWithPassword,
+                        child: Text(_loading ? 'Please wait…' : 'Sign in'),
+                      ),
+                    ] else if (!_otpSent) ...[
+                      TextField(
+                          controller: _phone,
+                          keyboardType: TextInputType.phone,
+                          decoration: const InputDecoration(
+                              labelText: 'Phone number',
+                              prefixIcon: Icon(Icons.phone))),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                          onPressed: _loading ? null : _request,
+                          child: Text(_loading ? '…' : 'Send OTP')),
+                    ] else ...[
+                      if (_mockOtp != null)
+                        Text('Dev OTP: $_mockOtp',
+                            style: const TextStyle(
+                                color: AppColors.gold,
+                                fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      TextField(
+                          controller: _otp,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                              labelText: 'OTP', prefixIcon: Icon(Icons.lock))),
+                      const SizedBox(height: 12),
+                      TextField(
+                          controller: _name,
+                          decoration: const InputDecoration(
+                              labelText: 'Full name (optional)',
+                              prefixIcon: Icon(Icons.person))),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                          onPressed: _loading ? null : _verify,
+                          child: Text(_loading ? '…' : 'Sign in')),
+                    ],
+                    TextButton(
+                        onPressed: () => Navigator.pushReplacementNamed(
+                            context, '/register'),
+                        child: const Text('New user? Create account')),
+                  ],
                 ),
-                onSubmitted: (_) => _loginWithPassword(),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _loading ? null : _loginWithPassword,
-                child: Text(_loading ? 'Please wait…' : 'Sign in'),
-              ),
-            ] else if (!_otpSent) ...[
-              TextField(
-                  controller: _phone,
-                  keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                      labelText: 'Phone number',
-                      prefixIcon: Icon(Icons.phone))),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                  onPressed: _loading ? null : _request,
-                  child: Text(_loading ? '…' : 'Send OTP')),
-            ] else ...[
-              if (_mockOtp != null)
-                Text('Dev OTP: $_mockOtp',
-                    style: const TextStyle(
-                        color: AppColors.gold, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              TextField(
-                  controller: _otp,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                      labelText: 'OTP', prefixIcon: Icon(Icons.lock))),
-              const SizedBox(height: 12),
-              TextField(
-                  controller: _name,
-                  decoration: const InputDecoration(
-                      labelText: 'Full name (optional)',
-                      prefixIcon: Icon(Icons.person))),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                  onPressed: _loading ? null : _verify,
-                  child: Text(_loading ? '…' : 'Sign in')),
-            ],
-            TextButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, '/register'),
-                child: const Text('New user? Create account')),
-                ],
               ),
             ),
-          ),
           ],
         ),
       ),

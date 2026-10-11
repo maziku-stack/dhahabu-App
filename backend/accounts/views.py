@@ -81,6 +81,15 @@ class RequestOTPView(APIView):
         ser.is_valid(raise_exception=True)
         phone = ser.validated_data['phone'].strip()
 
+        if (
+            not ser.validated_data['allow_registration']
+            and not User.objects.filter(phone=phone).exists()
+        ):
+            return Response(
+                {'detail': 'No account found for this phone number. Create an account first.'},
+                status=404,
+            )
+
         locked = OTPCode.objects.filter(
             phone=phone, locked_until__gt=timezone.now()
         ).first()
