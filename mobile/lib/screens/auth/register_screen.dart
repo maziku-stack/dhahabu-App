@@ -17,6 +17,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordConfirmation = TextEditingController();
   String? _role;
   bool _loading = false;
+  bool _passwordVisible = false;
+  bool _passwordConfirmationVisible = false;
   String? _error;
 
   Future<void> _register() async {
@@ -180,16 +182,57 @@ class _RegisterScreenState extends State<RegisterScreen> {
             TextField(
               controller: _password,
               style: const TextStyle(color: Colors.white),
-              obscureText: true,
-              decoration: const InputDecoration(labelText: 'Password (at least 8 characters)', prefixIcon: Icon(Icons.lock_outline)),
+              obscureText: !_passwordVisible,
+              cursorColor: AppColors.gold,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.black,
+                labelText: 'Password (at least 8 characters)',
+                labelStyle: const TextStyle(color: Colors.white),
+                prefixIcon: const Icon(Icons.lock_outline, color: Colors.white70),
+                suffixIcon: IconButton(
+                  tooltip: _passwordVisible ? 'Hide password' : 'Show password',
+                  onPressed: () => setState(
+                    () => _passwordVisible = !_passwordVisible,
+                  ),
+                  icon: Icon(
+                    _passwordVisible
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    color: Colors.white70,
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 14),
             TextField(
               controller: _passwordConfirmation,
               style: const TextStyle(color: Colors.white),
-              obscureText: true,
+              obscureText: !_passwordConfirmationVisible,
+              cursorColor: AppColors.gold,
               textInputAction: TextInputAction.done,
-              decoration: const InputDecoration(labelText: 'Confirm password', prefixIcon: Icon(Icons.lock_reset_outlined)),
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.black,
+                labelText: 'Confirm password',
+                labelStyle: const TextStyle(color: Colors.white),
+                prefixIcon: const Icon(Icons.lock_reset_outlined, color: Colors.white70),
+                suffixIcon: IconButton(
+                  tooltip: _passwordConfirmationVisible
+                      ? 'Hide password'
+                      : 'Show password',
+                  onPressed: () => setState(
+                    () => _passwordConfirmationVisible =
+                        !_passwordConfirmationVisible,
+                  ),
+                  icon: Icon(
+                    _passwordConfirmationVisible
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    color: Colors.white70,
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 22),
             ElevatedButton(
