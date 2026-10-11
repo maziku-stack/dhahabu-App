@@ -158,7 +158,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controller: _name,
               style: const TextStyle(color: Colors.white),
               textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(labelText: 'Full name', prefixIcon: Icon(Icons.person_outline)),
+              decoration: const InputDecoration(
+                filled: true,
+                fillColor: Colors.black,
+                labelText: 'Full name',
+                labelStyle: TextStyle(color: Colors.white),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
+                prefixIcon: Icon(Icons.person_outline, color: Colors.white70),
+              ),
             ),
             const SizedBox(height: 14),
             TextField(
@@ -166,7 +176,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
               style: const TextStyle(color: Colors.white),
               keyboardType: TextInputType.emailAddress,
               autocorrect: false,
-              decoration: const InputDecoration(labelText: 'Email address', prefixIcon: Icon(Icons.email_outlined)),
+              decoration: const InputDecoration(
+                filled: true,
+                fillColor: Colors.black,
+                labelText: 'Email address',
+                labelStyle: TextStyle(color: Colors.white),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
+                prefixIcon: Icon(Icons.email_outlined, color: Colors.white70),
+              ),
             ),
             const SizedBox(height: 14),
             TextField(

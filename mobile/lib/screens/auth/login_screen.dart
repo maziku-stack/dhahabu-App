@@ -112,7 +112,10 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        scrolledUnderElevation: 0,
         title: const Text('Sign in'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -121,16 +124,42 @@ class _LoginScreenState extends State<LoginScreen> {
               : Navigator.pushReplacementNamed(context, '/landing'),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            'lib/assets/images/OIP.webp',
+            fit: BoxFit.cover,
+          ),
+          const DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xB80B1F3A),
+                  Color(0xD9101115),
+                  Color(0xE6101115),
+                ],
+              ),
+            ),
+          ),
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(24, 76, 24, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
             const Text('Welcome back',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Text('Sign in with your email and password, or use a phone code.',
-                style: TextStyle(color: Colors.grey[400])),
+            const Text(
+              'Sign in with your email and password, or use a phone code.',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 24),
             SegmentedButton<bool>(
               segments: const [
@@ -212,8 +241,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: () =>
                     Navigator.pushReplacementNamed(context, '/register'),
                 child: const Text('New user? Create account')),
-          ],
-        ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
