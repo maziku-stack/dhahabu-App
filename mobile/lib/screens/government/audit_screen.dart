@@ -21,7 +21,10 @@ class _AuditScreenState extends State<AuditScreen> {
   Future<void> _load() async {
     try {
       final d = await ApiService().getAuditLogs();
-      setState(() { _items = d; _loading = false; });
+      setState(() {
+        _items = d;
+        _loading = false;
+      });
     } catch (_) {
       setState(() => _loading = false);
     }
@@ -44,9 +47,20 @@ class _AuditScreenState extends State<AuditScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(a['action'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold)),
-                        Text('${a['entity_type']} ${a['entity_id']}', style: const TextStyle(fontSize: 12)),
-                        Text('${a['actor'] ?? ''} · ${a['created_at'] ?? ''}', style: TextStyle(fontSize: 11, color: Colors.grey[500])),
+                        Text(a['action'] ?? '',
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
+                        Text(
+                          '${a['entity_type']} ${a['entity_id']}',
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        Text(
+                          '${a['actor'] ?? ''} · ${a['created_at'] ?? ''}',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
                       ],
                     ),
                   ),

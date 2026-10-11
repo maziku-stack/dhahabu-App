@@ -27,7 +27,7 @@ class DhahabuApp extends StatelessWidget {
       ],
       child: Consumer<AppSettingsProvider>(
         builder: (context, settings, _) {
-          final isMiner = context.watch<AuthProvider>().user?.isMiner == true;
+          final hasDashboardTheme = context.watch<AuthProvider>().user != null;
           final lightTheme = buildDhahabuLightTheme();
           final darkTheme = buildDhahabuTheme();
 
@@ -42,19 +42,23 @@ class DhahabuApp extends StatelessWidget {
                 ),
                 child: child ?? const SizedBox.shrink(),
               );
-              if (!isMiner) return app;
+              if (!hasDashboardTheme) return app;
               return Stack(
                 fit: StackFit.expand,
                 children: [
-                  _MinerAtmosphere(isDark: settings.isDark),
+                  _DashboardAtmosphere(isDark: settings.isDark),
                   app,
                 ],
               );
             },
             // Keep each ThemeData paired with its actual brightness. The
             // previous pairing sent dark mode to the light palette.
-            theme: isMiner ? buildMinerGlassTheme(lightTheme) : lightTheme,
-            darkTheme: isMiner ? buildMinerGlassTheme(darkTheme) : darkTheme,
+            theme: hasDashboardTheme
+                ? buildGlassDashboardTheme(lightTheme)
+                : lightTheme,
+            darkTheme: hasDashboardTheme
+                ? buildGlassDashboardTheme(darkTheme)
+                : darkTheme,
             themeMode: settings.themeMode,
             locale: settings.locale,
             home: const SplashScreen(),
@@ -72,8 +76,8 @@ class DhahabuApp extends StatelessWidget {
   }
 }
 
-class _MinerAtmosphere extends StatelessWidget {
-  const _MinerAtmosphere({required this.isDark});
+class _DashboardAtmosphere extends StatelessWidget {
+  const _DashboardAtmosphere({required this.isDark});
 
   final bool isDark;
 

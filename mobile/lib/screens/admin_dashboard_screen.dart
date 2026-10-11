@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import '../services/api_service.dart';
+import '../theme/app_colors.dart';
+import '../widgets/app_card.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
+
   @override
   State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
 }
@@ -23,66 +27,107 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     setState(() => _loading = true);
     try {
       final data = await ApiService().getAdminDashboard();
+      if (!mounted) return;
       setState(() {
         _data = data;
         _loading = false;
       });
     } catch (_) {
-      setState(() => _loading = false);
+      if (mounted) setState(() => _loading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) return const Center(child: CircularProgressIndicator());
-    final s = _data?['summary'] as Map<String, dynamic>? ?? {};
+    final summary = _data?['summary'] as Map<String, dynamic>? ?? {};
+    final secondary = Theme.of(context).colorScheme.onSurfaceVariant;
 
     return RefreshIndicator(
       onRefresh: _load,
       child: ListView(
-        padding: const EdgeInsets.all(16),
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
         children: [
-          Text('Government Dashboard',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
-          Text('Real-time sector visibility',
-              style: TextStyle(color: Colors.grey[600])),
-          const SizedBox(height: 16),
-          _metricCard('Confirmed Transactions',
-              '${s['transaction_count'] ?? 0}', Icons.receipt),
-          _metricCard(
-              'Total Volume', '${s['total_volume_grams'] ?? 0} g', Icons.scale),
-          _metricCard(
-              'Total Value',
-              'TZS ${_fmt.format(double.tryParse('${s['total_value_tzs']}') ?? 0)}',
-              Icons.payments),
-          _metricCard(
-              'Royalty Collected',
-              'TZS ${_fmt.format(double.tryParse('${s['total_royalty_tzs']}') ?? 0)}',
-              Icons.account_balance),
+          Text(
+            'Government overview',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            'A clear view of confirmed gold trade and royalties.',
+            style: TextStyle(color: secondary, fontSize: 14),
+          ),
+          const SizedBox(height: 20),
+          if (_loading)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 40),
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else ...[
+            _metricCard(
+              'Confirmed transactions',
+              '${summary['transaction_count'] ?? 0}',
+              Icons.receipt_long_outlined,
+            ),
+            _metricCard(
+              'Gold traded',
+              '${summary['total_volume_grams'] ?? 0} g',
+              Icons.scale_outlined,
+            ),
+            _metricCard(
+              'Total trade value',
+              'TSh ${_fmt.format(double.tryParse('${summary['total_value_tzs']}') ?? 0)}',
+              Icons.payments_outlined,
+            ),
+            _metricCard(
+              'Royalty collected',
+              'TSh ${_fmt.format(double.tryParse('${summary['total_royalty_tzs']}') ?? 0)}',
+              Icons.account_balance_wallet_outlined,
+            ),
+          ],
         ],
       ),
     );
   }
 
   Widget _metricCard(String label, String value, IconData icon) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: const Color(0xFFD4A017).withValues.call(),
-          child: Icon(icon, color: const Color(0xFFB8860B)),
+    final secondary = Theme.of(context).colorScheme.onSurfaceVariant;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: AppCard(
+        child: Row(
+          children: [
+            Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                color: AppColors.gold.withValues(alpha: .14),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(icon, color: AppColors.gold),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label, style: TextStyle(color: secondary, fontSize: 14)),
+                  const SizedBox(height: 4),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        title: Text(label,
-            style: TextStyle(color: Colors.grey[600], fontSize: 13)),
-        subtitle: Text(value,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-                color: Colors.black87)),
       ),
     );
   }

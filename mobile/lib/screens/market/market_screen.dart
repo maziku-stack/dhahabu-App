@@ -163,7 +163,9 @@ class _MarketScreenState extends State<MarketScreen> {
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
           children: isMinerHome
               ? _buildMinerDashboard(user?.fullName ?? '')
-              : _buildMarketContent(),
+              : user?.isDealer == true
+                  ? _buildDealerDashboard(user?.fullName ?? '')
+                  : _buildMarketContent(),
         ),
       ),
     );
@@ -362,6 +364,96 @@ class _MarketScreenState extends State<MarketScreen> {
         const SizedBox(height: 16),
         _buildPriceCard(),
       ];
+
+  List<Widget> _buildDealerDashboard(String fullName) {
+    final firstName = fullName.trim().isEmpty
+        ? 'Dealer'
+        : fullName.trim().split(RegExp(r'\s+')).first;
+    return [
+      Container(
+        padding: const EdgeInsets.all(22),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(22),
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF17375D), AppColors.navy, Color(0xFF091629)],
+          ),
+          border: Border.all(color: AppColors.gold.withValues(alpha: .28)),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'DEALER DASHBOARD',
+                    style: TextStyle(
+                      color: AppColors.gold,
+                      fontSize: 11,
+                      letterSpacing: 1.4,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Karibu, $firstName',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 7),
+                  Text(
+                    'Check reference prices before browsing available gold.',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: .84),
+                      fontSize: 14,
+                      height: 1.35,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 10),
+            const Icon(Icons.storefront_outlined,
+                color: AppColors.gold, size: 36),
+          ],
+        ),
+      ),
+      const SizedBox(height: 24),
+      Row(
+        children: [
+          const Expanded(
+            child: Text(
+              'Today’s gold prices',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+            ),
+          ),
+          if (!_loading && _prices.isNotEmpty)
+            _MarketStatus(
+              stale: _prices.any(
+                (p) => p['is_stale'] == true || p['price_per_gram'] == null,
+              ),
+            ),
+        ],
+      ),
+      const SizedBox(height: 5),
+      Text(
+        'Reference price per gram',
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          fontSize: 14,
+        ),
+      ),
+      const SizedBox(height: 13),
+      _buildPriceCard(),
+    ];
+  }
 
   Widget _buildPriceCard() {
     if (_loading) {

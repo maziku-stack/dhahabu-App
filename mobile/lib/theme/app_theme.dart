@@ -111,10 +111,9 @@ ThemeData buildDhahabuLightTheme() {
   );
 }
 
-/// A miner-specific, high-contrast glass theme for the full dashboard and its
-/// pushed screens. It keeps the selected dark/light palette and enlarges the
-/// text hierarchy while preserving the app's gold and navy identity.
-ThemeData buildMinerGlassTheme(ThemeData base) {
+/// A high-contrast glass theme for authenticated dashboards and their pushed
+/// screens. It preserves the selected palette and Dhahabu gold/navy identity.
+ThemeData buildGlassDashboardTheme(ThemeData base) {
   final isDark = base.brightness == Brightness.dark;
   final foreground = isDark ? const Color(0xFFF7F8FA) : const Color(0xFF172334);
   final secondaryText =
