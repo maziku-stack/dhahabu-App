@@ -92,7 +92,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         scrolledUnderElevation: 0,
-        title: const Text('Create account'),
+        title: const Text(
+          'Create account',
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           TextButton(
               onPressed: () => Navigator.pushNamed(context, '/login'),
@@ -100,9 +103,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: TextStyle(color: AppColors.gold))),
         ],
       ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
+      body: Theme(
+        data: Theme.of(context).copyWith(
+          inputDecorationTheme: Theme.of(context).inputDecorationTheme.copyWith(
+            labelStyle: const TextStyle(color: Colors.white),
+            hintStyle: const TextStyle(color: Colors.white70),
+            prefixIconColor: Colors.white70,
+          ),
+        ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
           Image.asset(
             'lib/assets/images/Purified_gold.webp',
             fit: BoxFit.cover,
@@ -126,14 +137,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-            Text('Choose the account type that fits you',
-                style: TextStyle(color: Theme.of(context).hintColor)),
+            const Text(
+              'Choose the account type that fits you',
+              style: TextStyle(color: Colors.white),
+            ),
             const SizedBox(height: 16),
             if (_error != null)
               Text(_error!, style: const TextStyle(color: AppColors.error)),
             if (!_otpSent) ...[
-              const Text('I am registering as',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+              const Text(
+                'I am registering as',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
               const SizedBox(height: 12),
               Row(children: [
                 Expanded(
@@ -156,10 +175,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ]),
               const SizedBox(height: 20),
               TextField(
-                  controller: _phone,
-                  keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                      labelText: 'Phone', prefixIcon: Icon(Icons.phone))),
+                controller: _phone,
+                style: const TextStyle(color: Colors.white),
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(
+                  labelText: 'Phone number',
+                  labelStyle: TextStyle(color: Colors.white),
+                  prefixIcon: Icon(Icons.phone, color: Colors.white70),
+                ),
+              ),
               const SizedBox(height: 20),
               ElevatedButton(
                   onPressed: _loading ? null : _request,
@@ -202,7 +226,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
           ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -269,7 +294,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: TextStyle(
                     color: selected
                         ? AppColors.navy.withValues(alpha: 0.82)
-                        : theme.hintColor,
+                        : Colors.white70,
                     fontSize: 12,
                     height: 1.2,
                   ),
