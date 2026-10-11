@@ -25,7 +25,10 @@ class ProfileScreen extends StatelessWidget {
                   const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
           Text(user.phone,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey[400])),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: 16,
+              )),
           const SizedBox(height: 8),
           Center(
               child: Chip(

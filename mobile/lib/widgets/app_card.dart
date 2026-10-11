@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 
@@ -13,16 +15,41 @@ class AppCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
+    final theme = Theme.of(context);
+    final isMinerGlassTheme =
+        theme.scaffoldBackgroundColor == Colors.transparent;
+    final isDark = theme.brightness == Brightness.dark;
+    final radius = BorderRadius.circular(isMinerGlassTheme ? 18 : 8);
+    final card = Container(
       width: double.infinity,
       padding: padding,
       decoration: BoxDecoration(
-        color: isDark ? AppColors.surfaceDark : Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: isDark ? AppColors.border : Colors.black12),
+        color: isMinerGlassTheme
+            ? theme.cardColor
+            : isDark
+                ? AppColors.surfaceDark
+                : Colors.white,
+        borderRadius: radius,
+        border: Border.all(
+          color: isMinerGlassTheme
+              ? (isDark
+                  ? Colors.white24
+                  : AppColors.navy.withValues(alpha: .14))
+              : isDark
+                  ? AppColors.border
+                  : Colors.black12,
+        ),
       ),
       child: child,
+    );
+
+    if (!isMinerGlassTheme) return card;
+    return ClipRRect(
+      borderRadius: radius,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: card,
+      ),
     );
   }
 }

@@ -26,34 +26,120 @@ class DhahabuApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AppSettingsProvider()),
       ],
       child: Consumer<AppSettingsProvider>(
-        builder: (context, settings, _) => MaterialApp(
-          title: 'Dhahabu',
-          debugShowCheckedModeBanner: false,
-          builder: (context, child) {
-            final mediaQuery = MediaQuery.of(context);
-            return MediaQuery(
-              data: mediaQuery.copyWith(
-                textScaler: _AppTextScaler(mediaQuery.textScaler, 1.1),
-              ),
-              child: child!,
-            );
-          },
-          theme: buildDhahabuTheme(),
-          darkTheme: buildDhahabuLightTheme(),
-          themeMode: settings.themeMode,
-          locale: settings.locale,
-          home: const SplashScreen(),
-          routes: {
-            '/landing': (_) => const LandingScreen(),
-            '/login': (_) => const LoginScreen(),
-            '/register': (_) => const RegisterScreen(),
-            '/set-pin': (_) => const SetPinScreen(),
-            '/home': (_) => const RoleRouter(),
-          },
-        ),
+        builder: (context, settings, _) {
+          final isMiner = context.watch<AuthProvider>().user?.isMiner == true;
+          final lightTheme = buildDhahabuLightTheme();
+          final darkTheme = buildDhahabuTheme();
+
+          return MaterialApp(
+            title: 'Dhahabu',
+            debugShowCheckedModeBanner: false,
+            builder: (context, child) {
+              final mediaQuery = MediaQuery.of(context);
+              final app = MediaQuery(
+                data: mediaQuery.copyWith(
+                  textScaler: _AppTextScaler(mediaQuery.textScaler, 1.1),
+                ),
+                child: child ?? const SizedBox.shrink(),
+              );
+              if (!isMiner) return app;
+              return Stack(
+                fit: StackFit.expand,
+                children: [
+                  _MinerAtmosphere(isDark: settings.isDark),
+                  app,
+                ],
+              );
+            },
+            // Keep each ThemeData paired with its actual brightness. The
+            // previous pairing sent dark mode to the light palette.
+            theme: isMiner ? buildMinerGlassTheme(lightTheme) : lightTheme,
+            darkTheme: isMiner ? buildMinerGlassTheme(darkTheme) : darkTheme,
+            themeMode: settings.themeMode,
+            locale: settings.locale,
+            home: const SplashScreen(),
+            routes: {
+              '/landing': (_) => const LandingScreen(),
+              '/login': (_) => const LoginScreen(),
+              '/register': (_) => const RegisterScreen(),
+              '/set-pin': (_) => const SetPinScreen(),
+              '/home': (_) => const RoleRouter(),
+            },
+          );
+        },
       ),
     );
   }
+}
+
+class _MinerAtmosphere extends StatelessWidget {
+  const _MinerAtmosphere({required this.isDark});
+
+  final bool isDark;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isDark
+                ? const [
+                    Color(0xFF071321),
+                    Color(0xFF10243A),
+                    Color(0xFF091626),
+                  ]
+                : const [
+                    Color(0xFFF7F6F2),
+                    Color(0xFFE9EFF4),
+                    Color(0xFFF8F9FA),
+                  ],
+          ),
+        ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Positioned(
+              top: -170,
+              right: -100,
+              child: _AmbientGlow(
+                color:
+                    isDark ? const Color(0x35C9A227) : const Color(0x3AC9A227),
+                size: 380,
+              ),
+            ),
+            Positioned(
+              left: -180,
+              bottom: 50,
+              child: _AmbientGlow(
+                color:
+                    isDark ? const Color(0x283F79A8) : const Color(0x183F79A8),
+                size: 430,
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
+class _AmbientGlow extends StatelessWidget {
+  const _AmbientGlow({required this.color, required this.size});
+
+  final Color color;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) => SizedBox.square(
+        dimension: size,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: RadialGradient(
+              colors: [color, color.withValues(alpha: 0)],
+            ),
+          ),
+        ),
+      );
 }
 
 /// Gives app text a modest 10% size increase while retaining the user's
@@ -68,7 +154,7 @@ class _AppTextScaler extends TextScaler {
   double scale(double fontSize) => platformScaler.scale(fontSize) * factor;
 
   @override
-  double get textScaleFactor => platformScaler.textScaleFactor * factor;
+  double get textScaleFactor => platformScaler.scale(1) * factor;
 
   @override
   bool operator ==(Object other) =>

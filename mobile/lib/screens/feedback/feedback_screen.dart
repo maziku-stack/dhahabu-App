@@ -31,7 +31,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
   Future<void> _submit() async {
     if (_subject.text.isEmpty || _body.text.isEmpty) return;
-    await ApiService().submitFeedback(type: _type, subject: _subject.text, body: _body.text);
+    await ApiService()
+        .submitFeedback(type: _type, subject: _subject.text, body: _body.text);
     _subject.clear();
     _body.clear();
     _load();
@@ -85,7 +86,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.isAdmin ? 'Feedback Inbox' : 'Feedback')),
+      appBar:
+          AppBar(title: Text(widget.isAdmin ? 'Feedback Inbox' : 'Feedback')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -96,17 +98,24 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   SegmentedButton<String>(
                     segments: const [
                       ButtonSegment(value: 'feedback', label: Text('Feedback')),
-                      ButtonSegment(value: 'grievance', label: Text('Grievance')),
+                      ButtonSegment(
+                          value: 'grievance', label: Text('Grievance')),
                     ],
                     selected: {_type},
                     onSelectionChanged: (s) => setState(() => _type = s.first),
                   ),
                   const SizedBox(height: 12),
-                  TextField(controller: _subject, decoration: const InputDecoration(labelText: 'Subject')),
+                  TextField(
+                      controller: _subject,
+                      decoration: const InputDecoration(labelText: 'Subject')),
                   const SizedBox(height: 8),
-                  TextField(controller: _body, maxLines: 3, decoration: const InputDecoration(labelText: 'Message')),
+                  TextField(
+                      controller: _body,
+                      maxLines: 3,
+                      decoration: const InputDecoration(labelText: 'Message')),
                   const SizedBox(height: 12),
-                  ElevatedButton(onPressed: _submit, child: const Text('Submit')),
+                  ElevatedButton(
+                      onPressed: _submit, child: const Text('Submit')),
                 ],
               ),
             ),
@@ -118,11 +127,20 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(f['subject'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold)),
-                      Text('${f['type']} · ${f['status']}', style: const TextStyle(color: AppColors.gold, fontSize: 12)),
+                      Text(f['subject'] ?? '',
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text('${f['type']} · ${f['status']}',
+                          style: const TextStyle(
+                              color: AppColors.gold, fontSize: 12)),
                       Text(f['body'] ?? ''),
                       if ((f['admin_response'] ?? '').toString().isNotEmpty)
-                        Text('Reply: ${f['admin_response']}', style: TextStyle(color: Colors.grey[400])),
+                        Text(
+                          'Reply: ${f['admin_response']}',
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
                       if (widget.isAdmin && f['status'] != 'resolved')
                         Align(
                           alignment: Alignment.centerRight,

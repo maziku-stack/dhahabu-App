@@ -29,8 +29,12 @@ class _ListingsScreenState extends State<ListingsScreen> {
   Future<void> _load() async {
     setState(() => _loading = true);
     try {
-      final data = await ApiService().getListings(mine: widget.mineOnly, status: 'open');
-      setState(() { _items = data; _loading = false; });
+      final data =
+          await ApiService().getListings(mine: widget.mineOnly, status: 'open');
+      setState(() {
+        _items = data;
+        _loading = false;
+      });
     } catch (_) {
       setState(() => _loading = false);
     }
@@ -49,7 +53,10 @@ class _ListingsScreenState extends State<ListingsScreen> {
             IconButton(
               icon: const Icon(Icons.add),
               onPressed: () async {
-                await Navigator.push(context, MaterialPageRoute(builder: (_) => const ListingNewScreen()));
+                await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const ListingNewScreen()));
                 _load();
               },
             ),
@@ -60,7 +67,10 @@ class _ListingsScreenState extends State<ListingsScreen> {
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : _items.isEmpty
-                ? ListView(children: const [SizedBox(height: 80), Center(child: Text('No open listings'))])
+                ? ListView(children: const [
+                    SizedBox(height: 80),
+                    Center(child: Text('No open listings'))
+                  ])
                 : ListView.builder(
                     padding: const EdgeInsets.all(16),
                     itemCount: _items.length,
@@ -72,14 +82,30 @@ class _ListingsScreenState extends State<ListingsScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('${l['weight_grams']} g · ${l['karat']}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                              Text('${l['weight_grams']} g · ${l['karat']}',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18)),
                               const SizedBox(height: 4),
-                              Text('Asking: TSh ${_fmt.format(double.tryParse('${l['asking_price']}') ?? 0)}'),
-                              Text('${l['miner_name'] ?? ''} · ${l['region'] ?? ''}', style: TextStyle(color: Colors.grey[400], fontSize: 13)),
-                              if (!widget.mineOnly && user?.isDealer == true) ...[
+                              Text(
+                                  'Asking: TSh ${_fmt.format(double.tryParse('${l['asking_price']}') ?? 0)}'),
+                              Text(
+                                '${l['miner_name'] ?? ''} · ${l['region'] ?? ''}',
+                                style: TextStyle(
+                                  color: Theme.of(ctx)
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              if (!widget.mineOnly &&
+                                  user?.isDealer == true) ...[
                                 const SizedBox(height: 12),
                                 if (!canTrade)
-                                  const Text('Verification required to transact', style: TextStyle(color: AppColors.warning))
+                                  const Text(
+                                      'Verification required to transact',
+                                      style:
+                                          TextStyle(color: AppColors.warning))
                                 else
                                   ElevatedButton(
                                     onPressed: () {
@@ -87,10 +113,15 @@ class _ListingsScreenState extends State<ListingsScreen> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (_) => ConfirmSaleScreen(
-                                            counterpartyPhone: l['miner_phone'] ?? '',
-                                            weight: double.tryParse('${l['weight_grams']}') ?? 0,
+                                            counterpartyPhone:
+                                                l['miner_phone'] ?? '',
+                                            weight: double.tryParse(
+                                                    '${l['weight_grams']}') ??
+                                                0,
                                             karat: l['karat'] ?? '24K',
-                                            pricePerGram: double.tryParse('${l['price_per_gram'] ?? l['asking_price']}') ?? 0,
+                                            pricePerGram: double.tryParse(
+                                                    '${l['price_per_gram'] ?? l['asking_price']}') ??
+                                                0,
                                             listingId: l['id']?.toString(),
                                           ),
                                         ),

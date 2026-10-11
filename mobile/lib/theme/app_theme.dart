@@ -21,8 +21,14 @@ ThemeData buildDhahabuTheme() {
     textTheme: const TextTheme(
       bodyLarge: TextStyle(fontSize: 16, color: AppColors.textOnDark),
       bodyMedium: TextStyle(fontSize: 16, color: AppColors.textOnDark),
-      titleLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: AppColors.textOnDark),
-      titleMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: AppColors.textOnDark),
+      titleLarge: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+          color: AppColors.textOnDark),
+      titleMedium: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: AppColors.textOnDark),
       labelSmall: TextStyle(fontSize: 12, color: AppColors.textOnDark),
     ),
     inputDecorationTheme: InputDecorationTheme(
@@ -100,6 +106,91 @@ ThemeData buildDhahabuLightTheme() {
         minimumSize: const Size(0, 48),
         side: const BorderSide(color: AppColors.border),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    ),
+  );
+}
+
+/// A miner-specific, high-contrast glass theme for the full dashboard and its
+/// pushed screens. It keeps the selected dark/light palette and enlarges the
+/// text hierarchy while preserving the app's gold and navy identity.
+ThemeData buildMinerGlassTheme(ThemeData base) {
+  final isDark = base.brightness == Brightness.dark;
+  final foreground = isDark ? const Color(0xFFF7F8FA) : const Color(0xFF172334);
+  final secondaryText =
+      isDark ? const Color(0xFFD1D9E3) : const Color(0xFF455468);
+  final glass = isDark ? const Color(0xD916293D) : const Color(0xEFFFFFFF);
+  final line = isDark
+      ? Colors.white.withValues(alpha: .16)
+      : AppColors.navy.withValues(alpha: .12);
+  final inputFill = isDark
+      ? Colors.white.withValues(alpha: .09)
+      : AppColors.navy.withValues(alpha: .045);
+  final bodyStyle = TextStyle(color: foreground, fontFamily: 'Roboto');
+  final secondaryStyle = TextStyle(color: secondaryText, fontFamily: 'Roboto');
+
+  return base.copyWith(
+    scaffoldBackgroundColor: Colors.transparent,
+    canvasColor: Colors.transparent,
+    cardColor: glass,
+    colorScheme: base.colorScheme.copyWith(
+      onSurface: foreground,
+      onSurfaceVariant: secondaryText,
+      surface: isDark ? const Color(0xFF15263A) : const Color(0xFFF8FAFC),
+    ),
+    textTheme: base.textTheme
+        .apply(
+          fontFamily: 'Roboto',
+          bodyColor: foreground,
+          displayColor: foreground,
+        )
+        .copyWith(
+          bodySmall: bodyStyle.copyWith(fontSize: 14),
+          bodyMedium: bodyStyle.copyWith(fontSize: 16),
+          bodyLarge: bodyStyle.copyWith(fontSize: 18),
+          titleSmall:
+              bodyStyle.copyWith(fontSize: 16, fontWeight: FontWeight.w600),
+          titleMedium:
+              bodyStyle.copyWith(fontSize: 20, fontWeight: FontWeight.w700),
+          titleLarge:
+              bodyStyle.copyWith(fontSize: 24, fontWeight: FontWeight.w700),
+          labelSmall: secondaryStyle.copyWith(fontSize: 13),
+          labelMedium:
+              bodyStyle.copyWith(fontSize: 14, fontWeight: FontWeight.w600),
+          labelLarge:
+              bodyStyle.copyWith(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+    appBarTheme: base.appBarTheme.copyWith(
+      backgroundColor: Colors.transparent,
+      foregroundColor: foreground,
+      surfaceTintColor: Colors.transparent,
+      titleTextStyle:
+          bodyStyle.copyWith(fontSize: 21, fontWeight: FontWeight.w700),
+    ),
+    inputDecorationTheme: base.inputDecorationTheme.copyWith(
+      filled: true,
+      fillColor: inputFill,
+      labelStyle: secondaryStyle.copyWith(fontSize: 15),
+      hintStyle: secondaryStyle.copyWith(fontSize: 14),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(color: line),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(color: line),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: AppColors.gold, width: 1.8),
+      ),
+    ),
+    navigationBarTheme: base.navigationBarTheme.copyWith(
+      backgroundColor:
+          isDark ? const Color(0xE6101F31) : const Color(0xEFFFFFFF),
+      indicatorColor: AppColors.gold.withValues(alpha: .22),
+      labelTextStyle: WidgetStatePropertyAll(
+        TextStyle(color: foreground, fontSize: 12, fontWeight: FontWeight.w600),
       ),
     ),
   );
