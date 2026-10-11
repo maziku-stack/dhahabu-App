@@ -19,6 +19,5 @@ urlpatterns = [
 admin.site.site_header = 'Dhahabu Operations'
 admin.site.site_title = 'Dhahabu Admin'
 admin.site.index_title = 'Gold trade oversight'
-admin.site.index_template = 'admin/index.html'
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

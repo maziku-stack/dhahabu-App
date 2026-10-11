@@ -23,6 +23,7 @@ if not ALLOWED_HOSTS or (not DEBUG and '*' in ALLOWED_HOSTS):
     raise ImproperlyConfigured('Set explicit ALLOWED_HOSTS when DEBUG is False.')
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -128,5 +129,36 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 SPECTACULAR_SETTINGS = {'TITLE': 'Dhahabu API', 'VERSION': '1.0.0'}
+JAZZMIN_SETTINGS = {
+    'site_title': 'Dhahabu Admin',
+    'site_header': 'Dhahabu Operations',
+    'site_brand': 'Dhahabu',
+    'welcome_sign': 'Gold trade oversight',
+    'copyright': 'Dhahabu',
+    'order_with_respect_to': [
+        'accounts',
+        'listings',
+        'transactions',
+        'pricing',
+        'feedback',
+        'auth',
+    ],
+    'icons': {
+        'accounts': 'fas fa-users',
+        'listings': 'fas fa-gem',
+        'transactions': 'fas fa-exchange-alt',
+        'pricing': 'fas fa-coins',
+        'feedback': 'fas fa-comments',
+    },
+    'custom_css': 'admin/jazzmin_gold.css',
+}
+JAZZMIN_UI_TWEAKS = {
+    'theme': 'cosmo',
+    'dark_mode_theme': 'darkly',
+    'navbar_small_text': False,
+    'sidebar_nav_small_text': False,
+    'sidebar_nav_compact': True,
+    'sidebar_nav_flat_style': True,
+}
 MOCK_OTP = DEBUG and os.getenv('MOCK_OTP', 'False').lower() in ('true', '1', 'yes')
 DEFAULT_ROYALTY_RATE = float(os.getenv('DEFAULT_ROYALTY_RATE', '0.07'))

@@ -1,0 +1,85 @@
+:root {
+  --dhahabu-navy: #0b1f3a;
+  --dhahabu-navy-light: #163252;
+  --dhahabu-gold: #c9a227;
+  --dhahabu-gold-light: #e4ca70;
+  --dhahabu-paper: #f7f5ee;
+}
+
+/* Gold accents on the standard light Jazzmin theme. */
+body.theme-cosmo .main-header.navbar,
+body.theme-cosmo .main-header {
+  border-bottom: 3px solid var(--dhahabu-gold);
+}
+
+body.theme-cosmo .main-sidebar,
+body.theme-cosmo .sidebar-dark-primary {
+  background-color: var(--dhahabu-navy);
+}
+
+body.theme-cosmo .brand-link {
+  border-bottom: 1px solid rgb(255 255 255 / 12%);
+  color: var(--dhahabu-gold-light);
+}
+
+body.theme-cosmo .sidebar .nav-link.active,
+body.theme-cosmo .sidebar .nav-link:hover {
+  background-color: var(--dhahabu-navy-light);
+  color: var(--dhahabu-gold-light);
+}
+
+body.theme-cosmo .sidebar .nav-link.active {
+  border-left: 3px solid var(--dhahabu-gold);
+}
+
+body.theme-cosmo .btn-primary,
+body.theme-cosmo .page-item.active .page-link {
+  border-color: var(--dhahabu-navy);
+  background-color: var(--dhahabu-navy);
+}
+
+body.theme-cosmo .btn-primary:hover,
+body.theme-cosmo .btn-primary:focus {
+  border-color: var(--dhahabu-navy-light);
+  background-color: var(--dhahabu-navy-light);
+}
+
+body.theme-cosmo a,
+body.theme-cosmo .nav-tabs .nav-link.active {
+  color: #8a6a0a;
+}
+
+body.theme-cosmo .form-control:focus,
+body.theme-cosmo .form-select:focus {
+  border-color: var(--dhahabu-gold);
+  box-shadow: 0 0 0 0.2rem rgb(201 162 39 / 20%);
+}
+
+body.theme-cosmo .content-wrapper,
+body.theme-cosmo .content {
+  background-color: var(--dhahabu-paper);
+}
+
+/* Keep the navy and gold identity when Jazzmin's dark palette is selected. */
+html[data-bs-theme="dark"] body.theme-darkly .main-sidebar,
+html[data-bs-theme="dark"] body.theme-darkly .sidebar-dark-primary {
+  background-color: #08182c;
+}
+
+html[data-bs-theme="dark"] body.theme-darkly .sidebar .nav-link.active,
+html[data-bs-theme="dark"] body.theme-darkly .sidebar .nav-link:hover {
+  background-color: var(--dhahabu-navy-light);
+  color: var(--dhahabu-gold-light);
+}
+
+html[data-bs-theme="dark"] body.theme-darkly .btn-primary,
+html[data-bs-theme="dark"] body.theme-darkly .page-item.active .page-link {
+  border-color: var(--dhahabu-gold);
+  background-color: #a78318;
+}
+
+html[data-bs-theme="dark"] body.theme-darkly .form-control:focus,
+html[data-bs-theme="dark"] body.theme-darkly .form-select:focus {
+  border-color: var(--dhahabu-gold);
+  box-shadow: 0 0 0 0.2rem rgb(201 162 39 / 24%);
+}
