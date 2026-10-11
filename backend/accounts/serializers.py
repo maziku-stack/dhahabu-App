@@ -1,8 +1,45 @@
 from rest_framework import serializers
+from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError as DjangoValidationError
 from .models import DealerProfile
 
 User = get_user_model()
+
+
+class EmailPasswordRegisterSerializer(serializers.Serializer):
+    full_name = serializers.CharField(max_length=150)
+    email = serializers.EmailField()
+    phone = serializers.CharField(max_length=20)
+    role = serializers.ChoiceField(choices=['miner', 'dealer'])
+    password = serializers.CharField(write_only=True, min_length=8)
+    password_confirmation = serializers.CharField(write_only=True)
+
+    def validate_email(self, value):
+        value = value.strip().lower()
+        if User.objects.filter(email__iexact=value).exists():
+            raise serializers.ValidationError('An account with this email already exists.')
+        return value
+
+    def validate_phone(self, value):
+        value = value.strip()
+        if User.objects.filter(phone=value).exists():
+            raise serializers.ValidationError('An account with this phone number already exists.')
+        return value
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password_confirmation']:
+            raise serializers.ValidationError({'password_confirmation': 'Passwords do not match.'})
+        try:
+            validate_password(attrs['password'])
+        except DjangoValidationError as error:
+            raise serializers.ValidationError({'password': error.messages})
+        return attrs
+
+
+class EmailPasswordLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -59,6 +96,14 @@ class VerifyOTPSerializer(serializers.Serializer):
 
 
 class ProfileUpdateSerializer(serializers.ModelSerializer):
+    def validate_email(self, value):
+        value = value.strip().lower()
+        if not value:
+            return value
+        if User.objects.filter(email__iexact=value).exclude(pk=self.instance.pk).exists():
+            raise serializers.ValidationError('An account with this email already exists.')
+        return value
+
     class Meta:
         model = User
         fields = ('full_name', 'email', 'region', 'mining_site', 'preferred_language')

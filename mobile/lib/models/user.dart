@@ -1,6 +1,7 @@
 class User {
   final String id;
   final String phone;
+  final String email;
   final String fullName;
   final String role;
   final bool phoneVerified;
@@ -13,6 +14,7 @@ class User {
   User({
     required this.id,
     required this.phone,
+    this.email = '',
     this.fullName = '',
     this.role = 'miner',
     this.phoneVerified = false,
@@ -26,6 +28,7 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: json['id'].toString(),
         phone: json['phone'] ?? '',
+        email: json['email'] ?? '',
         fullName: json['full_name'] ?? '',
         role: json['role'] ?? 'miner',
         phoneVerified: json['phone_verified'] ?? false,

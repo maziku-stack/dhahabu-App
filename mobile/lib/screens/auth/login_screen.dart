@@ -13,10 +13,41 @@ class _LoginScreenState extends State<LoginScreen> {
   final _phone = TextEditingController();
   final _otp = TextEditingController();
   final _name = TextEditingController();
+  final _email = TextEditingController();
+  final _password = TextEditingController();
+  bool _usePassword = true;
   bool _otpSent = false;
   bool _loading = false;
   String? _error;
   String? _mockOtp;
+
+  Future<void> _loginWithPassword() async {
+    if (_email.text.trim().isEmpty || _password.text.isEmpty) {
+      setState(() => _error = 'Enter your email and password.');
+      return;
+    }
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      await context.read<AuthProvider>().loginWithEmailPassword(
+            email: _email.text.trim(),
+            password: _password.text,
+          );
+      if (!mounted) return;
+      final user = context.read<AuthProvider>().user;
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        user?.pinSet == true ? '/home' : '/set-pin',
+        (_) => false,
+      );
+    } catch (e) {
+      setState(() => _error = e.toString().replaceFirst('Exception: ', ''));
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
 
   Future<void> _request() async {
     if (_phone.text.trim().length < 9) {
@@ -73,6 +104,8 @@ class _LoginScreenState extends State<LoginScreen> {
     _phone.dispose();
     _otp.dispose();
     _name.dispose();
+    _email.dispose();
+    _password.dispose();
     super.dispose();
   }
 
@@ -96,16 +129,53 @@ class _LoginScreenState extends State<LoginScreen> {
             const Text('Welcome back',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Text('Use the phone number you registered with.  +255xxxxxxxxx',
+            Text('Sign in with your email and password, or use a phone code.',
                 style: TextStyle(color: Colors.grey[400])),
             const SizedBox(height: 24),
+            SegmentedButton<bool>(
+              segments: const [
+                ButtonSegment(value: true, label: Text('Email & password')),
+                ButtonSegment(value: false, label: Text('Phone code')),
+              ],
+              selected: {_usePassword},
+              onSelectionChanged: (selection) => setState(() {
+                _usePassword = selection.first;
+                _error = null;
+              }),
+            ),
+            const SizedBox(height: 20),
             if (_error != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Text(_error!,
                     style: const TextStyle(color: AppColors.error)),
               ),
-            if (!_otpSent) ...[
+            if (_usePassword) ...[
+              TextField(
+                controller: _email,
+                keyboardType: TextInputType.emailAddress,
+                autocorrect: false,
+                decoration: const InputDecoration(
+                  labelText: 'Email address',
+                  prefixIcon: Icon(Icons.email_outlined),
+                ),
+              ),
+              const SizedBox(height: 14),
+              TextField(
+                controller: _password,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                  prefixIcon: Icon(Icons.lock_outline),
+                ),
+                onSubmitted: (_) => _loginWithPassword(),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _loading ? null : _loginWithPassword,
+                child: Text(_loading ? 'Please wait…' : 'Sign in'),
+              ),
+            ] else if (!_otpSent) ...[
               TextField(
                   controller: _phone,
                   keyboardType: TextInputType.phone,

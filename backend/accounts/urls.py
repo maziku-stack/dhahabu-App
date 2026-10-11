@@ -1,10 +1,13 @@
 from django.urls import path
 from .views import (
-    RequestOTPView, VerifyOTPView, MeView, DealerProfileView,
+    RequestOTPView, VerifyOTPView, EmailPasswordRegisterView,
+    EmailPasswordLoginView, MeView, DealerProfileView,
     PendingDealersView, AdminVerifyDealerView, SetPinView,
 )
 
 urlpatterns = [
+    path('register/', EmailPasswordRegisterView.as_view()),
+    path('login/', EmailPasswordLoginView.as_view()),
     path('otp/request/', RequestOTPView.as_view()),
     path('otp/verify/', VerifyOTPView.as_view()),
     path('me/', MeView.as_view()),

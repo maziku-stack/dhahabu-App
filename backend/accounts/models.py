@@ -1,6 +1,8 @@
 import uuid
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.db import models
+from django.db.models import Q
+from django.db.models.functions import Lower
 from django.utils import timezone
 
 
@@ -47,6 +49,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         db_table = 'users'
+        constraints = [
+            models.UniqueConstraint(
+                Lower('email'),
+                condition=Q(email__gt=''),
+                name='users_email_ci_uniq',
+            ),
+        ]
 
     def __str__(self):
         return f'{self.phone} ({self.role})'

@@ -40,6 +40,40 @@ class AuthProvider with ChangeNotifier {
   Future<Map<String, dynamic>> requestOtp(String phone, String role) =>
       _api.requestOtp(phone, role);
 
+  Future<void> registerWithEmailPassword({
+    required String fullName,
+    required String email,
+    required String phone,
+    required String role,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    final data = await _api.registerWithEmailPassword(
+      fullName: fullName,
+      email: email,
+      phone: phone,
+      role: role,
+      password: password,
+      passwordConfirmation: passwordConfirmation,
+    );
+    _user = User.fromJson(data['user'] as Map<String, dynamic>);
+    _authenticated = true;
+    notifyListeners();
+  }
+
+  Future<void> loginWithEmailPassword({
+    required String email,
+    required String password,
+  }) async {
+    final data = await _api.loginWithEmailPassword(
+      email: email,
+      password: password,
+    );
+    _user = User.fromJson(data['user'] as Map<String, dynamic>);
+    _authenticated = true;
+    notifyListeners();
+  }
+
   Future<void> verifyOtp({
     required String phone,
     required String code,
@@ -71,6 +105,7 @@ class AuthProvider with ChangeNotifier {
       _user = User(
         id: _user!.id,
         phone: _user!.phone,
+        email: _user!.email,
         fullName: _user!.fullName,
         role: _user!.role,
         phoneVerified: _user!.phoneVerified,

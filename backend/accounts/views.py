@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth import get_user_model
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import check_password, make_password
 from django.db import transaction
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -14,6 +14,7 @@ from .models import OTPCode, DealerProfile
 from .serializers import (
     RequestOTPSerializer, VerifyOTPSerializer, UserSerializer,
     ProfileUpdateSerializer, DealerProfileSerializer,
+    EmailPasswordRegisterSerializer, EmailPasswordLoginSerializer,
 )
 
 User = get_user_model()
@@ -22,6 +23,54 @@ User = get_user_model()
 def tokens_for(user):
     refresh = RefreshToken.for_user(user)
     return {'refresh': str(refresh), 'access': str(refresh.access_token)}
+
+
+class EmailPasswordRegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    @transaction.atomic
+    def post(self, request):
+        ser = EmailPasswordRegisterSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        data = ser.validated_data
+        user = User.objects.create_user(
+            phone=data['phone'],
+            password=data['password'],
+            email=data['email'],
+            full_name=data['full_name'].strip(),
+            role=data['role'],
+        )
+        if user.role == 'dealer':
+            DealerProfile.objects.create(
+                user=user,
+                business_name=user.full_name or user.email.split('@')[0],
+            )
+        tokens = tokens_for(user)
+        return Response({
+            'user': UserSerializer(user).data,
+            'access': tokens['access'],
+            'refresh': tokens['refresh'],
+        }, status=201)
+
+
+class EmailPasswordLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        ser = EmailPasswordLoginSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        email = ser.validated_data['email'].strip()
+        user = User.objects.filter(email__iexact=email).first()
+        if user is None or not user.is_active or not check_password(
+            ser.validated_data['password'], user.password
+        ):
+            return Response({'detail': 'Invalid email or password.'}, status=400)
+        tokens = tokens_for(user)
+        return Response({
+            'user': UserSerializer(user).data,
+            'access': tokens['access'],
+            'refresh': tokens['refresh'],
+        })
 
 
 class RequestOTPView(APIView):

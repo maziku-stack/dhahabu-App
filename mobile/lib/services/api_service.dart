@@ -79,6 +79,53 @@ class ApiService {
     throw Exception(data['detail'] ?? 'OTP failed');
   }
 
+  Future<Map<String, dynamic>> registerWithEmailPassword({
+    required String fullName,
+    required String email,
+    required String phone,
+    required String role,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    final res = await _post(
+      Uri.parse('$baseUrl/auth/register/'),
+      headers: await _headers(auth: false),
+      body: jsonEncode({
+        'full_name': fullName,
+        'email': email,
+        'phone': phone,
+        'role': role,
+        'password': password,
+        'password_confirmation': passwordConfirmation,
+      }),
+    );
+    final data = _decodeApiResponse(res);
+    if (res.statusCode == 201) {
+      await saveTokens(data['access'], data['refresh']);
+      return data;
+    }
+    final detail = data['detail'] ?? data.values.first;
+    throw Exception(detail is List ? detail.join(' ') : detail.toString());
+  }
+
+  Future<Map<String, dynamic>> loginWithEmailPassword({
+    required String email,
+    required String password,
+  }) async {
+    final res = await _post(
+      Uri.parse('$baseUrl/auth/login/'),
+      headers: await _headers(auth: false),
+      body: jsonEncode({'email': email, 'password': password}),
+    );
+    final data = _decodeApiResponse(res);
+    if (res.statusCode == 200) {
+      await saveTokens(data['access'], data['refresh']);
+      return data;
+    }
+    final detail = data['detail'] ?? data.values.first;
+    throw Exception(detail is List ? detail.join(' ') : detail.toString());
+  }
+
   Future<Map<String, dynamic>> verifyOtp({
     required String phone,
     required String code,
