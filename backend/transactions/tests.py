@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django.contrib.auth.hashers import make_password
 from django.test import TestCase
+from django.utils import timezone
 from rest_framework.test import APIClient
 
 from accounts.models import DealerProfile, User
@@ -18,6 +19,7 @@ class TransactionConfirmationTests(TestCase):
         )
         self.dealer = User.objects.create_user(
             phone='0700000102', role='dealer', full_name='Test Dealer',
+            pin_hash=make_password('1357'), pin_set=True,
         )
         DealerProfile.objects.create(
             user=self.dealer, business_name='Test Gold',
@@ -34,11 +36,11 @@ class TransactionConfirmationTests(TestCase):
             miner=self.miner, dealer=self.dealer, listing=self.listing,
             weight_grams=Decimal('10.000'), karat='24K',
             price_per_gram=Decimal('100000.00'), agreed_price=Decimal('1000000.00'),
-            created_by=self.dealer,
+            created_by=self.dealer, dealer_confirmed_at=timezone.now(),
         )
         self.url = f'/api/transactions/{self.transaction.id}/confirm/'
 
-    def test_miner_confirmation_creates_royalty_and_sells_listing(self):
+    def test_miner_confirmation_creates_unassessed_charge_record_and_sells_listing(self):
         self.client.force_authenticate(self.miner)
 
         response = self.client.post(self.url, {'pin': '2468'}, format='json')
@@ -51,8 +53,11 @@ class TransactionConfirmationTests(TestCase):
         self.assertEqual(self.listing.status, 'sold')
         self.assertEqual(TaxRecord.objects.filter(transaction=self.transaction).count(), 1)
         tax = TaxRecord.objects.get(transaction=self.transaction)
-        self.assertEqual(tax.tax_base, Decimal('1000000.00'))
-        self.assertEqual(tax.royalty_amount, Decimal('70000.00'))
+        self.assertIsNone(tax.tax_base)
+        self.assertIsNone(tax.royalty_amount)
+        self.assertIsNone(tax.royalty_rate)
+        self.assertEqual(tax.assessment_status, 'unavailable')
+        self.assertEqual(tax.payment_status, 'not_started')
         self.assertEqual(AuditLog.objects.filter(action='transaction.confirmed').count(), 1)
 
     def test_wrong_pin_does_not_confirm_or_create_tax(self):
@@ -85,6 +90,80 @@ class TransactionConfirmationTests(TestCase):
         self.assertEqual(second.status_code, 200)
         self.assertEqual(TaxRecord.objects.filter(transaction=self.transaction).count(), 1)
         self.assertEqual(AuditLog.objects.filter(action='transaction.confirmed').count(), 1)
+
+    def test_price_endpoint_never_returns_manual_prices_as_official(self):
+        from pricing.models import GoldPrice
+        from django.utils import timezone
+        GoldPrice.objects.create(
+            karat='24K', price_per_gram=Decimal('999999.00'),
+            effective_at=timezone.now(), created_by=self.miner,
+        )
+        self.client.force_authenticate(self.miner)
+
+        response = self.client.get('/api/pricing/current/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['status'], 'not_configured')
+        self.assertFalse(response.data['official'])
+        self.assertEqual(response.data['prices'], [])
+
+    def test_admin_cannot_publish_manual_price_as_official(self):
+        admin = User.objects.create_user(phone='0700000105', role='admin')
+        self.client.force_authenticate(admin)
+
+        response = self.client.post('/api/pricing/set/', {
+            'karat': '24K', 'price_per_gram': '100000.00',
+        }, format='json')
+
+        self.assertEqual(response.status_code, 503)
+        from pricing.models import GoldPrice
+        self.assertFalse(GoldPrice.objects.exists())
+
+    def test_each_party_must_confirm_before_sale_is_finalized(self):
+        self.transaction.dealer_confirmed_at = None
+        self.transaction.save(update_fields=['dealer_confirmed_at'])
+        self.client.force_authenticate(self.miner)
+
+        miner_response = self.client.post(self.url, {'pin': '2468'}, format='json')
+
+        self.assertEqual(miner_response.status_code, 200)
+        self.assertEqual(miner_response.data['status'], 'pending_confirm')
+        self.assertFalse(TaxRecord.objects.filter(transaction=self.transaction).exists())
+        self.assertIsNotNone(miner_response.data['miner_confirmed_at'])
+        self.assertIsNone(miner_response.data['dealer_confirmed_at'])
+
+        self.client.force_authenticate(self.dealer)
+        dealer_response = self.client.post(self.url, {'pin': '1357'}, format='json')
+
+        self.assertEqual(dealer_response.status_code, 200)
+        self.assertEqual(dealer_response.data['status'], 'confirmed')
+        self.assertEqual(TaxRecord.objects.filter(transaction=self.transaction).count(), 1)
+
+    def test_admin_cannot_confirm_for_either_party(self):
+        admin = User.objects.create_user(phone='0700000104', role='admin')
+        self.client.force_authenticate(admin)
+
+        response = self.client.post(self.url, {'pin': '2468'}, format='json')
+
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(TaxRecord.objects.filter(transaction=self.transaction).exists())
+
+    def test_legacy_default_estimate_is_preserved_but_not_exposed_as_official(self):
+        tax = TaxRecord.objects.create(
+            transaction=self.transaction,
+            royalty_rate=Decimal('0.0700'),
+            royalty_amount=Decimal('70000.00'),
+            tax_base=Decimal('1000000.00'),
+            assessment_status='unavailable',
+        )
+        self.client.force_authenticate(self.miner)
+
+        response = self.client.get(f'/api/transactions/{self.transaction.id}/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.data['tax_record']['royalty_rate'])
+        self.assertIsNone(response.data['tax_record']['royalty_amount'])
+        self.assertEqual(TaxRecord.objects.get(id=tax.id).royalty_amount, Decimal('70000.00'))
 
 
 class TransactionCreationTests(TestCase):
@@ -150,4 +229,14 @@ class TransactionCreationTests(TestCase):
         self.assertEqual(first.status_code, 201)
         self.assertEqual(retry.status_code, 200)
         self.assertEqual(retry.data['id'], first.data['id'])
+        self.assertIsNone(first.data['miner_confirmed_at'])
+        self.assertIsNone(first.data['dealer_confirmed_at'])
         self.assertEqual(Transaction.objects.count(), 1)
+
+    def test_sale_creator_must_confirm_separately_with_pin(self):
+        response = self.client.post(self.url, self.payload, format='json')
+        txn = Transaction.objects.get(id=response.data['id'])
+        self.assertEqual(response.status_code, 201)
+        self.assertIsNone(txn.miner_confirmed_at)
+        self.assertIsNone(txn.dealer_confirmed_at)
+        self.assertFalse(TaxRecord.objects.filter(transaction=txn).exists())

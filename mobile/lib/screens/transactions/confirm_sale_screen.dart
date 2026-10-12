@@ -48,9 +48,6 @@ class _ConfirmSaleScreenState extends State<ConfirmSaleScreen> {
     return w * p;
   }
 
-  double get _royalty => _agreed * 0.07;
-  double get _net => _agreed - _royalty;
-
   Future<void> _submit() async {
     setState(() {
       _loading = true;
@@ -67,7 +64,8 @@ class _ConfirmSaleScreenState extends State<ConfirmSaleScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('Sale created. Miner must confirm to finalize tax.')),
+            content: Text(
+                'Sale created. Both parties must confirm to finalize it.')),
       );
       Navigator.pushReplacement(
         context,
@@ -109,6 +107,11 @@ class _ConfirmSaleScreenState extends State<ConfirmSaleScreen> {
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
                 decoration: const InputDecoration(labelText: 'Weight (grams)')),
+            const Padding(
+              padding: EdgeInsets.only(top: 6),
+              child: Text(
+                  'Weight and karat entered here are self-reported until an approved assay device/provider is connected.'),
+            ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
               initialValue: _karat,
@@ -134,14 +137,15 @@ class _ConfirmSaleScreenState extends State<ConfirmSaleScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Tax & Royalty (estimate)',
+                  const Text('Sale value and official charges',
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   Text('Agreed: TSh ${_fmt.format(_agreed)}'),
-                  const Text('Statutory rate: 7%'),
-                  Text('Withheld: TSh ${_fmt.format(_royalty)}',
-                      style: const TextStyle(color: AppColors.gold)),
-                  Text('Net to miner: TSh ${_fmt.format(_net)}'),
+                  const Text(
+                      'This is the price agreed by the two parties, not an official Commission quote.'),
+                  const Text(
+                    'Official charges and payment status will be shown when the approved government assessment service is connected. Dhahabu adds no charge here.',
+                  ),
                 ],
               ),
             ),
@@ -149,7 +153,7 @@ class _ConfirmSaleScreenState extends State<ConfirmSaleScreen> {
             ElevatedButton(
               onPressed: _loading ? null : _submit,
               child:
-                  Text(_loading ? '…' : 'Submit sale (pending miner confirm)'),
+                  Text(_loading ? '…' : 'Submit sale (both parties confirm)'),
             ),
           ],
         ),

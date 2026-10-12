@@ -82,8 +82,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               Icons.payments_outlined,
             ),
             _metricCard(
-              'Royalty collected',
-              'TSh ${_fmt.format(double.tryParse('${summary['total_royalty_tzs']}') ?? 0)}',
+              'Assessed charges (not payment)',
+              'TSh ${_fmt.format(double.tryParse('${summary['total_assessed_charges_tzs']}') ?? 0)}',
               Icons.account_balance_wallet_outlined,
             ),
           ],

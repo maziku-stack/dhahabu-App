@@ -30,7 +30,10 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     setState(() => _loading = true);
     try {
       final data = await ApiService().getTransactions();
-      setState(() { _items = data; _loading = false; });
+      setState(() {
+        _items = data;
+        _loading = false;
+      });
     } catch (_) {
       setState(() => _loading = false);
     }
@@ -67,10 +70,13 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     try {
       final txn = await ApiService().confirmTransaction(id, pin: pin);
       if (!mounted) return;
-      Navigator.push(context, MaterialPageRoute(builder: (_) => ReceiptScreen(txn: txn)));
+      Navigator.push(
+          context, MaterialPageRoute(builder: (_) => ReceiptScreen(txn: txn)));
       _load();
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+      if (mounted)
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('$e')));
     }
   }
 
@@ -84,7 +90,11 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () async {
-              await Navigator.push(context, MaterialPageRoute(builder: (_) => const ConfirmSaleScreen(counterpartyPhone: '')));
+              await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) =>
+                          const ConfirmSaleScreen(counterpartyPhone: '')));
               _load();
             },
           ),
@@ -95,7 +105,10 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : _items.isEmpty
-                ? ListView(children: const [SizedBox(height: 80), Center(child: Text('No transactions'))])
+                ? ListView(children: const [
+                    SizedBox(height: 80),
+                    Center(child: Text('No transactions'))
+                  ])
                 : ListView.builder(
                     padding: const EdgeInsets.all(16),
                     itemCount: _items.length,
@@ -103,6 +116,14 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       final t = _items[i];
                       final pending = t['status'] == 'pending_confirm';
                       final confirmed = t['status'] == 'confirmed';
+                      final isMiner = user?.id == t['miner']?.toString();
+                      final isDealer = user?.id == t['dealer']?.toString();
+                      final currentPartyAccepted = isMiner
+                          ? t['miner_confirmed_at'] != null
+                          : isDealer && t['dealer_confirmed_at'] != null;
+                      final canConfirm = pending &&
+                          (isMiner || isDealer) &&
+                          !currentPartyAccepted;
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 12),
                         child: AppCard(
@@ -110,27 +131,39 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('${t['weight_grams']} g · ${t['karat']}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                  Text('${t['weight_grams']} g · ${t['karat']}',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16)),
                                   confirmed
                                       ? StatusBadge.verified()
                                       : StatusBadge.pending(),
                                 ],
                               ),
-                              Text('TSh ${_fmt.format(double.tryParse('${t['agreed_price']}') ?? 0)}'),
+                              Text(
+                                  'TSh ${_fmt.format(double.tryParse('${t['agreed_price']}') ?? 0)}'),
                               if (t['tax_record'] != null)
-                                Text('Royalty: TSh ${_fmt.format(double.tryParse('${t['tax_record']['royalty_amount']}') ?? 0)}',
-                                    style: const TextStyle(color: AppColors.gold)),
-                              if (pending && user?.isMiner == true) ...[
+                                Text(
+                                    'Government charge: ${t['tax_record']['assessment_status'] ?? 'not assessed'} · Payment: ${t['tax_record']['payment_status'] ?? 'not started'}',
+                                    style:
+                                        const TextStyle(color: AppColors.gold)),
+                              if (canConfirm) ...[
                                 const SizedBox(height: 12),
                                 ElevatedButton(
                                   onPressed: () => _confirm(t['id'].toString()),
-                                  child: const Text('Confirm & Sign'),
+                                  child: const Text('Agree to sale & Sign'),
                                 ),
                               ],
                               TextButton(
-                                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ReceiptScreen(txn: Map<String, dynamic>.from(t)))),
+                                onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => ReceiptScreen(
+                                            txn:
+                                                Map<String, dynamic>.from(t)))),
                                 child: const Text('View receipt'),
                               ),
                             ],

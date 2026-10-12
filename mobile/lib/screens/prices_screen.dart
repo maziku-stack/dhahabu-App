@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/price.dart';
 import '../services/api_service.dart';
-import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
 
 class PricesScreen extends StatefulWidget {
   const PricesScreen({super.key});
@@ -44,48 +42,8 @@ class _PricesScreenState extends State<PricesScreen> {
     }
   }
 
-  Future<void> _setPrice(String karat) async {
-    final ctrl = TextEditingController();
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('Set $karat price (TZS/g)'),
-        content: TextField(
-          controller: ctrl,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: const InputDecoration(labelText: 'Price per gram'),
-        ),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancel')),
-          ElevatedButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Save')),
-        ],
-      ),
-    );
-    if (ok == true && ctrl.text.isNotEmpty) {
-      try {
-        await ApiService().setPrice(
-          karat,
-          double.parse(ctrl.text),
-        );
-        _load();
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(e.toString())),
-          );
-        }
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final isAdmin = context.watch<AuthProvider>().user?.isAdmin == true;
-
     return RefreshIndicator(
       onRefresh: _load,
       child: _loading
@@ -119,44 +77,35 @@ class _PricesScreenState extends State<PricesScreen> {
                           leading: CircleAvatar(
                             backgroundColor:
                                 const Color(0xFFD4A017).withValues(alpha: 0.2),
-                            child: Text(p.karat,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
-                                    color: Color(0xFFB8860B))),
+                            child: const Icon(Icons.price_change_outlined,
+                                color: Color(0xFFB8860B)),
                           ),
                           title: Text(
                             p.pricePerGram != null
-                                ? 'TZS ${_fmt.format(p.pricePerGram)} / g'
-                                : 'No price set',
+                                ? '${p.currency} ${_fmt.format(p.pricePerGram)}'
+                                : 'No official price',
                             style: const TextStyle(
                                 fontWeight: FontWeight.w600, fontSize: 18),
                           ),
                           subtitle: Text(
                             stale
-                                ? '⚠ Last known / stale'
-                                : 'Live • updated recently',
+                                ? 'Commission feed not connected or price is stale'
+                                : '${p.priceType} · ${p.unit} · ${p.source ?? 'Mining Commission'} · Ref ${p.reference ?? '—'}',
                             style: TextStyle(
                                 color: stale
                                     ? Colors.orange[800]
                                     : Colors.green[700]),
                           ),
-                          trailing: isAdmin
-                              ? IconButton(
-                                  icon: const Icon(Icons.edit),
-                                  onPressed: () => _setPrice(p.karat),
-                                )
-                              : null,
+                          trailing: null,
                         ),
                       );
                     }),
-                    if (isAdmin)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: OutlinedButton.icon(
-                          onPressed: () => _setPrice('24K'),
-                          icon: const Icon(Icons.add),
-                          label: const Text('Publish new price'),
+                    if (_prices.isEmpty)
+                      const Card(
+                        child: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Text(
+                              'No official prices are available until the Mining Commission integration is approved and connected.'),
                         ),
                       ),
                   ],

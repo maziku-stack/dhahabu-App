@@ -54,35 +54,6 @@ class _MarketScreenState extends State<MarketScreen> {
     }
   }
 
-  Future<void> _setPrice(String karat) async {
-    final controller = TextEditingController();
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text('Set $karat TZS/g'),
-        content: TextField(
-          controller: controller,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
-    if (ok == true && controller.text.isNotEmpty) {
-      await ApiService().setPrice(karat, double.parse(controller.text));
-      if (mounted) _load();
-    }
-    controller.dispose();
-  }
-
   Future<void> _openNewListing() async {
     await Navigator.push(
       context,
@@ -264,7 +235,9 @@ class _MarketScreenState extends State<MarketScreen> {
           if (!_loading && _prices.isNotEmpty)
             _MarketStatus(
               stale: _prices.any(
-                (p) => p['is_stale'] == true || p['price_per_gram'] == null,
+                (p) =>
+                    p['is_stale'] == true ||
+                    (p['value'] ?? p['price_per_gram']) == null,
               ),
             ),
         ],
@@ -437,7 +410,9 @@ class _MarketScreenState extends State<MarketScreen> {
           if (!_loading && _prices.isNotEmpty)
             _MarketStatus(
               stale: _prices.any(
-                (p) => p['is_stale'] == true || p['price_per_gram'] == null,
+                (p) =>
+                    p['is_stale'] == true ||
+                    (p['value'] ?? p['price_per_gram']) == null,
               ),
             ),
         ],
@@ -477,7 +452,7 @@ class _MarketScreenState extends State<MarketScreen> {
             const SizedBox(height: 8),
             Text(_loadFailed
                 ? 'Prices could not be loaded'
-                : 'No market prices available'),
+                : 'Official Mining Commission price feed is not connected yet'),
             TextButton.icon(
               onPressed: _load,
               icon: const Icon(Icons.refresh),
@@ -492,8 +467,11 @@ class _MarketScreenState extends State<MarketScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Column(
         children: _prices.map((p) {
-          final karat = p['karat']?.toString() ?? '';
-          final price = p['price_per_gram'];
+          final label = p['price_type']?.toString() ??
+              p['karat']?.toString() ??
+              'Gold price';
+          final price = p['value'] ?? p['price_per_gram'];
+          final unit = p['unit']?.toString() ?? 'TZS/g';
           final stale = p['is_stale'] == true || price == null;
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 12),
@@ -507,22 +485,20 @@ class _MarketScreenState extends State<MarketScreen> {
                     color: AppColors.gold.withValues(alpha: .13),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Text(
-                    karat,
-                    style: const TextStyle(
-                      color: AppColors.gold,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  child: const Icon(Icons.price_change_outlined,
+                      color: AppColors.gold),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text(label,
+                          style: const TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.w700)),
                       Text(
                         price != null
-                            ? 'TSh ${_fmt.format(double.tryParse(price.toString()) ?? 0)}'
+                            ? '${p['currency'] ?? 'TZS'} ${_fmt.format(double.tryParse(price.toString()) ?? 0)}'
                             : 'Price unavailable',
                         style: TextStyle(
                           fontSize: 17,
@@ -533,27 +509,29 @@ class _MarketScreenState extends State<MarketScreen> {
                         ),
                       ),
                       Text(
-                        'per gram',
+                        unit,
                         style: TextStyle(
                           fontSize: 12,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
+                      if (p['source'] != null)
+                        Text(
+                          '${p['source']}${p['reference'] == null ? '' : ' · Ref ${p['reference']}'}',
+                          style: TextStyle(
+                              fontSize: 11,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant),
+                        ),
                     ],
                   ),
                 ),
-                if (widget.isAdmin)
-                  IconButton(
-                    tooltip: 'Edit $karat price',
-                    icon: const Icon(Icons.edit_outlined, size: 19),
-                    onPressed: () => _setPrice(karat),
-                  )
-                else
-                  Icon(
-                    stale ? Icons.schedule : Icons.check_circle_outline,
-                    color: stale ? AppColors.warning : AppColors.success,
-                    size: 19,
-                  ),
+                Icon(
+                  stale ? Icons.schedule : Icons.check_circle_outline,
+                  color: stale ? AppColors.warning : AppColors.success,
+                  size: 19,
+                ),
               ],
             ),
           );

@@ -5,6 +5,10 @@ class GoldPrice {
   final bool isStale;
   final double? ageHours;
   final String? effectiveAt;
+  final String priceType;
+  final String unit;
+  final String? source;
+  final String? reference;
 
   GoldPrice({
     required this.karat,
@@ -13,13 +17,18 @@ class GoldPrice {
     this.isStale = true,
     this.ageHours,
     this.effectiveAt,
+    this.priceType = '',
+    this.unit = 'TZS/g',
+    this.source,
+    this.reference,
   });
 
   factory GoldPrice.fromJson(Map<String, dynamic> json) {
     return GoldPrice(
-      karat: json['karat'] ?? '',
-      pricePerGram: json['price_per_gram'] != null
-          ? double.tryParse(json['price_per_gram'].toString())
+      karat: json['karat'] ?? json['price_type'] ?? '',
+      pricePerGram: (json['value'] ?? json['price_per_gram']) != null
+          ? double.tryParse(
+              (json['value'] ?? json['price_per_gram']).toString())
           : null,
       currency: json['currency'] ?? 'TZS',
       isStale: json['is_stale'] ?? true,
@@ -27,6 +36,10 @@ class GoldPrice {
           ? double.tryParse(json['age_hours'].toString())
           : null,
       effectiveAt: json['effective_at'],
+      priceType: json['price_type'] ?? json['karat'] ?? '',
+      unit: json['unit'] ?? 'TZS/g',
+      source: json['source'],
+      reference: json['reference'],
     );
   }
 }

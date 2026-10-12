@@ -1,14 +1,34 @@
 from rest_framework import serializers
 from decimal import Decimal
 from django.contrib.auth import get_user_model
-from .models import Transaction, TaxRecord
+from .models import Transaction, TaxRecord, GovernmentCharge
 
 User = get_user_model()
 
+class GovernmentChargeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GovernmentCharge
+        fields = ('id', 'authority', 'charge_code', 'charge_name', 'legal_basis', 'payer_role', 'calculation_rate', 'calculation_basis', 'amount', 'currency', 'assessment_status', 'assessment_reference', 'payment_status', 'payment_reference', 'assessed_at', 'paid_at')
+
+
 class TaxRecordSerializer(serializers.ModelSerializer):
+    charges = GovernmentChargeSerializer(many=True, read_only=True)
+    royalty_rate = serializers.SerializerMethodField()
+    royalty_amount = serializers.SerializerMethodField()
+    tax_base = serializers.SerializerMethodField()
+
+    def get_royalty_rate(self, obj):
+        return obj.royalty_rate if obj.assessment_status == 'assessed' else None
+
+    def get_royalty_amount(self, obj):
+        return obj.royalty_amount if obj.assessment_status == 'assessed' else None
+
+    def get_tax_base(self, obj):
+        return obj.tax_base if obj.assessment_status == 'assessed' else None
+
     class Meta:
         model = TaxRecord
-        fields = ('id', 'royalty_rate', 'royalty_amount', 'tax_base', 'currency', 'created_at', 'is_reversal')
+        fields = ('id', 'royalty_rate', 'royalty_amount', 'tax_base', 'currency', 'created_at', 'is_reversal', 'assessment_status', 'authority', 'authority_reference', 'payment_status', 'payment_reference', 'charges')
 
 class TransactionSerializer(serializers.ModelSerializer):
     miner_name = serializers.CharField(source='miner.full_name', read_only=True)
@@ -22,10 +42,15 @@ class TransactionSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'miner', 'dealer', 'listing', 'miner_name', 'miner_phone',
             'dealer_name', 'dealer_phone', 'weight_grams', 'karat', 'price_per_gram',
-            'agreed_price', 'status', 'notes', 'created_at', 'confirmed_at',
-            'client_ref', 'tax_record',
+            'agreed_price', 'price_basis', 'assay_status', 'assay_reference', 'measured_weight_grams', 'measured_karat', 'measured_purity', 'assay_device_id', 'assayed_at', 'status', 'notes', 'created_at', 'confirmed_at',
+            'miner_confirmed_at', 'dealer_confirmed_at', 'client_ref', 'tax_record',
         )
-        read_only_fields = ('id', 'status', 'created_at', 'confirmed_at', 'tax_record')
+        read_only_fields = (
+            'id', 'status', 'created_at', 'confirmed_at',
+            'miner_confirmed_at', 'dealer_confirmed_at', 'tax_record', 'price_basis',
+            'assay_status', 'assay_reference', 'measured_weight_grams', 'measured_karat',
+            'measured_purity', 'assay_device_id', 'assayed_at',
+        )
 
 class CreateTransactionSerializer(serializers.Serializer):
     counterparty_phone = serializers.CharField(max_length=20)

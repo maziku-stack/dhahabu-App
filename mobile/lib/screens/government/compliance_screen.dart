@@ -156,9 +156,9 @@ class _ComplianceScreenState extends State<ComplianceScreen> {
                       ),
                       _metric(
                         width: width,
-                        label: 'Royalty collected',
+                        label: 'Assessed charges (not payment)',
                         value:
-                            'TSh ${_fmt.format(double.tryParse('${summary['total_royalty_tzs']}') ?? 0)}',
+                            'TSh ${_fmt.format(double.tryParse('${summary['total_assessed_charges_tzs']}') ?? 0)}',
                         icon: Icons.account_balance_wallet_outlined,
                       ),
                     ],

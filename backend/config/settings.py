@@ -161,4 +161,8 @@ JAZZMIN_UI_TWEAKS = {
     'sidebar_nav_flat_style': True,
 }
 MOCK_OTP = DEBUG and os.getenv('MOCK_OTP', 'False').lower() in ('true', '1', 'yes')
-DEFAULT_ROYALTY_RATE = float(os.getenv('DEFAULT_ROYALTY_RATE', '0.07'))
+# These remain empty until the authorities approve and provide their interfaces.
+DH_COMMISSION_PRICE_PROVIDER = os.getenv('DH_COMMISSION_PRICE_PROVIDER', '')
+DH_ASSAY_PROVIDER = os.getenv('DH_ASSAY_PROVIDER', '')
+DH_CHARGE_ASSESSMENT_PROVIDER = os.getenv('DH_CHARGE_ASSESSMENT_PROVIDER', '')
+DH_GOVERNMENT_PAYMENT_PROVIDER = os.getenv('DH_GOVERNMENT_PAYMENT_PROVIDER', '')

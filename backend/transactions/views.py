@@ -7,8 +7,9 @@ from rest_framework import generics
 from django.db.models import Q, Sum
 from django.db import transaction as db_transaction
 from django.utils import timezone
+from django.conf import settings
 from accounts.models import DealerProfile
-from .models import Transaction, TaxRecord, AuditLog
+from .models import Transaction, TaxRecord, AuditLog, GovernmentCharge
 from .serializers import TransactionSerializer, CreateTransactionSerializer, TaxRecordSerializer
 
 def audit(actor, action, entity_type, entity_id, payload=None):
@@ -91,16 +92,22 @@ class ConfirmTransactionView(APIView):
                 ).get(id=txn_id)
             except Transaction.DoesNotExist:
                 return Response({'detail': 'Not found.'}, status=404)
-            if request.user.id != txn.miner_id and request.user.role != 'admin' and not request.user.is_staff:
-                return Response({'detail': 'Only the miner can confirm this sale.'}, status=403)
+            if request.user.id not in (txn.miner_id, txn.dealer_id):
+                return Response({'detail': 'Only the miner or dealer in this sale can confirm it.'}, status=403)
             if txn.status == 'confirmed':
                 return Response(TransactionSerializer(txn).data)
             if txn.status != 'pending_confirm':
                 return Response({'detail': f'Transaction is {txn.status} and cannot be confirmed.'}, status=400)
-            if request.user.role != 'admin' and not request.user.is_staff:
-                pin = str(request.data.get('pin', '')).strip()
-                if not request.user.pin_hash or not check_password(pin, request.user.pin_hash):
-                    return Response({'detail': 'A valid account PIN is required to confirm this sale.'}, status=400)
+            accepted_field = (
+                'miner_confirmed_at'
+                if request.user.id == txn.miner_id
+                else 'dealer_confirmed_at'
+            )
+            if getattr(txn, accepted_field):
+                return Response(TransactionSerializer(txn).data)
+            pin = str(request.data.get('pin', '')).strip()
+            if not request.user.pin_hash or not check_password(pin, request.user.pin_hash):
+                return Response({'detail': 'A valid account PIN is required to confirm this sale.'}, status=400)
 
             if txn.listing_id:
                 from listings.models import Listing
@@ -110,10 +117,18 @@ class ConfirmTransactionView(APIView):
                     txn.save(update_fields=['status'])
                     return Response({'detail': 'This listing was already sold or closed.'}, status=409)
 
-            txn.confirm()
-            audit(request.user, 'transaction.confirmed', 'Transaction', txn.id, {
-                'royalty': str(txn.tax_record.royalty_amount) if hasattr(txn, 'tax_record') else None,
+            setattr(txn, accepted_field, timezone.now())
+            txn.save(update_fields=[accepted_field])
+            audit(request.user, 'transaction.party_confirmed', 'Transaction', txn.id, {
+                'party': 'miner' if request.user.id == txn.miner_id else 'dealer',
             })
+
+            if txn.miner_confirmed_at and txn.dealer_confirmed_at:
+                txn.confirm()
+                audit(request.user, 'transaction.confirmed', 'Transaction', txn.id, {
+                    'government_charge_assessment': 'unavailable_until_authority_api_connected',
+                    'government_payment': 'not_started',
+                })
             return Response(TransactionSerializer(txn).data)
 
 class MyTransactionsView(generics.ListAPIView):
@@ -129,14 +144,15 @@ class MyTransactionsView(generics.ListAPIView):
         st = self.request.query_params.get('status')
         if st:
             qs = qs.filter(status=st)
-        return qs.select_related('miner', 'dealer').prefetch_related('tax_record')
+        return qs.select_related('miner', 'dealer').prefetch_related('tax_record__charges')
 
 class TransactionDetailView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = TransactionSerializer
+    lookup_url_kwarg = 'txn_id'
     def get_queryset(self):
         user = self.request.user
-        qs = Transaction.objects.select_related('miner', 'dealer').prefetch_related('tax_record')
+        qs = Transaction.objects.select_related('miner', 'dealer').prefetch_related('tax_record__charges')
         if user.role == 'admin' or user.is_staff:
             return qs
         return qs.filter(Q(miner=user) | Q(dealer=user))
@@ -151,12 +167,17 @@ class TaxSummaryView(APIView):
         qs = TaxRecord.objects.filter(is_reversal=False)
         if user.role == 'dealer':
             qs = qs.filter(transaction__dealer=user)
-        total = qs.aggregate(s=Sum('royalty_amount'))['s'] or 0
+        charge_qs = GovernmentCharge.objects.filter(assessment_status='assessed')
+        if user.role == 'dealer':
+            charge_qs = charge_qs.filter(tax_record__transaction__dealer=user)
+        total_charges = charge_qs.aggregate(s=Sum('amount'))['s'] or 0
         count = qs.count()
         return Response({
             'transaction_count': count,
-            'total_royalty_tzs': str(total),
-            'records': TaxRecordSerializer(qs.order_by('-created_at')[:50], many=True).data,
+            'total_assessed_charges_tzs': str(total_charges),
+            'total_royalty_tzs': str(total_charges),  # compatibility key; value means assessed charges
+            'assessment_status': 'configured_pending_assessments' if settings.DH_CHARGE_ASSESSMENT_PROVIDER else 'unavailable_until_authority_api_connected',
+            'records': TaxRecordSerializer(qs.prefetch_related('charges').order_by('-created_at')[:50], many=True).data,
         })
 
 class AdminDashboardView(APIView):
@@ -173,16 +194,17 @@ class AdminDashboardView(APIView):
             total_volume_grams=Sum('weight_grams'),
             total_value=Sum('agreed_price'),
         )
-        tax_totals = TaxRecord.objects.filter(
-            transaction__in=confirmed, is_reversal=False
-        ).aggregate(total_royalty=Sum('royalty_amount'))
+        tax_totals = GovernmentCharge.objects.filter(
+            tax_record__transaction__in=confirmed, assessment_status='assessed'
+        ).aggregate(total_charges=Sum('amount'))
         recent = confirmed.select_related('miner', 'dealer').order_by('-confirmed_at')[:20]
         return Response({
             'summary': {
                 'transaction_count': confirmed.count(),
                 'total_volume_grams': str(totals['total_volume_grams'] or 0),
                 'total_value_tzs': str(totals['total_value'] or 0),
-                'total_royalty_tzs': str(tax_totals['total_royalty'] or 0),
+                'total_assessed_charges_tzs': str(tax_totals['total_charges'] or 0),
+                'total_royalty_tzs': str(tax_totals['total_charges'] or 0),
             },
             'recent_transactions': TransactionSerializer(recent, many=True).data,
         })
