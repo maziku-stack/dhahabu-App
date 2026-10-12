@@ -51,17 +51,6 @@ class ApiService {
   Future<void> saveTokens(String a, String r) async {
     await _secureStorage.write(key: AppConstants.accessTokenKey, value: a);
     await _secureStorage.write(key: AppConstants.refreshTokenKey, value: r);
-    final preferences = await SharedPreferences.getInstance();
-    await preferences.remove(AppConstants.accessTokenKey);
-    await preferences.remove(AppConstants.refreshTokenKey);
-  }
-
-  Future<List<dynamic>> getMyPrivacyRequests() async {
-    final response = await _get(Uri.parse('$baseUrl/auth/privacy/requests/'),
-        headers: await _headers());
-    if (response.statusCode == 200)
-      return jsonDecode(response.body) as List<dynamic>;
-    throw Exception('Could not load your privacy requests');
   }
 
   Future<void> clearTokens() async {
@@ -138,7 +127,6 @@ class ApiService {
         'password': password,
         'password_confirmation': passwordConfirmation,
         'privacy_notice_version': '2026-10-draft-1',
-        'privacy_notice_acknowledged': true,
       }),
     );
     final data = _decodeApiResponse(res);
@@ -191,7 +179,6 @@ class ApiService {
         'business_name': businessName,
         'license_number': licenseNumber,
         'privacy_notice_version': '2026-10-draft-1',
-        'privacy_notice_acknowledged': true,
       }),
     );
     final data = _decodeApiResponse(res);
@@ -236,8 +223,9 @@ class ApiService {
         headers: await _headers(),
         body: jsonEncode({'request_type': type, 'details': details}));
     final data = _decodeApiResponse(res);
-    if (res.statusCode != 201)
+    if (res.statusCode != 201) {
       throw Exception(data['detail'] ?? 'Could not submit request');
+    }
   }
 
   Future<List<dynamic>> getCurrentPrices() async {

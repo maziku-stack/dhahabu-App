@@ -19,17 +19,6 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
   final _details = TextEditingController();
   String _requestType = 'access';
   bool _busy = false;
-  bool _loadedRequests = false;
-  List<dynamic> _requests = const [];
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_loadedRequests && context.read<AuthProvider>().isAuthenticated) {
-      _loadedRequests = true;
-      _loadRequests();
-    }
-  }
 
   @override
   void dispose() {
@@ -83,7 +72,6 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
     try {
       await ApiService().submitPrivacyRequest(
           type: _requestType, details: _details.text.trim());
-      await _loadRequests();
       _details.clear();
       _message('Your request has been recorded for review.');
     } catch (e) {
@@ -93,19 +81,11 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
     }
   }
 
-  Future<void> _loadRequests() async {
-    try {
-      final requests = await ApiService().getMyPrivacyRequests();
-      if (mounted) setState(() => _requests = requests);
-    } catch (_) {
-      // The request form remains usable if status refresh fails.
-    }
-  }
-
   void _message(String value) {
-    if (mounted)
+    if (mounted) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(value)));
+    }
   }
 
   @override
@@ -148,14 +128,8 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
               ? 'Muda wa kuhifadhi, kampuni za hosting/SMS/uchanganuzi, uhamisho wa data nje ya nchi na mawasiliano ya afisa wa faragha bado vinahitaji kuthibitishwa. Unaweza kuomba kuona, kusahihisha, kufuta, kuzuia au kuhamisha data, au kupinga uchakataji. Rekodi za biashara zinaweza kuhitaji kuhifadhiwa kisheria; ombi la kufuta litakaguliwa na halifuti rekodi hizo moja kwa moja.'
               : 'Retention periods, hosting/SMS/analytics providers, cross-border storage and the privacy officer’s contact still need confirmation. You can request access, correction, deletion, restriction or portability, or object to processing. Trade records may have legal retention requirements; a deletion request is reviewed and does not automatically erase such records.'),
           const SizedBox(height: 12),
-          Text(sw ? 'Usalama' : 'Security',
-              style: Theme.of(context).textTheme.titleLarge),
           Text(sw
-              ? 'Tokeni za kuingia huhifadhiwa kwenye hifadhi salama ya kifaa. Muunganisho wa HTTPS/TLS lazima utumike uzalishajini; anwani ya API ya HTTP ya mtandao wa ndani ni ya majaribio pekee.'
-              : 'Sign-in tokens are stored in platform secure storage. Production must use HTTPS/TLS; this build’s local-network HTTP API address is for development only.'),
-          const SizedBox(height: 12),
-          Text(sw
-              ? 'Toleo ${_noticeVersion}. Hili ni taarifa ya bidhaa ya rasimu, si ushauri wa kisheria wala uthibitisho wa kufuata sheria.'
+              ? 'Toleo $_noticeVersion. Hili ni taarifa ya bidhaa ya rasimu, si ushauri wa kisheria wala uthibitisho wa kufuata sheria.'
               : 'Version $_noticeVersion. This product notice is a draft, not legal advice or a certification of compliance.'),
           if (authenticated) ...[
             const Divider(height: 36),
@@ -171,7 +145,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              value: _requestType,
+              initialValue: _requestType,
               items: const [
                 DropdownMenuItem(
                     value: 'access', child: Text('Access / export')),
@@ -211,18 +185,6 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
             Text(sw
                 ? 'Ombi linahifadhiwa kama “limepokelewa”; mhudumu anapaswa kulikagua. Halifuti data moja kwa moja.'
                 : 'Requests are recorded as received for an operator to review. This form does not automatically delete data.'),
-            if (_requests.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Text(sw ? 'Maombi yako' : 'Your requests',
-                  style: Theme.of(context).textTheme.titleMedium),
-              for (final item in _requests)
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.assignment_outlined),
-                  title: Text('${item['request_type']} · ${item['status']}'),
-                  subtitle: Text('${item['created_at']}'),
-                ),
-            ],
           ],
         ],
       ),
