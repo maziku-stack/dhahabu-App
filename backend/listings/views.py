@@ -43,7 +43,7 @@ class ListingListCreateView(generics.ListCreateAPIView):
             miner=request.user,
             region=ser.validated_data.get('region') or request.user.region,
         )
-        return Response(ListingSerializer(listing).data, status=201)
+        return Response(ListingSerializer(listing, context={'request': request}).data, status=201)
 
 class ListingDetailView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
@@ -57,6 +57,12 @@ class ListingDetailView(generics.RetrieveUpdateAPIView):
         listing = self.get_object()
         if request.user.id != listing.miner_id and request.user.role != 'admin':
             return Response({'detail': 'Forbidden'}, status=403)
+        if set(request.data.keys()) == {'share_phone'} and isinstance(request.data['share_phone'], bool):
+            if request.user.id != listing.miner_id:
+                return Response({'detail': 'Only the seller can change phone visibility.'}, status=403)
+            listing.share_phone = request.data['share_phone']
+            listing.save(update_fields=['share_phone', 'updated_at'])
+            return Response(ListingSerializer(listing, context={'request': request}).data)
         status_val = request.data.get('status')
         if set(request.data.keys()) != {'status'} or status_val != 'cancelled':
             return Response({'detail': 'Only cancellation is allowed here.'}, status=400)

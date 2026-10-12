@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/constants.dart';
 
@@ -10,6 +11,7 @@ class ApiService {
 
   final baseUrl = AppConstants.baseUrl;
   static const _requestTimeout = Duration(seconds: 12);
+  static const _secureStorage = FlutterSecureStorage();
 
   Future<bool> hasAccessToken() async => (await _token())?.isNotEmpty == true;
 
@@ -24,17 +26,47 @@ class ApiService {
       http.post(uri, headers: headers, body: body).timeout(_requestTimeout);
 
   Future<String?> _token() async {
+    final token = await _secureStorage.read(key: AppConstants.accessTokenKey);
+    if (token != null) return token;
+    await _migrateLegacyTokens();
+    return _secureStorage.read(key: AppConstants.accessTokenKey);
+  }
+
+  Future<void> _migrateLegacyTokens() async {
     final p = await SharedPreferences.getInstance();
-    return p.getString(AppConstants.accessTokenKey);
+    final access = p.getString(AppConstants.accessTokenKey);
+    final refresh = p.getString(AppConstants.refreshTokenKey);
+    if (access != null) {
+      await _secureStorage.write(
+          key: AppConstants.accessTokenKey, value: access);
+    }
+    if (refresh != null) {
+      await _secureStorage.write(
+          key: AppConstants.refreshTokenKey, value: refresh);
+    }
+    await p.remove(AppConstants.accessTokenKey);
+    await p.remove(AppConstants.refreshTokenKey);
   }
 
   Future<void> saveTokens(String a, String r) async {
-    final p = await SharedPreferences.getInstance();
-    await p.setString(AppConstants.accessTokenKey, a);
-    await p.setString(AppConstants.refreshTokenKey, r);
+    await _secureStorage.write(key: AppConstants.accessTokenKey, value: a);
+    await _secureStorage.write(key: AppConstants.refreshTokenKey, value: r);
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.remove(AppConstants.accessTokenKey);
+    await preferences.remove(AppConstants.refreshTokenKey);
+  }
+
+  Future<List<dynamic>> getMyPrivacyRequests() async {
+    final response = await _get(Uri.parse('$baseUrl/auth/privacy/requests/'),
+        headers: await _headers());
+    if (response.statusCode == 200)
+      return jsonDecode(response.body) as List<dynamic>;
+    throw Exception('Could not load your privacy requests');
   }
 
   Future<void> clearTokens() async {
+    await _secureStorage.delete(key: AppConstants.accessTokenKey);
+    await _secureStorage.delete(key: AppConstants.refreshTokenKey);
     final p = await SharedPreferences.getInstance();
     await p.remove(AppConstants.accessTokenKey);
     await p.remove(AppConstants.refreshTokenKey);
@@ -105,6 +137,8 @@ class ApiService {
         'role': role,
         'password': password,
         'password_confirmation': passwordConfirmation,
+        'privacy_notice_version': '2026-10-draft-1',
+        'privacy_notice_acknowledged': true,
       }),
     );
     final data = _decodeApiResponse(res);
@@ -156,6 +190,8 @@ class ApiService {
         'mining_site': miningSite,
         'business_name': businessName,
         'license_number': licenseNumber,
+        'privacy_notice_version': '2026-10-draft-1',
+        'privacy_notice_acknowledged': true,
       }),
     );
     final data = _decodeApiResponse(res);
@@ -185,6 +221,24 @@ class ApiService {
   }
 
   Future<void> logout() async => clearTokens();
+
+  Future<Map<String, dynamic>> exportMyData() async {
+    final res = await _get(Uri.parse('$baseUrl/auth/privacy/export/'),
+        headers: await _headers());
+    final data = _decodeApiResponse(res);
+    if (res.statusCode == 200) return data;
+    throw Exception(data['detail'] ?? 'Could not export your data');
+  }
+
+  Future<void> submitPrivacyRequest(
+      {required String type, String details = ''}) async {
+    final res = await _post(Uri.parse('$baseUrl/auth/privacy/requests/'),
+        headers: await _headers(),
+        body: jsonEncode({'request_type': type, 'details': details}));
+    final data = _decodeApiResponse(res);
+    if (res.statusCode != 201)
+      throw Exception(data['detail'] ?? 'Could not submit request');
+  }
 
   Future<List<dynamic>> getCurrentPrices() async {
     final res = await _get(Uri.parse('$baseUrl/pricing/current/'),
@@ -234,6 +288,7 @@ class ApiService {
     double? pricePerGram,
     String notes = '',
     String region = '',
+    bool sharePhone = false,
   }) async {
     final res = await _post(
       Uri.parse('$baseUrl/listings/'),
@@ -245,11 +300,26 @@ class ApiService {
         'price_per_gram': pricePerGram,
         'notes': notes,
         'region': region,
+        'share_phone': sharePhone,
       }),
     );
     final data = jsonDecode(res.body);
     if (res.statusCode == 201) return data as Map<String, dynamic>;
     throw Exception(data['detail'] ?? data.toString());
+  }
+
+  Future<void> setListingPhoneSharing(String id, bool share) async {
+    final response = await http
+        .patch(
+          Uri.parse('$baseUrl/listings/$id/'),
+          headers: await _headers(),
+          body: jsonEncode({'share_phone': share}),
+        )
+        .timeout(_requestTimeout);
+    if (response.statusCode != 200) {
+      final data = _decodeApiResponse(response);
+      throw Exception(data['detail'] ?? 'Could not update listing privacy');
+    }
   }
 
   Future<Map<String, dynamic>> createTransaction({

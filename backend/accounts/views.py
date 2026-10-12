@@ -10,11 +10,12 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import generics
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import OTPCode, DealerProfile
+from .models import OTPCode, DealerProfile, PrivacyRequest
 from .serializers import (
     RequestOTPSerializer, VerifyOTPSerializer, UserSerializer,
     ProfileUpdateSerializer, DealerProfileSerializer,
     EmailPasswordRegisterSerializer, EmailPasswordLoginSerializer,
+    PRIVACY_NOTICE_VERSION,
 )
 
 User = get_user_model()
@@ -39,6 +40,8 @@ class EmailPasswordRegisterView(APIView):
             email=data['email'],
             full_name=data['full_name'].strip(),
             role=data['role'],
+            privacy_notice_version=data['privacy_notice_version'],
+            privacy_acknowledged_at=timezone.now(),
         )
         if user.role == 'dealer':
             DealerProfile.objects.create(
@@ -129,6 +132,11 @@ class VerifyOTPView(APIView):
         ).order_by('-created_at').first()
         if not otp:
             return Response({'detail': 'OTP expired or not found.'}, status=400)
+        if not User.objects.filter(phone=phone).exists() and (
+            data.get('privacy_notice_version') != PRIVACY_NOTICE_VERSION
+            or data.get('privacy_notice_acknowledged') is not True
+        ):
+            return Response({'detail': 'Please read and acknowledge the current privacy notice before creating an account.'}, status=400)
         if otp.attempts >= 3:
             otp.locked_until = timezone.now() + timedelta(minutes=15)
             otp.save(update_fields=['locked_until'])
@@ -150,6 +158,8 @@ class VerifyOTPView(APIView):
                 'region': data.get('region', ''),
                 'mining_site': data.get('mining_site', ''),
                 'phone_verified': True,
+                'privacy_notice_version': data.get('privacy_notice_version', ''),
+                'privacy_acknowledged_at': timezone.now(),
             },
         )
         if not created:

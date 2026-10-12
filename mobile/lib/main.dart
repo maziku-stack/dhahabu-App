@@ -9,6 +9,7 @@ import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';
 import 'screens/auth/set_pin_screen.dart';
 import 'screens/shells/role_router.dart';
+import 'screens/privacy/privacy_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -68,6 +69,7 @@ class DhahabuApp extends StatelessWidget {
               '/register': (_) => const RegisterScreen(),
               '/set-pin': (_) => const SetPinScreen(),
               '/home': (_) => const RoleRouter(),
+              '/privacy': (_) => const PrivacyScreen(),
             },
           );
         },

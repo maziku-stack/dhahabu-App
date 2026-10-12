@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from .models import DealerProfile
 
 User = get_user_model()
+PRIVACY_NOTICE_VERSION = '2026-10-draft-1'
 
 
 class EmailPasswordRegisterSerializer(serializers.Serializer):
@@ -14,6 +15,18 @@ class EmailPasswordRegisterSerializer(serializers.Serializer):
     role = serializers.ChoiceField(choices=['miner', 'dealer'])
     password = serializers.CharField(write_only=True, min_length=8)
     password_confirmation = serializers.CharField(write_only=True)
+    privacy_notice_version = serializers.CharField(max_length=32)
+    privacy_notice_acknowledged = serializers.BooleanField()
+
+    def validate_privacy_notice_acknowledged(self, value):
+        if value is not True:
+            raise serializers.ValidationError('Acknowledge that you have read the privacy notice.')
+        return value
+
+    def validate_privacy_notice_version(self, value):
+        if value != PRIVACY_NOTICE_VERSION:
+            raise serializers.ValidationError('Please read and acknowledge the current privacy notice.')
+        return value
 
     def validate_email(self, value):
         value = value.strip().lower()
@@ -94,6 +107,8 @@ class VerifyOTPSerializer(serializers.Serializer):
     mining_site = serializers.CharField(max_length=200, required=False, allow_blank=True)
     business_name = serializers.CharField(max_length=200, required=False, allow_blank=True)
     license_number = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    privacy_notice_version = serializers.CharField(max_length=32, required=False, allow_blank=True)
+    privacy_notice_acknowledged = serializers.BooleanField(required=False, default=False)
 
 
 class ProfileUpdateSerializer(serializers.ModelSerializer):

@@ -14,6 +14,7 @@ class _ListingNewScreenState extends State<ListingNewScreen> {
   final _notes = TextEditingController();
   String _karat = '24K';
   bool _loading = false;
+  bool _sharePhone = false;
   String? _error;
 
   Future<void> _submit() async {
@@ -30,6 +31,7 @@ class _ListingNewScreenState extends State<ListingNewScreen> {
         askingPrice: asking,
         pricePerGram: asking / w,
         notes: _notes.text,
+        sharePhone: _sharePhone,
       );
       if (!mounted) return;
       Navigator.pop(context);
@@ -87,6 +89,17 @@ class _ListingNewScreenState extends State<ListingNewScreen> {
                 controller: _notes,
                 maxLines: 2,
                 decoration: const InputDecoration(labelText: 'Notes')),
+            const SizedBox(height: 8),
+            SwitchListTile(
+              value: _sharePhone,
+              onChanged: _loading
+                  ? null
+                  : (value) => setState(() => _sharePhone = value),
+              title: const Text('Show my phone number on this listing'),
+              subtitle: const Text(
+                  'Only logged-in users browsing listings can see it. Off by default.'),
+              contentPadding: EdgeInsets.zero,
+            ),
             const SizedBox(height: 24),
             ElevatedButton(
                 onPressed: _loading ? null : _submit,

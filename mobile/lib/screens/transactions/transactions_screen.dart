@@ -74,9 +74,10 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           context, MaterialPageRoute(builder: (_) => ReceiptScreen(txn: txn)));
       _load();
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('$e')));
+      }
     }
   }
 

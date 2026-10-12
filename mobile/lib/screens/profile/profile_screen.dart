@@ -45,6 +45,12 @@ class ProfileScreen extends StatelessWidget {
             Text('Region: ${user.region}', textAlign: TextAlign.center),
           const SizedBox(height: 32),
           OutlinedButton.icon(
+            onPressed: () => Navigator.pushNamed(context, '/privacy'),
+            icon: const Icon(Icons.privacy_tip_outlined),
+            label: const Text('Privacy and data rights'),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
             onPressed: () async {
               await context.read<AuthProvider>().logout();
               if (context.mounted) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import 'privacy/privacy_screen.dart';
 
 /// Public registration: Miner or Dealer only (Admin is not self-register).
 class RegisterScreen extends StatefulWidget {
@@ -22,8 +23,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _loading = false;
   String? _error;
   String? _mockOtp;
+  bool _noticeAcknowledged = false;
 
   Future<void> _requestOtp() async {
+    if (!_noticeAcknowledged) {
+      setState(() =>
+          _error = 'Read and acknowledge the draft privacy notice first.');
+      return;
+    }
     if (_role == null) {
       setState(() => _error = 'Please choose Miner or Dealer');
       return;
@@ -188,6 +195,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     hintText: '07XXXXXXXX',
                     prefixIcon: Icon(Icons.phone),
                   ),
+                ),
+                CheckboxListTile(
+                  value: _noticeAcknowledged,
+                  onChanged: (value) =>
+                      setState(() => _noticeAcknowledged = value ?? false),
+                  title: const Text('I have read the draft privacy notice'),
+                  subtitle: TextButton(
+                    onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const PrivacyScreen())),
+                    child: const Text('Read the Privacy Notice'),
+                  ),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  contentPadding: EdgeInsets.zero,
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(

@@ -13,6 +13,7 @@ class Listing(models.Model):
     price_per_gram = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     notes = models.TextField(blank=True)
     region = models.CharField(max_length=100, blank=True)
+    share_phone = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=STATUS, default='open')
     photo = models.ImageField(upload_to='listings/%Y/%m/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -42,6 +42,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     region = models.CharField(max_length=100, blank=True)
     mining_site = models.CharField(max_length=200, blank=True)
     preferred_language = models.CharField(max_length=5, default='en')
+    privacy_notice_version = models.CharField(max_length=32, blank=True, default='')
+    privacy_acknowledged_at = models.DateTimeField(null=True, blank=True)
 
     objects = UserManager()
     USERNAME_FIELD = 'phone'
@@ -93,3 +95,25 @@ class DealerProfile(models.Model):
 
     def __str__(self):
         return f'{self.business_name} ({self.verification_status})'
+
+
+class PrivacyRequest(models.Model):
+    REQUEST_TYPES = [
+        ('access', 'Access or export'), ('correction', 'Correction'),
+        ('deletion', 'Deletion'), ('restriction', 'Restriction'),
+        ('objection', 'Objection'), ('portability', 'Portability'),
+        ('withdraw_consent', 'Withdraw optional consent'),
+    ]
+    STATUSES = [('received', 'Received'), ('reviewing', 'Reviewing'),
+                ('completed', 'Completed'), ('rejected', 'Rejected')]
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='privacy_requests')
+    request_type = models.CharField(max_length=32, choices=REQUEST_TYPES)
+    details = models.TextField(blank=True, max_length=2000)
+    status = models.CharField(max_length=20, choices=STATUSES, default='received')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'privacy_requests'
+        ordering = ['-created_at']

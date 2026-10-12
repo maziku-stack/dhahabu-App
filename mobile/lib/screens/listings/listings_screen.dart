@@ -82,6 +82,26 @@ class _ListingsScreenState extends State<ListingsScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              if (widget.mineOnly)
+                                SwitchListTile(
+                                  value: l['share_phone'] == true,
+                                  contentPadding: EdgeInsets.zero,
+                                  title: const Text(
+                                      'Share my phone on this listing'),
+                                  onChanged: (value) async {
+                                    try {
+                                      await ApiService().setListingPhoneSharing(
+                                          l['id'].toString(), value);
+                                      if (mounted) _load();
+                                    } catch (e) {
+                                      if (mounted) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content: Text(e.toString())));
+                                      }
+                                    }
+                                  },
+                                ),
                               Text('${l['weight_grams']} g · ${l['karat']}',
                                   style: const TextStyle(
                                       fontWeight: FontWeight.bold,
@@ -90,7 +110,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
                               Text(
                                   'Asking: TSh ${_fmt.format(double.tryParse('${l['asking_price']}') ?? 0)}'),
                               Text(
-                                '${l['miner_name'] ?? ''} · ${l['region'] ?? ''}',
+                                'Seller · ${l['region'] ?? ''}',
                                 style: TextStyle(
                                   color: Theme.of(ctx)
                                       .colorScheme
@@ -101,7 +121,10 @@ class _ListingsScreenState extends State<ListingsScreen> {
                               if (!widget.mineOnly &&
                                   user?.isDealer == true) ...[
                                 const SizedBox(height: 12),
-                                if (!canTrade)
+                                if (l['miner_phone'] == null)
+                                  const Text(
+                                      'Seller phone is private. The seller must opt in to sharing it on this listing.')
+                                else if (!canTrade)
                                   const Text(
                                       'Verification required to transact',
                                       style:
@@ -113,8 +136,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (_) => ConfirmSaleScreen(
-                                            counterpartyPhone:
-                                                l['miner_phone'] ?? '',
+                                            counterpartyPhone: l['miner_phone'],
                                             weight: double.tryParse(
                                                     '${l['weight_grams']}') ??
                                                 0,

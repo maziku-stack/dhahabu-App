@@ -1,7 +1,8 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../theme/app_colors.dart';
+import '../privacy/privacy_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -19,9 +20,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _loading = false;
   bool _passwordVisible = false;
   bool _passwordConfirmationVisible = false;
+  bool _noticeAcknowledged = false;
   String? _error;
 
   Future<void> _register() async {
+    if (!_noticeAcknowledged) {
+      setState(() =>
+          _error = 'Read and acknowledge the privacy notice to continue.');
+      return;
+    }
     if (_role == null) {
       setState(() => _error = 'Choose whether you are a miner or dealer.');
       return;
@@ -101,182 +108,227 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: Theme(
         data: Theme.of(context).copyWith(
           inputDecorationTheme: Theme.of(context).inputDecorationTheme.copyWith(
-            labelStyle: const TextStyle(color: Colors.white),
-            hintStyle: const TextStyle(color: Colors.white70),
-            prefixIconColor: Colors.white70,
-          ),
+                labelStyle: const TextStyle(color: Colors.white),
+                hintStyle: const TextStyle(color: Colors.white70),
+                prefixIconColor: Colors.white70,
+              ),
         ),
         child: Stack(
           fit: StackFit.expand,
           children: [
-          Image.asset(
-            'assets/images/Purified_gold.webp',
-            fit: BoxFit.cover,
-          ),
-          const DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xB80B1F3A),
-                  Color(0xD9101115),
-                  Color(0xE6101115),
-                ],
-              ),
+            Image.asset(
+              'assets/images/Purified_gold.webp',
+              fit: BoxFit.cover,
             ),
-          ),
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(24, 76, 24, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-            const Text(
-              'Choose the account type that fits you',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            if (_error != null)
-              Text(_error!, style: const TextStyle(color: AppColors.error)),
-            const Text(
-              'I am registering as',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
-            ),
-            const SizedBox(height: 12),
-            Row(children: [
-              Expanded(child: _card('Miner', 'Small-scale gold seller', Icons.hiking_outlined, _role == 'miner', () => setState(() => _role = 'miner'))),
-              const SizedBox(width: 12),
-              Expanded(child: _card('Dealer', 'Licensed gold buyer', Icons.storefront_outlined, _role == 'dealer', () => setState(() => _role = 'dealer'))),
-            ]),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _name,
-              style: const TextStyle(color: Colors.white),
-              textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Colors.black,
-                labelText: 'Full name',
-                labelStyle: TextStyle(color: Colors.white),
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 12,
-                ),
-                prefixIcon: Icon(Icons.person_outline, color: Colors.white70),
-              ),
-            ),
-            const SizedBox(height: 14),
-            TextField(
-              controller: _email,
-              style: const TextStyle(color: Colors.white),
-              keyboardType: TextInputType.emailAddress,
-              autocorrect: false,
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Colors.black,
-                labelText: 'Email address',
-                labelStyle: TextStyle(color: Colors.white),
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 12,
-                ),
-                prefixIcon: Icon(Icons.email_outlined, color: Colors.white70),
-              ),
-            ),
-            const SizedBox(height: 14),
-            TextField(
-              controller: _phone,
-              style: const TextStyle(color: Colors.white),
-              keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Colors.black,
-                labelText: 'Phone number',
-                labelStyle: TextStyle(color: Colors.white),
-                contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                prefixIcon: Icon(Icons.phone, color: Colors.white70),
-              ),
-            ),
-            const SizedBox(height: 14),
-            TextField(
-              controller: _password,
-              style: const TextStyle(color: Colors.white),
-              obscureText: !_passwordVisible,
-              cursorColor: AppColors.gold,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.black,
-                labelText: 'Password (at least 8 characters)',
-                labelStyle: const TextStyle(color: Colors.white),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 12,
-                ),
-                prefixIcon: const Icon(Icons.lock_outline, color: Colors.white70),
-                suffixIcon: IconButton(
-                  tooltip: _passwordVisible ? 'Hide password' : 'Show password',
-                  onPressed: () => setState(
-                    () => _passwordVisible = !_passwordVisible,
-                  ),
-                  icon: Icon(
-                    _passwordVisible
-                        ? Icons.visibility_off_outlined
-                        : Icons.visibility_outlined,
-                    color: Colors.white70,
-                  ),
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xB80B1F3A),
+                    Color(0xD9101115),
+                    Color(0xE6101115),
+                  ],
                 ),
               ),
             ),
-            const SizedBox(height: 14),
-            TextField(
-              controller: _passwordConfirmation,
-              style: const TextStyle(color: Colors.white),
-              obscureText: !_passwordConfirmationVisible,
-              cursorColor: AppColors.gold,
-              textInputAction: TextInputAction.done,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.black,
-                labelText: 'Confirm password',
-                labelStyle: const TextStyle(color: Colors.white),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 12,
-                ),
-                prefixIcon: const Icon(Icons.lock_reset_outlined, color: Colors.white70),
-                suffixIcon: IconButton(
-                  tooltip: _passwordConfirmationVisible
-                      ? 'Hide password'
-                      : 'Show password',
-                  onPressed: () => setState(
-                    () => _passwordConfirmationVisible =
-                        !_passwordConfirmationVisible,
-                  ),
-                  icon: Icon(
-                    _passwordConfirmationVisible
-                        ? Icons.visibility_off_outlined
-                        : Icons.visibility_outlined,
-                    color: Colors.white70,
-                  ),
+            SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(24, 76, 24, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Text(
+                      'Choose the account type that fits you',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    if (_error != null)
+                      Text(_error!,
+                          style: const TextStyle(color: AppColors.error)),
+                    const Text(
+                      'I am registering as',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(children: [
+                      Expanded(
+                          child: _card(
+                              'Miner',
+                              'Small-scale gold seller',
+                              Icons.hiking_outlined,
+                              _role == 'miner',
+                              () => setState(() => _role = 'miner'))),
+                      const SizedBox(width: 12),
+                      Expanded(
+                          child: _card(
+                              'Dealer',
+                              'Licensed gold buyer',
+                              Icons.storefront_outlined,
+                              _role == 'dealer',
+                              () => setState(() => _role = 'dealer'))),
+                    ]),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: _name,
+                      style: const TextStyle(color: Colors.white),
+                      textCapitalization: TextCapitalization.words,
+                      decoration: const InputDecoration(
+                        filled: true,
+                        fillColor: Colors.black,
+                        labelText: 'Full name',
+                        labelStyle: TextStyle(color: Colors.white),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
+                        prefixIcon:
+                            Icon(Icons.person_outline, color: Colors.white70),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    TextField(
+                      controller: _email,
+                      style: const TextStyle(color: Colors.white),
+                      keyboardType: TextInputType.emailAddress,
+                      autocorrect: false,
+                      decoration: const InputDecoration(
+                        filled: true,
+                        fillColor: Colors.black,
+                        labelText: 'Email address',
+                        labelStyle: TextStyle(color: Colors.white),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
+                        prefixIcon:
+                            Icon(Icons.email_outlined, color: Colors.white70),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    TextField(
+                      controller: _phone,
+                      style: const TextStyle(color: Colors.white),
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(
+                        filled: true,
+                        fillColor: Colors.black,
+                        labelText: 'Phone number',
+                        labelStyle: TextStyle(color: Colors.white),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        prefixIcon: Icon(Icons.phone, color: Colors.white70),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    TextField(
+                      controller: _password,
+                      style: const TextStyle(color: Colors.white),
+                      obscureText: !_passwordVisible,
+                      cursorColor: AppColors.gold,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.black,
+                        labelText: 'Password (at least 8 characters)',
+                        labelStyle: const TextStyle(color: Colors.white),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
+                        prefixIcon: const Icon(Icons.lock_outline,
+                            color: Colors.white70),
+                        suffixIcon: IconButton(
+                          tooltip: _passwordVisible
+                              ? 'Hide password'
+                              : 'Show password',
+                          onPressed: () => setState(
+                            () => _passwordVisible = !_passwordVisible,
+                          ),
+                          icon: Icon(
+                            _passwordVisible
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    TextField(
+                      controller: _passwordConfirmation,
+                      style: const TextStyle(color: Colors.white),
+                      obscureText: !_passwordConfirmationVisible,
+                      cursorColor: AppColors.gold,
+                      textInputAction: TextInputAction.done,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.black,
+                        labelText: 'Confirm password',
+                        labelStyle: const TextStyle(color: Colors.white),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
+                        prefixIcon: const Icon(Icons.lock_reset_outlined,
+                            color: Colors.white70),
+                        suffixIcon: IconButton(
+                          tooltip: _passwordConfirmationVisible
+                              ? 'Hide password'
+                              : 'Show password',
+                          onPressed: () => setState(
+                            () => _passwordConfirmationVisible =
+                                !_passwordConfirmationVisible,
+                          ),
+                          icon: Icon(
+                            _passwordConfirmationVisible
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 22),
+                    CheckboxListTile(
+                      value: _noticeAcknowledged,
+                      onChanged: (value) =>
+                          setState(() => _noticeAcknowledged = value ?? false),
+                      title: const Text('I have read the privacy notice',
+                          style: TextStyle(color: Colors.white)),
+                      subtitle: TextButton(
+                        style: TextButton.styleFrom(
+                            alignment: Alignment.centerLeft,
+                            padding: EdgeInsets.zero),
+                        onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const PrivacyScreen())),
+                        child: const Text('Read Privacy Notice (DRAFT)'),
+                      ),
+                      controlAffinity: ListTileControlAffinity.leading,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    ElevatedButton(
+                      onPressed: _loading ? null : _register,
+                      child: _loading
+                          ? const SizedBox(
+                              height: 22,
+                              width: 22,
+                              child: CircularProgressIndicator(strokeWidth: 2))
+                          : const Text('Create account'),
+                    ),
+                  ],
                 ),
               ),
             ),
-            const SizedBox(height: 22),
-            ElevatedButton(
-              onPressed: _loading ? null : _register,
-              child: _loading
-                  ? const SizedBox(height: 22, width: 22, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Text('Create account'),
-            ),
-                ],
-              ),
-            ),
-          ),
           ],
         ),
       ),

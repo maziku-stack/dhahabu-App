@@ -4,6 +4,7 @@ from .views import (
     EmailPasswordLoginView, MeView, DealerProfileView,
     PendingDealersView, AdminVerifyDealerView, SetPinView,
 )
+from .privacy_views import PrivacyExportView, PrivacyRequestListCreateView
 
 urlpatterns = [
     path('register/', EmailPasswordRegisterView.as_view()),
@@ -11,6 +12,8 @@ urlpatterns = [
     path('otp/request/', RequestOTPView.as_view()),
     path('otp/verify/', VerifyOTPView.as_view()),
     path('me/', MeView.as_view()),
+    path('privacy/export/', PrivacyExportView.as_view()),
+    path('privacy/requests/', PrivacyRequestListCreateView.as_view()),
     path('pin/', SetPinView.as_view()),
     path('dealer/profile/', DealerProfileView.as_view()),
     path('admin/dealers/pending/', PendingDealersView.as_view()),

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, OTPCode, DealerProfile
+from .models import User, OTPCode, DealerProfile, PrivacyRequest
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
@@ -23,3 +23,10 @@ class OTPCodeAdmin(admin.ModelAdmin):
 class DealerProfileAdmin(admin.ModelAdmin):
     list_display = ('business_name', 'user', 'verification_status', 'created_at')
     list_filter = ('verification_status',)
+
+@admin.register(PrivacyRequest)
+class PrivacyRequestAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'request_type', 'status', 'created_at')
+    list_filter = ('request_type', 'status', 'created_at')
+    search_fields = ('user__phone', 'user__email', 'user__full_name', 'details')
+    readonly_fields = ('id', 'user', 'request_type', 'details', 'created_at')

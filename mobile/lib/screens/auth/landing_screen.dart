@@ -80,7 +80,7 @@ class LandingScreen extends StatelessWidget {
               Text(
                   sw
                       ? 'Bei za haki kulingana na karati, risiti za pamoja za kidijitali na mrabaha wa moja kwa moja kwa wachimbaji, wafanyabiashara wenye leseni na serikali.'
-                      : 'Fair prices by karat, shared digital receipts, automatic royalty — for miners, licensed dealers and government.',
+                      : 'Gold listings by karat and shared digital trade records for miners and licensed dealers.',
                   style: TextStyle(
                       color: Theme.of(context).hintColor,
                       height: 1.45,
@@ -112,8 +112,8 @@ class LandingScreen extends StatelessWidget {
               const SizedBox(height: 12),
               Text(
                   sw
-                      ? '✓ Uthibitishaji wa simu kwa OTP\n✓ Rekodi za mauzo zisizobadilika\n✓ Mrahaba wa 7% huhesabiwa moja kwa moja'
-                      : '✓ OTP phone verification\n✓ Immutable sale records\n✓ 7% royalty auto-calculated',
+                      ? '✓ Uthibitishaji wa simu kwa OTP\n✓ Rekodi za mauzo za pamoja\n✓ Taarifa ya faragha inapatikana'
+                      : '✓ OTP phone verification\n✓ Shared sale records\n✓ Privacy notice available',
                   style: const TextStyle(height: 1.6)),
               const SizedBox(height: 32),
               Text(sw ? 'KWA NINI DHAHABU' : 'WHY DHAHABU',
@@ -131,7 +131,11 @@ class LandingScreen extends StatelessWidget {
                 _stat('1',
                     sw ? 'Rekodi ya mauzo ya pamoja' : 'Shared sale record'),
                 const Divider(),
-                _stat('7%', sw ? 'Mrahaba wa moja kwa moja' : 'Auto royalty'),
+                _stat(
+                    'TRA',
+                    sw
+                        ? 'Muunganisho rasmi bado haujaunganishwa'
+                        : 'Official integration not connected yet'),
                 const Divider(),
                 _stat(
                     'TZS',
@@ -142,10 +146,17 @@ class LandingScreen extends StatelessWidget {
               const SizedBox(height: 24),
               Text(
                   sw
-                      ? 'Kwa kuendelea unakubali Sera ya Faragha. Miamala inaweza kukaguliwa na rekodi za kodi haziwezi kubadilishwa baada ya kuthibitishwa.'
-                      : 'By continuing you agree to the Privacy Policy. Transactions are auditable and tax records are immutable once confirmed.',
+                      ? 'Soma taarifa ya faragha kabla ya kufungua akaunti. Kukubali taarifa hii hakumaanishi ridhaa kwa matumizi ya hiari ya data.'
+                      : 'Read the privacy notice before creating an account. Acknowledging it is not consent to optional data uses.',
                   style: TextStyle(
                       fontSize: 12, color: Theme.of(context).hintColor)),
+              TextButton.icon(
+                onPressed: () => Navigator.pushNamed(context, '/privacy'),
+                icon: const Icon(Icons.privacy_tip_outlined),
+                label: Text(sw
+                    ? 'Soma taarifa ya faragha (RASIMU)'
+                    : 'Read privacy notice (DRAFT)'),
+              ),
             ],
           ),
         ),
