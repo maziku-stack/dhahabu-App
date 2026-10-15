@@ -64,7 +64,7 @@ class LandingScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(999)),
                 child: Text(
                     sw
-                        ? 'KWA AJIRI YA BIASHARA YA DHAHABU TANZANIA'
+                        ? 'KWA AJIRI YA BIASHARA YA DHAHABU TANZANIA'   
                         : 'BUILT FOR TANZANIA GOLD TRADE',
                     style: const TextStyle(
                         fontSize: 12, color: AppColors.success)),
