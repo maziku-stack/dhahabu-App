@@ -29,8 +29,8 @@ class DhahabuApp extends StatelessWidget {
       child: Consumer<AppSettingsProvider>(
         builder: (context, settings, _) {
           final hasDashboardTheme = context.watch<AuthProvider>().user != null;
-          final lightTheme = buildDhahabuLightTheme();
-          final darkTheme = buildDhahabuTheme();
+          final lightTheme = dhahabuTheme();
+          final darkTheme = dhahabuDarkTheme();
 
           return MaterialApp(
             title: 'Dhahabu',
@@ -52,8 +52,6 @@ class DhahabuApp extends StatelessWidget {
                 ],
               );
             },
-            // Keep each ThemeData paired with its actual brightness. The
-            // previous pairing sent dark mode to the light palette.
             theme: hasDashboardTheme
                 ? buildGlassDashboardTheme(lightTheme)
                 : lightTheme,
@@ -148,8 +146,6 @@ class _AmbientGlow extends StatelessWidget {
       );
 }
 
-/// Gives app text a modest 10% size increase while retaining the user's
-/// platform text scaling preference, including nonlinear accessibility scaling.
 class _AppTextScaler extends TextScaler {
   const _AppTextScaler(this.platformScaler, this.factor);
 
