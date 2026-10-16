@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
-import '../../theme/app_colors.dart';
+import 'package:dhahabu/core/theme/app_colors.dart';
 import '../../widgets/app_card.dart';
 import 'listing_new_screen.dart';
 import '../transactions/confirm_sale_screen.dart';

@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../providers/auth_provider.dart';
 import '../../services/api_service.dart';
-import '../../theme/app_colors.dart';
+import 'package:dhahabu/core/theme/app_colors.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/dhahabu_logo.dart';
 import '../listings/listing_new_screen.dart';

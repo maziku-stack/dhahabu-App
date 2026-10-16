@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
-import '../../theme/app_colors.dart';
+import 'package:dhahabu/core/theme/app_colors.dart';
 
 class ListingNewScreen extends StatefulWidget {
   const ListingNewScreen({super.key});

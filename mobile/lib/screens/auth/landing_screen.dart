@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/app_settings_provider.dart';
-import '../../theme/app_colors.dart';
+import 'package:dhahabu/core/theme/app_colors.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/dhahabu_logo.dart';
 

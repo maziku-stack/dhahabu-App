@@ -1,4 +1,4 @@
-import 'package:dhahabu/utils/app_colors.dart';
+import 'package:dhahabu/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class LandingScreens extends StatelessWidget {
