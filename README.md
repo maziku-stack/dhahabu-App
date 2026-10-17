@@ -1,110 +1,115 @@
-# Dhahabu — Full MVP
+# Dhahabu Platform
 
-Gold trade platform for **Miners**, **Licensed Dealers**, and **Government** (Mining Commission / TRA).
-
-**Stack:** Django 5 + DRF + SimpleJWT | Flutter 3  
-**Design:** Navy `#0B1F3A` · Gold `#C9A227` · dark-first mobile (UI/UX Spec)
+A comprehensive gold trade and regulatory platform designed for **Miners**, **Licensed Dealers**, and **Government Authorities** (Mining Commission / TRA).
 
 ---
 
-## Features included
+## Technical Stack
 
-| Area | Status |
-|------|--------|
-| Landing (Sign in top right, CTAs) | ✅ |
-| Register Miner \| Dealer only | ✅ |
-| Login (OTP, mock 123456) | ✅ |
-| Set PIN after auth | ✅ |
-| Role shells (Miner / Dealer / Gov) | ✅ |
-| Market prices 24K/22K/18K + stale label | ✅ |
-| Listings (create / browse) | ✅ |
-| Confirm sale + tax estimate | ✅ |
-| Miner confirm → TaxRecord 7% | ✅ |
-| Receipt screen | ✅ |
-| Dealer tax summary | ✅ |
-| Feedback | ✅ |
-| Gov compliance overview | ✅ |
-| Dealer verification queue | ✅ |
-| Audit log | ✅ |
-| PostgreSQL optional | ✅ |
-| create_admin command | ✅ |
+- **Backend:** Python, Django 5, Django REST Framework, SimpleJWT, PostgreSQL
+- **Frontend:** Flutter 3, Provider State Management, Material 3
+- **Design System:** Professional Clean White Theme (Navy `#0B1F3A`, Gold `#C9A227`)
 
 ---
 
-## Backend setup
+## Project Structure
 
-```powershell
-cd backend
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+```text
+backend/
+  ├── accounts/        # User authentication, profiles, and roles
+  ├── pricing/         # Gold reference price feed management
+  ├── listings/        # Miner gold listings and marketplace
+  ├── transactions/    # Sales ledger, confirmations, tax records
+  ├── feedback/        # Support and grievance management
+  └── config/          # Django project settings and URLs
 
-$env:USE_SQLITE="False"
-$env:DEBUG="True"
-$env:SECRET_KEY="dev-secret"
-$env:MOCK_OTP="True"
-
-python manage.py makemigrations
-python manage.py migrate
-python manage.py create_admin --phone 0700000001 --name "TRA Admin"
-python manage.py runserver 0.0.0.0:8000
+mobile/
+  └── lib/
+      ├── core/        # Theme, network service, validation, and shared widgets
+      └── features/    # Feature-based modular architecture
+          ├── auth/        # Login, Register, Role Selection
+          ├── market/      # Home dashboard & pricing feed
+          ├── listings/    # Gold listings & marketplace
+          ├── transactions/# Sales, confirmation, and receipts
+          ├── tax/         # Tax summary and government charges
+          ├── feedback/    # Feedback and support system
+          ├── profile/     # User profile and settings
+          ├── government/  # Compliance and audit logs
+          └── shell/       # Role-based navigation and routing
 ```
 
-API docs: http://127.0.0.1:8000/api/docs/
+---
 
-**PostgreSQL:** set `USE_SQLITE=False` and `POSTGRES_*` env vars.
-## Flutter setup
+## Backend Setup
 
-```powershell
-cd mobile
-flutter create .
-flutter pub get
-```
-
-1. Start the backend so it listens on the computer's network interfaces:
-
+1. Navigate to the backend directory:
    ```powershell
    cd backend
+   ```
+
+2. Create and activate a virtual environment:
+   ```powershell
+   python -m venv venv
+   .\venv\Scripts\Activate.ps1
+   ```
+
+3. Install dependencies:
+   ```powershell
+   pip install -r requirements.txt
+   ```
+
+4. Configure environment variables in `.env`:
+   ```env
+   DEBUG=True
+   SECRET_KEY=dev-secret
+   USE_SQLITE=False
+   POSTGRES_DB=dhahabu
+   POSTGRES_USER=postgres
+   POSTGRES_PASSWORD=abuu@2020
+   POSTGRES_HOST=localhost
+   POSTGRES_PORT=5433
+   MOCK_OTP=True
+   ```
+
+5. Run database migrations and create an admin user:
+   ```powershell
+   python manage.py makemigrations
+   python manage.py migrate
+   python manage.py create_admin --phone 0700000001 --name "TRA Admin"
+   ```
+
+6. Start the Django development server:
+   ```powershell
    python manage.py runserver 0.0.0.0:8000
    ```
 
-2. Connect the phone and computer to the same Wi-Fi network, then from `mobile` run:
+---
 
+## Mobile App Setup
+
+1. Navigate to the mobile directory:
    ```powershell
-   .\run-on-device.ps1
+   cd mobile
    ```
 
-   The script detects the computer's current LAN IP and passes it to Flutter. If detection picks the wrong network adapter, pass the computer's Wi-Fi IPv4 address explicitly: `.\run-on-device.ps1 -ApiHost 192.168.1.20` (replace with your address).
+2. Install dependencies:
+   ```powershell
+   flutter pub get
+   ```
 
-3. Other launch options:
+3. Run the app on a connected physical device using your local network IP (e.g., `192.168.1.233`):
+   ```powershell
+   flutter run --dart-define=API_BASE_URL=http://192.168.1.233:8000/api
+   ```
 
-   - Physical phone on the Rafiki/Dhahabu network: `flutter run` (default API is `http://192.168.1.182:8000/api`)
-   - Physical phone if the computer's IP differs: `flutter run --dart-define=API_BASE_URL=http://<PC-IP>:8000/api`
-   - Android emulator: `flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000/api`
-   - Chrome on the same PC: `flutter run -d chrome --dart-define=API_BASE_URL=http://127.0.0.1:8000/api`
-
-Android already allows local HTTP traffic for development. If the phone cannot connect, check that Windows Firewall allows Python/Django on private networks and that both devices are on the same Wi-Fi. The development `.env` accepts LAN hostnames; do not use `ALLOWED_HOSTS=*` with `DEBUG=False` in production.
-
----
-
-## Test flow
-
-1. Admin: Sign in `0700000001` → OTP `123456` → set PIN → set gold prices  
-2. Register Miner → OTP → PIN → New Listing  
-3. Register Dealer → OTP → PIN → pending until Admin approves  
-4. Admin → Dealers tab → Approve  
-5. Dealer → browse listing → Confirm Sale  
-6. Miner → Sales → Confirm & Sign → TaxRecord + receipt  
-7. Dealer → Tax summary; Admin → Overview shows royalty  
+   - **Android Emulator:** `flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000/api`
+   - **Chrome / Web:** `flutter run -d chrome --dart-define=API_BASE_URL=http://127.0.0.1:8000/api`
 
 ---
 
-## Project layout
+## Testing & Verification Flow
 
-```
-backend/
-  accounts/ pricing/ listings/ transactions/ feedback/
-mobile/lib/
-  theme/ widgets/ models/ services/ providers/
-  screens/auth|shells|market|listings|transactions|tax|feedback|government|profile
-```
+1. **Admin / Government:** Sign in, manage dealer verification queue, review audit logs.
+2. **Miner:** Register with miner role, create gold listings, and record sales.
+3. **Dealer:** Register with dealer role (pending approval), browse open listings, and confirm sale agreements with PIN verification.
+4. **Transactions:** Both parties sign sales with account PINs to generate official receipts and government tax records.

@@ -1,5 +1,5 @@
-import 'package:dhahabu/providers/auth_provider.dart';
-import 'package:dhahabu/screens/auth/login_screen.dart';
+import 'package:dhahabu/features/auth/providers/auth_provider.dart';
+import 'package:dhahabu/features/auth/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
