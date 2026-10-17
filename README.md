@@ -65,7 +65,7 @@ mobile/
    USE_SQLITE=False
    POSTGRES_DB=dhahabu
    POSTGRES_USER=postgres
-   POSTGRES_PASSWORD=abuu@2020
+   POSTGRES_PASSWORD=your_postgres_password
    POSTGRES_HOST=localhost
    POSTGRES_PORT=5433
    MOCK_OTP=True
