@@ -37,8 +37,12 @@ class _DhahabuMarkPainter extends CustomPainter {
 
     // Low, broad ingot silhouette stays legible at launcher-icon scale.
     final top = polygon([
-      p(.19, .37), p(.34, .25), p(.70, .25), p(.83, .37),
-      p(.72, .47), p(.28, .47),
+      p(.19, .37),
+      p(.34, .25),
+      p(.70, .25),
+      p(.83, .37),
+      p(.72, .47),
+      p(.28, .47),
     ]);
     canvas.drawPath(
       top,
@@ -51,7 +55,10 @@ class _DhahabuMarkPainter extends CustomPainter {
     );
 
     final face = polygon([
-      p(.28, .47), p(.72, .47), p(.67, .73), p(.34, .73),
+      p(.28, .47),
+      p(.72, .47),
+      p(.67, .73),
+      p(.34, .73),
     ]);
     canvas.drawPath(
       face,
@@ -64,7 +71,10 @@ class _DhahabuMarkPainter extends CustomPainter {
     );
 
     final side = polygon([
-      p(.72, .47), p(.83, .37), p(.78, .64), p(.67, .73),
+      p(.72, .47),
+      p(.83, .37),
+      p(.78, .64),
+      p(.67, .73),
     ]);
     canvas.drawPath(side, Paint()..color = const Color(0xFFB77A1B));
 
@@ -80,9 +90,12 @@ class _DhahabuMarkPainter extends CustomPainter {
       ..moveTo(p(.43, .54).dx, p(.54, .54).dy)
       ..lineTo(p(.43, .66).dx, p(.66, .66).dy)
       ..cubicTo(
-        p(.61, .66).dx, p(.66, .66).dy,
-        p(.63, .54).dx, p(.54, .54).dy,
-        p(.43, .54).dx, p(.54, .54).dy,
+        p(.61, .66).dx,
+        p(.66, .66).dy,
+        p(.63, .54).dx,
+        p(.54, .54).dy,
+        p(.43, .54).dx,
+        p(.54, .54).dy,
       );
     canvas.drawPath(
       d,

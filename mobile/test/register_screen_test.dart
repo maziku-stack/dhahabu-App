@@ -1,5 +1,6 @@
-import 'package:dhahabu/providers/auth_provider.dart';
-import 'package:dhahabu/screens/auth/register_screen.dart';
+import 'package:dhahabu/features/auth/providers/auth_provider.dart';
+import 'package:dhahabu/features/auth/screens/register_screen.dart';
+import 'package:dhahabu/core/providers/app_settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,7 @@ class _TrackingAuthProvider extends AuthProvider {
     required String role,
     required String password,
     required String passwordConfirmation,
+    required bool privacyNoticeAcknowledged,
   }) async {
     registerCalled = true;
     submittedDetails = {
@@ -35,13 +37,45 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('registration requires a role before submitting', (tester) async {
+  testWidgets('registration requires acknowledging privacy notice first', (tester) async {
     await tester.pumpWidget(
-      ChangeNotifierProvider(
-        create: (_) => AuthProvider(),
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => AuthProvider()),
+          ChangeNotifierProvider(create: (_) => AppSettingsProvider()),
+        ],
         child: const MaterialApp(home: RegisterScreen()),
       ),
     );
+    await tester.pumpAndSettle();
+
+    final createAccountButton =
+        find.widgetWithText(ElevatedButton, 'Create account');
+    await tester.ensureVisible(createAccountButton);
+    await tester.tap(createAccountButton);
+    await tester.pump();
+
+    expect(
+      find.text('Read and acknowledge the privacy notice to continue.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('registration requires a role before submitting', (tester) async {
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => AuthProvider()),
+          ChangeNotifierProvider(create: (_) => AppSettingsProvider()),
+        ],
+        child: const MaterialApp(home: RegisterScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final checkbox = find.byType(CheckboxListTile);
+    await tester.ensureVisible(checkbox);
+    await tester.tap(checkbox);
     await tester.pumpAndSettle();
 
     final createAccountButton =
@@ -60,14 +94,22 @@ void main() {
       (tester) async {
     final auth = _TrackingAuthProvider();
     await tester.pumpWidget(
-      ChangeNotifierProvider<AuthProvider>.value(
-        value: auth,
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<AuthProvider>.value(value: auth),
+          ChangeNotifierProvider(create: (_) => AppSettingsProvider()),
+        ],
         child: const MaterialApp(home: RegisterScreen()),
       ),
     );
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Miner'));
+    await tester.pumpAndSettle();
+
+    final checkbox = find.byType(CheckboxListTile);
+    await tester.ensureVisible(checkbox);
+    await tester.tap(checkbox);
     await tester.pumpAndSettle();
 
     const values = [
@@ -97,8 +139,11 @@ void main() {
       (tester) async {
     final auth = _TrackingAuthProvider();
     await tester.pumpWidget(
-      ChangeNotifierProvider<AuthProvider>.value(
-        value: auth,
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<AuthProvider>.value(value: auth),
+          ChangeNotifierProvider(create: (_) => AppSettingsProvider()),
+        ],
         child: MaterialApp(
           home: const RegisterScreen(),
           routes: {
@@ -111,6 +156,12 @@ void main() {
 
     await tester.tap(find.text('Miner'));
     await tester.pumpAndSettle();
+
+    final checkbox = find.byType(CheckboxListTile);
+    await tester.ensureVisible(checkbox);
+    await tester.tap(checkbox);
+    await tester.pumpAndSettle();
+
     const values = [
       ' Amina Tester ',
       ' amina@example.com ',

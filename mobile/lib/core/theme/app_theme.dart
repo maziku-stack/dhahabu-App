@@ -6,22 +6,53 @@ ThemeData dhahabuTheme() {
   return ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
-    scaffoldBackgroundColor: AppColors.background,
+    scaffoldBackgroundColor: AppColors.white,
     colorScheme: const ColorScheme.light(
       primary: AppColors.navy,
       secondary: AppColors.gold,
       surface: AppColors.white,
+      surfaceTint: Colors.transparent,
       error: AppColors.error,
       onPrimary: AppColors.white,
       onSecondary: AppColors.navy,
       onSurface: AppColors.navy,
       onSurfaceVariant: AppColors.textSecondary,
     ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: AppColors.white,
+      surfaceTintColor: Colors.transparent,
+      height: 68,
+      indicatorColor: AppColors.gold.withValues(alpha: 0.18),
+      indicatorShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      iconTheme: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return const IconThemeData(color: AppColors.navy);
+        }
+        return const IconThemeData(color: AppColors.textSecondary);
+      }),
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return GoogleFonts.publicSans(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: AppColors.navy,
+          );
+        }
+        return GoogleFonts.publicSans(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          color: AppColors.textSecondary,
+        );
+      }),
+    ),
     appBarTheme: AppBarTheme(
       backgroundColor: AppColors.navy,
       foregroundColor: AppColors.white,
       elevation: 0,
       centerTitle: false,
+      toolbarHeight: 64,
       titleTextStyle: GoogleFonts.urbanist(
         fontSize: 20,
         fontWeight: FontWeight.w600,
@@ -152,6 +183,7 @@ ThemeData dhahabuDarkTheme() {
       primary: AppColors.gold,
       secondary: AppColors.navyLight,
       surface: AppColors.navyLight,
+      surfaceTint: Colors.transparent,
       error: AppColors.error,
       onPrimary: AppColors.navy,
       onSecondary: AppColors.white,
@@ -163,6 +195,7 @@ ThemeData dhahabuDarkTheme() {
       foregroundColor: AppColors.white,
       elevation: 0,
       centerTitle: false,
+      toolbarHeight: 64,
       titleTextStyle: GoogleFonts.urbanist(
         fontSize: 20,
         fontWeight: FontWeight.w600,

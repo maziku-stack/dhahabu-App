@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../utils/constants.dart';
+import 'package:dhahabu/core/constants/app_constants.dart';
 
 class ApiService {
   static final ApiService _i = ApiService._();
@@ -24,6 +24,13 @@ class ApiService {
     String? body,
   }) =>
       http.post(uri, headers: headers, body: body).timeout(_requestTimeout);
+
+  Future<http.Response> _patch(
+    Uri uri, {
+    required Map<String, String> headers,
+    String? body,
+  }) =>
+      http.patch(uri, headers: headers, body: body).timeout(_requestTimeout);
 
   Future<String?> _token() async {
     final token = await _secureStorage.read(key: AppConstants.accessTokenKey);
@@ -115,6 +122,7 @@ class ApiService {
     required String role,
     required String password,
     required String passwordConfirmation,
+    required bool privacyNoticeAcknowledged,
   }) async {
     final res = await _post(
       Uri.parse('$baseUrl/auth/register/'),
@@ -127,6 +135,7 @@ class ApiService {
         'password': password,
         'password_confirmation': passwordConfirmation,
         'privacy_notice_version': '2026-10-draft-1',
+        'privacy_notice_acknowledged': privacyNoticeAcknowledged,
       }),
     );
     final data = _decodeApiResponse(res);
@@ -196,6 +205,30 @@ class ApiService {
       return jsonDecode(res.body) as Map<String, dynamic>;
     }
     throw Exception('Not authenticated');
+  }
+
+  Future<Map<String, dynamic>> updateProfile({
+    required String fullName,
+    required String email,
+    required String region,
+    required String miningSite,
+  }) async {
+    final res = await _patch(
+      Uri.parse('$baseUrl/auth/me/'),
+      headers: await _headers(),
+      body: jsonEncode({
+        'full_name': fullName,
+        'email': email,
+        'region': region,
+        'mining_site': miningSite,
+      }),
+    );
+    final data = _decodeApiResponse(res);
+    if (res.statusCode == 200) {
+      return data;
+    }
+    final detail = data['detail'] ?? data.values.first;
+    throw Exception(detail is List ? detail.join(' ') : detail.toString());
   }
 
   Future<void> setPin(String pin) async {

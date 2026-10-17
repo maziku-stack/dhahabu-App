@@ -14,6 +14,11 @@ class AppColors {
   static const Color error = Color(0xFFD64545);
   static const Color info = Color(0xFF2F80ED);
 
+  // Onboarding per-page background colors
+  static const Color onboardNavy = Color(0xFF0B1F3A);
+  static const Color onboardEmerald = Color(0xFF0F3D2E);
+  static const Color onboardRoyal = Color(0xFF12306B);
+
   // Backward compatibility aliases
   static const Color charcoal = navy;
   static const Color warmWhite = background;

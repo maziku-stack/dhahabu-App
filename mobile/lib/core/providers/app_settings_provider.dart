@@ -6,7 +6,7 @@ class AppSettingsProvider extends ChangeNotifier {
   static const _themeKey = 'app_dark_mode';
 
   Locale _locale = const Locale('en');
-  ThemeMode _themeMode = ThemeMode.dark;
+  ThemeMode _themeMode = ThemeMode.light;
 
   Locale get locale => _locale;
   ThemeMode get themeMode => _themeMode;
@@ -20,7 +20,7 @@ class AppSettingsProvider extends ChangeNotifier {
   Future<void> _load() async {
     final preferences = await SharedPreferences.getInstance();
     _locale = Locale(preferences.getString(_languageKey) ?? 'en');
-    _themeMode = (preferences.getBool(_themeKey) ?? true)
+    _themeMode = (preferences.getBool(_themeKey) ?? false)
         ? ThemeMode.dark
         : ThemeMode.light;
     notifyListeners();
