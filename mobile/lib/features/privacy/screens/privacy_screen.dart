@@ -1,10 +1,11 @@
+import 'dart:ui';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-import 'package:dhahabu/core/providers/app_settings_provider.dart';
+import 'package:dhahabu/core/theme/app_colors.dart';
 import 'package:dhahabu/core/network/api_service.dart';
 import 'package:dhahabu/features/auth/providers/auth_provider.dart';
 
@@ -37,13 +38,20 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
         builder: (context) => AlertDialog(
           title: const Text('Your data export'),
           content: SizedBox(
-              width: 520,
-              child: SingleChildScrollView(child: SelectableText(json))),
+            width: 520,
+            child: SingleChildScrollView(child: SelectableText(json)),
+          ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Close')),
-            FilledButton.icon(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.gold,
+                foregroundColor: AppColors.navy,
+                elevation: 0,
+              ),
               onPressed: () async {
                 await Clipboard.setData(ClipboardData(text: json));
                 if (context.mounted) {
@@ -54,7 +62,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                   );
                 }
               },
-              icon: const Icon(Icons.copy),
+              icon: const Icon(Icons.copy, size: 18),
               label: const Text('Copy JSON'),
             ),
           ],
@@ -88,64 +96,152 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
     }
   }
 
+  InputDecoration _decoration({required IconData icon, String? label}) {
+    OutlineInputBorder border(Color c, [double w = 1]) => OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: c, width: w),
+        );
+    return InputDecoration(
+      labelText: label,
+      filled: true,
+      fillColor: const Color(0xFFF9FAFB),
+      isDense: true,
+      prefixIcon: Icon(icon, color: AppColors.navy, size: 20),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      enabledBorder: border(AppColors.border),
+      focusedBorder: border(AppColors.gold, 2),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final sw = context.watch<AppSettingsProvider>().isSwahili;
     final authenticated = context.watch<AuthProvider>().isAuthenticated;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      appBar: AppBar(title: Text(sw ? 'Faragha na data' : 'Privacy and data')),
+      backgroundColor: AppColors.white,
+      appBar: AppBar(
+        backgroundColor: AppColors.white,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+        title: Text(
+          'Privacy and data',
+          style: textTheme.titleLarge?.copyWith(
+            color: AppColors.navy,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
       body: ListView(
-        padding: const EdgeInsets.all(20),
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
         children: [
-          Card(
-            color: Theme.of(context).colorScheme.errorContainer,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(sw
-                  ? 'RASIMU YA MAJARIBIO — haijakamilika kwa matumizi ya uzalishaji. Taasisi inayoendesha, mawasiliano ya faragha, watoa huduma, muda wa kuhifadhi na masharti ya kisheria lazima yathibitishwe.'
-                  : 'DRAFT — NOT READY FOR PRODUCTION. The operating entity, privacy contact, service providers, retention periods and legal terms still need confirmation.'),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.warning.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: AppColors.warning.withValues(alpha: 0.3),
+              ),
+            ),
+            child: Text(
+              'DRAFT — NOT READY FOR PRODUCTION. The operating entity, privacy contact, service providers, retention periods and legal terms still need confirmation.',
+              style: textTheme.bodySmall?.copyWith(
+                color: AppColors.navy,
+                height: 1.45,
+              ),
             ),
           ),
-          const SizedBox(height: 12),
-          Text(sw ? 'Data tunayokusanya' : 'Data we collect',
-              style: Theme.of(context).textTheme.titleLarge),
-          Text(sw
-              ? 'Akaunti: jina, simu, barua pepe, aina ya akaunti na lugha. Kwa hiari: eneo na mgodi. Pia taarifa za matangazo, vipimo vya biashara, rekodi za miamala na uthibitishaji wa wafanyabiashara. Nenosiri/PIN huhifadhiwa kama hash; tokeni za kuingia huhifadhiwa kwenye kifaa.'
-              : 'Account data: name, phone, email, account type and language; region and mining site are optional. We also process listing details, trade measurements and records, and dealer verification information. Passwords/PINs are stored as hashes; sign-in tokens are kept on your device.'),
-          const SizedBox(height: 12),
-          Text(sw ? 'Matumizi na ufikiaji' : 'Use and access',
-              style: Theme.of(context).textTheme.titleLarge),
-          Text(sw
-              ? 'Taarifa hutumika kuendesha akaunti, matangazo, miamala, usalama na huduma kwa wateja. Namba ya simu huonyeshwa kwenye tangazo tu ikiwa mchimbaji amechagua kushiriki. Washiriki wa muamala huona taarifa muhimu za upande mwingine. Ufikiaji wa mamlaka hutegemea msingi halali na muunganisho ulioidhinishwa; miunganisho ya Mining Commission/TRA bado haijaunganishwa.'
-              : 'Data supports accounts, listings, trades, security and support. A miner’s phone appears on a listing only when they choose to share it. Trade participants see relevant counterparty details. Authority access must have a lawful basis and approved integration; Mining Commission/TRA integrations are not connected yet.'),
-          const SizedBox(height: 12),
+          const SizedBox(height: 24),
           Text(
-              sw
-                  ? 'Muda, watoa huduma na haki zako'
-                  : 'Retention, providers and your rights',
-              style: Theme.of(context).textTheme.titleLarge),
-          Text(sw
-              ? 'Muda wa kuhifadhi, kampuni za hosting/SMS/uchanganuzi, uhamisho wa data nje ya nchi na mawasiliano ya afisa wa faragha bado vinahitaji kuthibitishwa. Unaweza kuomba kuona, kusahihisha, kufuta, kuzuia au kuhamisha data, au kupinga uchakataji. Rekodi za biashara zinaweza kuhitaji kuhifadhiwa kisheria; ombi la kufuta litakaguliwa na halifuti rekodi hizo moja kwa moja.'
-              : 'Retention periods, hosting/SMS/analytics providers, cross-border storage and the privacy officer’s contact still need confirmation. You can request access, correction, deletion, restriction or portability, or object to processing. Trade records may have legal retention requirements; a deletion request is reviewed and does not automatically erase such records.'),
-          const SizedBox(height: 12),
-          Text(sw
-              ? 'Toleo $_noticeVersion. Hili ni taarifa ya bidhaa ya rasimu, si ushauri wa kisheria wala uthibitisho wa kufuata sheria.'
-              : 'Version $_noticeVersion. This product notice is a draft, not legal advice or a certification of compliance.'),
-          if (authenticated) ...[
-            const Divider(height: 36),
-            Text(sw ? 'Tumia haki zako' : 'Use your data rights',
-                style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 8),
-            OutlinedButton.icon(
-              onPressed: _busy ? null : _export,
-              icon: const Icon(Icons.download_outlined),
-              label: Text(sw
-                  ? 'Onyesha na nakili data yangu'
-                  : 'View and copy my data export'),
+            'Data we collect',
+            style: textTheme.titleMedium?.copyWith(
+              color: AppColors.navy,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 8),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Account data: name, phone, email, account type and language; region and mining site are optional. We also process listing details, trade measurements and records, and dealer verification information. Passwords/PINs are stored as hashes; sign-in tokens are kept on your device.',
+            style: textTheme.bodyMedium?.copyWith(
+              color: AppColors.textSecondary,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Use and access',
+            style: textTheme.titleMedium?.copyWith(
+              color: AppColors.navy,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Data supports accounts, listings, trades, security and support. A miner’s phone appears on a listing only when they choose to share it. Trade participants see relevant counterparty details. Authority access must have a lawful basis and approved integration; Mining Commission/TRA integrations are not connected yet.',
+            style: textTheme.bodyMedium?.copyWith(
+              color: AppColors.textSecondary,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Retention, providers and your rights',
+            style: textTheme.titleMedium?.copyWith(
+              color: AppColors.navy,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Retention periods, hosting/SMS/analytics providers, cross-border storage and the privacy officer’s contact still need confirmation. You can request access, correction, deletion, restriction or portability, or object to processing. Trade records may have legal retention requirements; a deletion request is reviewed and does not automatically erase such records.',
+            style: textTheme.bodyMedium?.copyWith(
+              color: AppColors.textSecondary,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Version $_noticeVersion. This product notice is a draft, not legal advice or a certification of compliance.',
+            style: textTheme.bodySmall?.copyWith(
+              color: AppColors.textSecondary,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+          if (authenticated) ...[
+            const SizedBox(height: 28),
+            const Divider(color: AppColors.border, height: 1),
+            const SizedBox(height: 28),
+            Text(
+              'Use your data rights',
+              style: textTheme.titleLarge?.copyWith(
+                color: AppColors.navy,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 52,
+              child: OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.navy,
+                  side: const BorderSide(color: AppColors.border),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: _busy ? null : _export,
+                icon: const Icon(Icons.download_outlined, color: AppColors.gold),
+                label: const Text('View and copy my data export'),
+              ),
+            ),
+            const SizedBox(height: 20),
             DropdownButtonFormField<String>(
               initialValue: _requestType,
+              isExpanded: true,
+              style: textTheme.bodyLarge?.copyWith(color: AppColors.navy),
               items: const [
                 DropdownMenuItem(
                     value: 'access', child: Text('Access / export')),
@@ -166,25 +262,44 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
               onChanged: _busy
                   ? null
                   : (value) => setState(() => _requestType = value ?? 'access'),
-              decoration: InputDecoration(
-                  labelText: sw ? 'Aina ya ombi' : 'Request type'),
+              decoration: _decoration(icon: Icons.shield_outlined, label: 'Request type'),
             ),
+            const SizedBox(height: 18),
             TextField(
               controller: _details,
               maxLength: 2000,
               maxLines: 3,
-              decoration: InputDecoration(
-                  labelText: sw ? 'Maelezo ya hiari' : 'Details (optional)'),
+              style: textTheme.bodyLarge?.copyWith(color: AppColors.navy),
+              cursorColor: AppColors.gold,
+              decoration: _decoration(icon: Icons.notes_rounded, label: 'Details (optional)'),
             ),
-            FilledButton(
-              onPressed: _busy ? null : _submitRequest,
-              child: Text(
-                  sw ? 'Tuma ombi kwa ukaguzi' : 'Submit request for review'),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 52,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.gold,
+                  foregroundColor: AppColors.navy,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: _busy ? null : _submitRequest,
+                child: const Text(
+                  'Submit request for review',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
             ),
-            const SizedBox(height: 8),
-            Text(sw
-                ? 'Ombi linahifadhiwa kama “limepokelewa”; mhudumu anapaswa kulikagua. Halifuti data moja kwa moja.'
-                : 'Requests are recorded as received for an operator to review. This form does not automatically delete data.'),
+            const SizedBox(height: 12),
+            Text(
+              'Requests are recorded as received for an operator to review. This form does not automatically delete data.',
+              style: textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+                height: 1.4,
+              ),
+            ),
           ],
         ],
       ),

@@ -368,7 +368,11 @@ class ApiService {
     if (res.statusCode == 201 || res.statusCode == 200) {
       return data as Map<String, dynamic>;
     }
-    throw Exception(data['detail'] ?? data.toString());
+    if (data is Map) {
+      final detail = data['detail'] ?? data.values.map((v) => v is List ? v.join(' ') : v.toString()).join(' ');
+      throw Exception(detail);
+    }
+    throw Exception(data.toString());
   }
 
   Future<Map<String, dynamic>> confirmTransaction(String id,

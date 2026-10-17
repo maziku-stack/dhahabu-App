@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dhahabu/core/network/api_service.dart';
 import 'package:dhahabu/core/theme/app_colors.dart';
-import 'package:dhahabu/core/widgets/app_card.dart';
 
 class FeedbackScreen extends StatefulWidget {
   final bool isAdmin;
@@ -15,6 +14,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   final _subject = TextEditingController();
   final _body = TextEditingController();
   String _type = 'feedback';
+  bool _loading = false;
 
   @override
   void initState() {
@@ -25,17 +25,36 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   Future<void> _load() async {
     try {
       final d = await ApiService().getFeedback();
+      if (!mounted) return;
       setState(() => _items = d);
     } catch (_) {}
   }
 
   Future<void> _submit() async {
-    if (_subject.text.isEmpty || _body.text.isEmpty) return;
-    await ApiService()
-        .submitFeedback(type: _type, subject: _subject.text, body: _body.text);
-    _subject.clear();
-    _body.clear();
-    _load();
+    if (_subject.text.trim().isEmpty || _body.text.trim().isEmpty) return;
+    setState(() => _loading = true);
+    try {
+      await ApiService().submitFeedback(
+        type: _type,
+        subject: _subject.text.trim(),
+        body: _body.text.trim(),
+      );
+      _subject.clear();
+      _body.clear();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Feedback submitted successfully.')),
+      );
+      _load();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   Future<void> _respond(String id) async {
@@ -83,76 +102,272 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     super.dispose();
   }
 
+  InputDecoration _decoration({required IconData icon, String? label}) {
+    OutlineInputBorder border(Color c, [double w = 1]) => OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: c, width: w),
+        );
+    return InputDecoration(
+      labelText: label,
+      filled: true,
+      fillColor: const Color(0xFFF9FAFB),
+      isDense: true,
+      prefixIcon: Icon(icon, color: AppColors.navy, size: 20),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      enabledBorder: border(AppColors.border),
+      focusedBorder: border(AppColors.gold, 2),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      appBar:
-          AppBar(title: Text(widget.isAdmin ? 'Feedback Inbox' : 'Feedback')),
+      backgroundColor: AppColors.white,
+      appBar: AppBar(
+        backgroundColor: AppColors.white,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+        title: Text(
+          widget.isAdmin ? 'Feedback Inbox' : 'Feedback & Support',
+          style: textTheme.titleLarge?.copyWith(
+            color: AppColors.navy,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
         children: [
           if (!widget.isAdmin) ...[
-            AppCard(
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.border),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Text(
+                    'Category',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   SegmentedButton<String>(
                     segments: const [
-                      ButtonSegment(value: 'feedback', label: Text('Feedback')),
                       ButtonSegment(
-                          value: 'grievance', label: Text('Grievance')),
+                        value: 'feedback',
+                        label: Text('Feedback'),
+                        icon: Icon(Icons.feedback_outlined, size: 16),
+                      ),
+                      ButtonSegment(
+                        value: 'grievance',
+                        label: Text('Grievance'),
+                        icon: Icon(Icons.report_problem_outlined, size: 16),
+                      ),
                     ],
                     selected: {_type},
                     onSelectionChanged: (s) => setState(() => _type = s.first),
+                    style: SegmentedButton.styleFrom(
+                      selectedBackgroundColor: AppColors.gold.withValues(alpha: 0.2),
+                      selectedForegroundColor: AppColors.navy,
+                    ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 18),
                   TextField(
-                      controller: _subject,
-                      decoration: const InputDecoration(labelText: 'Subject')),
-                  const SizedBox(height: 8),
+                    controller: _subject,
+                    style: textTheme.bodyLarge?.copyWith(color: AppColors.navy),
+                    cursorColor: AppColors.gold,
+                    decoration: _decoration(
+                      icon: Icons.subject_rounded,
+                      label: 'Subject',
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   TextField(
-                      controller: _body,
-                      maxLines: 3,
-                      decoration: const InputDecoration(labelText: 'Message')),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                      onPressed: _submit, child: const Text('Submit')),
+                    controller: _body,
+                    maxLines: 3,
+                    style: textTheme.bodyLarge?.copyWith(color: AppColors.navy),
+                    cursorColor: AppColors.gold,
+                    decoration: _decoration(
+                      icon: Icons.message_outlined,
+                      label: 'Message',
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    height: 52,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.gold,
+                        foregroundColor: AppColors.navy,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: _loading ? null : _submit,
+                      child: _loading
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                color: AppColors.navy,
+                              ),
+                            )
+                          : const Text(
+                              'Submit',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                    ),
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 28),
+            Text(
+              widget.isAdmin ? 'All Submissions' : 'Your History',
+              style: textTheme.titleLarge?.copyWith(
+                color: AppColors.navy,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+            const SizedBox(height: 12),
           ],
-          ..._items.map((f) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: AppCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(f['subject'] ?? '',
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
-                      Text('${f['type']} · ${f['status']}',
-                          style: const TextStyle(
-                              color: AppColors.gold, fontSize: 12)),
-                      Text(f['body'] ?? ''),
-                      if ((f['admin_response'] ?? '').toString().isNotEmpty)
-                        Text(
-                          'Reply: ${f['admin_response']}',
-                          style: TextStyle(
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      if (widget.isAdmin && f['status'] != 'resolved')
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () => _respond(f['id'].toString()),
-                            child: const Text('Respond / resolve'),
-                          ),
-                        ),
-                    ],
-                  ),
+          if (_items.isEmpty)
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF9FAFB),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Center(
+                child: Text(
+                  'No feedback records found.',
+                  style: textTheme.bodyMedium
+                      ?.copyWith(color: AppColors.textSecondary),
                 ),
-              )),
+              ),
+            )
+          else
+            ..._items.map(
+              (f) => Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.border),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            f['subject'] ?? '',
+                            style: textTheme.titleMedium?.copyWith(
+                              color: AppColors.navy,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: f['status'] == 'resolved'
+                                ? AppColors.success.withValues(alpha: 0.15)
+                                : AppColors.warning.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            '${f['type']} · ${f['status']}',
+                            style: textTheme.labelSmall?.copyWith(
+                              color: f['status'] == 'resolved'
+                                    ? AppColors.success
+                                    : AppColors.warning,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      f['body'] ?? '',
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                        height: 1.4,
+                      ),
+                    ),
+                    if ((f['admin_response'] ?? '').toString().isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF9FAFB),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.border),
+                        ),
+                        child: Text(
+                          'Reply: ${f['admin_response']}',
+                          style: textTheme.bodySmall?.copyWith(
+                            color: AppColors.navy,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                    if (widget.isAdmin && f['status'] != 'resolved') ...[
+                      const SizedBox(height: 12),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton.icon(
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.navy,
+                          ),
+                          onPressed: () => _respond(f['id'].toString()),
+                          icon: const Icon(Icons.check_circle_outline_rounded,
+                              size: 18, color: AppColors.gold),
+                          label: const Text('Respond / resolve'),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );

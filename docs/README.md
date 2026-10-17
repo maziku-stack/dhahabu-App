@@ -1,5 +1,12 @@
-# Dhahabu documentation
+# Dhahabu Documentation Center
 
-This folder documents Dhahabu, the gold-trading app in this repository. Its roadmap and lifecycle are in [dhahabu-roadmap.md](dhahabu-roadmap.md). Its privacy notice draft is in [privacy-notice-draft.md](privacy-notice-draft.md).
+Welcome to the technical documentation center for the Dhahabu Platform.
 
-The proposed youth opportunity app has a separate project folder at [../youth-opportunity-app/](../youth-opportunity-app/). Keep its product decisions, data, privacy work, code, and releases separate from Dhahabu.
+## Available Documents
+
+- [Architecture Overview](architecture.md) — System design, client-server architecture, and security protocols.
+- [API Specification](api-spec.md) — Core REST API endpoints, JWT authentication, and request contracts.
+- [Database Schema](database-schema.md) — PostgreSQL data models, entities, and relationships.
+- [Deployment Guide](deployment-guide.md) — Production deployment and server configuration instructions.
+- [Project Roadmap](dhahabu-roadmap.md) — Development milestones and feature lifecycle.
+- [Privacy Notice Draft](privacy-notice-draft.md) — Data collection, compliance, and user rights notice.

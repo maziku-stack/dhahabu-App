@@ -1,9 +1,9 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'package:dhahabu/core/network/api_service.dart';
 import 'package:dhahabu/core/theme/app_colors.dart';
-import 'package:dhahabu/core/widgets/app_card.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -40,87 +40,131 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final summary = _data?['summary'] as Map<String, dynamic>? ?? {};
-    final secondary = Theme.of(context).colorScheme.onSurfaceVariant;
+    final textTheme = Theme.of(context).textTheme;
 
-    return RefreshIndicator(
-      onRefresh: _load,
-      child: ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
-        children: [
-          Text(
-            'Government overview',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+    return Scaffold(
+      backgroundColor: AppColors.white,
+      appBar: AppBar(
+        backgroundColor: AppColors.white,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+        title: Text(
+          'Government Overview',
+          style: textTheme.titleLarge?.copyWith(
+            color: AppColors.navy,
+            fontWeight: FontWeight.bold,
           ),
-          const SizedBox(height: 5),
-          Text(
-            'A clear view of confirmed gold trade and royalties.',
-            style: TextStyle(color: secondary, fontSize: 14),
-          ),
-          const SizedBox(height: 20),
-          if (_loading)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 40),
-              child: Center(child: CircularProgressIndicator()),
-            )
-          else ...[
-            _metricCard(
-              'Confirmed transactions',
-              '${summary['transaction_count'] ?? 0}',
-              Icons.receipt_long_outlined,
+        ),
+      ),
+      body: RefreshIndicator(
+        color: AppColors.navy,
+        onRefresh: _load,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+          children: [
+            Text(
+              'Government Overview',
+              style: textTheme.displayLarge?.copyWith(
+                color: AppColors.navy,
+                fontSize: 26,
+              ),
             ),
-            _metricCard(
-              'Gold traded',
-              '${summary['total_volume_grams'] ?? 0} g',
-              Icons.scale_outlined,
+            const SizedBox(height: 6),
+            Text(
+              'A clear view of confirmed gold trade and royalties.',
+              style: textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
-            _metricCard(
-              'Total trade value',
-              'TSh ${_fmt.format(double.tryParse('${summary['total_value_tzs']}') ?? 0)}',
-              Icons.payments_outlined,
-            ),
-            _metricCard(
-              'Assessed charges (not payment)',
-              'TSh ${_fmt.format(double.tryParse('${summary['total_assessed_charges_tzs']}') ?? 0)}',
-              Icons.account_balance_wallet_outlined,
-            ),
+            const SizedBox(height: 24),
+            if (_loading)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 40),
+                child: Center(
+                    child: CircularProgressIndicator(color: AppColors.gold)),
+              )
+            else ...[
+              _metricCard(
+                textTheme,
+                'Confirmed transactions',
+                '${summary['transaction_count'] ?? 0}',
+                Icons.receipt_long_outlined,
+              ),
+              _metricCard(
+                textTheme,
+                'Gold traded',
+                '${summary['total_volume_grams'] ?? 0} g',
+                Icons.scale_outlined,
+              ),
+              _metricCard(
+                textTheme,
+                'Total trade value',
+                'TSh ${_fmt.format(double.tryParse('${summary['total_value_tzs']}') ?? 0)}',
+                Icons.payments_outlined,
+              ),
+              _metricCard(
+                textTheme,
+                'Assessed charges (not payment)',
+                'TSh ${_fmt.format(double.tryParse('${summary['total_assessed_charges_tzs']}') ?? 0)}',
+                Icons.account_balance_wallet_outlined,
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
 
-  Widget _metricCard(String label, String value, IconData icon) {
-    final secondary = Theme.of(context).colorScheme.onSurfaceVariant;
+  Widget _metricCard(TextTheme t, String label, String value, IconData icon) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: AppCard(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.border),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
         child: Row(
           children: [
             Container(
               width: 46,
               height: 46,
               decoration: BoxDecoration(
-                color: AppColors.gold.withValues(alpha: .14),
+                color: AppColors.gold.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: Icon(icon, color: AppColors.gold),
+              child: Icon(icon, color: AppColors.navy, size: 22),
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label, style: TextStyle(color: secondary, fontSize: 14)),
+                  Text(
+                    label,
+                    style: t.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   const SizedBox(height: 4),
                   Text(
                     value,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface,
+                    style: t.titleLarge?.copyWith(
+                      color: AppColors.navy,
                       fontSize: 20,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.bold,
+                      fontFeatures: const [FontFeature.tabularFigures()],
                     ),
                   ),
                 ],

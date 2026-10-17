@@ -50,60 +50,188 @@ class _ListingNewScreenState extends State<ListingNewScreen> {
     super.dispose();
   }
 
+  InputDecoration _decoration({required IconData icon, String? suffix}) {
+    OutlineInputBorder border(Color c, [double w = 1]) => OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: c, width: w),
+        );
+    return InputDecoration(
+      filled: true,
+      fillColor: const Color(0xFFF9FAFB),
+      isDense: true,
+      prefixIcon: Icon(icon, color: AppColors.navy, size: 20),
+      suffixText: suffix,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      enabledBorder: border(AppColors.border),
+      focusedBorder: border(AppColors.gold, 2),
+    );
+  }
+
+  Widget _label(String text) => Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: Text(
+          text,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.navy,
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+              ),
+        ),
+      );
+
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final fieldStyle = textTheme.bodyLarge?.copyWith(
+      color: AppColors.navy,
+      fontSize: 15,
+      fontWeight: FontWeight.w600,
+    );
+
     return Scaffold(
-      appBar: AppBar(title: const Text('New Listing')),
+      backgroundColor: AppColors.white,
+      appBar: AppBar(
+        backgroundColor: AppColors.white,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+        title: Text(
+          'Create New Listing',
+          style: textTheme.titleLarge?.copyWith(
+            color: AppColors.navy,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 40),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (_error != null)
-              Text(_error!, style: const TextStyle(color: AppColors.error)),
+            if (_error != null) ...[
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.error.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppColors.error.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.error_outline_rounded,
+                        color: AppColors.error, size: 18),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        _error!,
+                        style: textTheme.bodySmall
+                            ?.copyWith(color: AppColors.error),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+            _label('Weight (grams)'),
             TextField(
-                controller: _weight,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(labelText: 'Weight (grams)')),
-            const SizedBox(height: 12),
+              controller: _weight,
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              style: fieldStyle,
+              cursorColor: AppColors.gold,
+              decoration: _decoration(icon: Icons.scale_outlined, suffix: 'g'),
+            ),
+            const SizedBox(height: 18),
+            _label('Karat'),
             DropdownButtonFormField<String>(
               initialValue: _karat,
+              isExpanded: true,
+              style: fieldStyle,
               items: const [
                 DropdownMenuItem(value: '24K', child: Text('24K')),
                 DropdownMenuItem(value: '22K', child: Text('22K')),
                 DropdownMenuItem(value: '18K', child: Text('18K')),
               ],
               onChanged: (v) => setState(() => _karat = v!),
-              decoration: const InputDecoration(labelText: 'Karat'),
+              decoration: _decoration(icon: Icons.diamond_outlined),
+            ),
+            const SizedBox(height: 18),
+            _label('Asking price (TZS total)'),
+            TextField(
+              controller: _price,
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              style: fieldStyle,
+              cursorColor: AppColors.gold,
+              decoration: _decoration(icon: Icons.payments_outlined, suffix: 'TZS'),
+            ),
+            const SizedBox(height: 18),
+            _label('Notes'),
+            TextField(
+              controller: _notes,
+              maxLines: 3,
+              style: fieldStyle,
+              cursorColor: AppColors.gold,
+              decoration: _decoration(icon: Icons.note_outlined),
             ),
             const SizedBox(height: 12),
-            TextField(
-                controller: _price,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(
-                    labelText: 'Asking price (TZS total)')),
-            const SizedBox(height: 12),
-            TextField(
-                controller: _notes,
-                maxLines: 2,
-                decoration: const InputDecoration(labelText: 'Notes')),
-            const SizedBox(height: 8),
-            SwitchListTile(
+            CheckboxListTile(
               value: _sharePhone,
               onChanged: _loading
                   ? null
-                  : (value) => setState(() => _sharePhone = value),
-              title: const Text('Show my phone number on this listing'),
-              subtitle: const Text(
-                  'Only logged-in users browsing listings can see it. Off by default.'),
+                  : (value) => setState(() => _sharePhone = value ?? false),
+              activeColor: AppColors.navy,
               contentPadding: EdgeInsets.zero,
+              title: const Text(
+                'Show my phone number on this listing',
+                style: TextStyle(
+                  color: AppColors.navy,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              subtitle: const Text(
+                'Only logged-in users browsing listings can see it. Off by default.',
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                ),
+              ),
             ),
-            const SizedBox(height: 24),
-            ElevatedButton(
+            const SizedBox(height: 28),
+            SizedBox(
+              height: 52,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.gold,
+                  foregroundColor: AppColors.navy,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
                 onPressed: _loading ? null : _submit,
-                child: Text(_loading ? '…' : 'Publish listing')),
+                child: _loading
+                    ? const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: AppColors.navy,
+                        ),
+                      )
+                    : Text(
+                        'Publish listing',
+                        style: textTheme.labelLarge
+                            ?.copyWith(color: AppColors.navy),
+                      ),
+              ),
+            ),
           ],
         ),
       ),

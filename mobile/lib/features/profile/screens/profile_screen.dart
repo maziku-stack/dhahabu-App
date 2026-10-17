@@ -7,6 +7,7 @@ import 'package:dhahabu/core/widgets/status_badge.dart';
 import 'package:dhahabu/features/auth/models/user.dart';
 import 'package:dhahabu/features/auth/providers/auth_provider.dart';
 import 'package:dhahabu/features/feedback/screens/feedback_screen.dart';
+import 'package:dhahabu/features/privacy/screens/privacy_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -80,7 +81,10 @@ class ProfileScreen extends StatelessWidget {
         surfaceTintColor: Colors.transparent,
         title: Text(
           'Profile',
-          style: textTheme.titleLarge?.copyWith(color: AppColors.navy),
+          style: textTheme.titleLarge?.copyWith(
+            color: AppColors.navy,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         actions: [
           IconButton(
@@ -92,7 +96,7 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 40),
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
         children: [
           // ---------- Header ----------
           Center(
@@ -103,7 +107,7 @@ class ProfileScreen extends StatelessWidget {
                 border: Border.all(color: AppColors.gold, width: 2),
               ),
               child: CircleAvatar(
-                radius: 46,
+                radius: 44,
                 backgroundColor: AppColors.navy,
                 child: Text(
                   user.fullName.isNotEmpty
@@ -111,19 +115,20 @@ class ProfileScreen extends StatelessWidget {
                       : 'U',
                   style: textTheme.displayLarge?.copyWith(
                     color: AppColors.gold,
-                    fontSize: 36,
+                    fontSize: 34,
                   ),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 16),
           Text(
             user.fullName,
             textAlign: TextAlign.center,
-            style: textTheme.displayLarge?.copyWith(
+            style: textTheme.titleLarge?.copyWith(
               color: AppColors.navy,
-              fontSize: 24,
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 4),
@@ -134,7 +139,7 @@ class ProfileScreen extends StatelessWidget {
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           Center(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -147,70 +152,104 @@ class ProfileScreen extends StatelessWidget {
                 style: textTheme.labelSmall?.copyWith(
                   color: AppColors.navy,
                   fontWeight: FontWeight.w700,
-                  letterSpacing: 1.2,
+                  letterSpacing: 1.1,
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 36),
-
-          // ---------- Account ----------
-          const _SectionTitle('ACCOUNT'),
-          _InfoRow(
-            icon: Icons.phone_outlined,
-            label: 'Phone',
-            value: user.phone,
-          ),
-          _InfoRow(
-            icon: Icons.location_on_outlined,
-            label: 'Region',
-            value: user.region.isNotEmpty ? user.region : notSpecified,
-            muted: user.region.isEmpty,
-          ),
-          if (user.isMiner)
-            _InfoRow(
-              icon: Icons.landscape_outlined,
-              label: 'Mining site',
-              value:
-              user.miningSite.isNotEmpty ? user.miningSite : notSpecified,
-              muted: user.miningSite.isEmpty,
-            ),
-          if (user.isDealer)
-            _InfoRow(
-              icon: Icons.verified_outlined,
-              label: 'Dealer verification',
-              value: user.isVerifiedDealer ? 'Verified' : 'Pending',
-              trailing: user.isVerifiedDealer
-                  ? StatusBadge.verified()
-                  : StatusBadge.pending(),
-            ),
           const SizedBox(height: 32),
+
+          // ---------- Account Info ----------
+          const _SectionTitle('ACCOUNT INFO'),
+          _InfoCard(
+            children: [
+              _InfoRow(
+                icon: Icons.phone_outlined,
+                label: 'Phone',
+                value: user.phone,
+              ),
+              _InfoRow(
+                icon: Icons.location_on_outlined,
+                label: 'Region',
+                value: user.region.isNotEmpty ? user.region : notSpecified,
+                muted: user.region.isEmpty,
+              ),
+              if (user.isMiner)
+                _InfoRow(
+                  icon: Icons.landscape_outlined,
+                  label: 'Mining site',
+                  value: user.miningSite.isNotEmpty
+                      ? user.miningSite
+                      : notSpecified,
+                  muted: user.miningSite.isEmpty,
+                ),
+              if (user.isDealer)
+                _InfoRow(
+                  icon: Icons.verified_outlined,
+                  label: 'Dealer verification',
+                  value: user.isVerifiedDealer ? 'Verified' : 'Pending',
+                  trailing: user.isVerifiedDealer
+                      ? StatusBadge.verified()
+                      : StatusBadge.pending(),
+                ),
+            ],
+          ),
+          const SizedBox(height: 24),
+
+          // ---------- Settings & Privacy ----------
+          const _SectionTitle('SETTINGS & PRIVACY'),
+          _InfoCard(
+            children: [
+              _ActionRow(
+                icon: Icons.privacy_tip_outlined,
+                label: 'Privacy & Data Policy',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PrivacyScreen()),
+                ),
+              ),
+              _InfoRow(
+                icon: Icons.info_outline_rounded,
+                label: 'App Version',
+                value: 'v1.0.0 (Dhahabu Mobile)',
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
 
           // ---------- Support ----------
           const _SectionTitle('SUPPORT'),
-          _ActionRow(
-            icon: Icons.feedback_outlined,
-            label: 'Feedback & support',
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const FeedbackScreen()),
+          _InfoCard(
+            children: [
+              _ActionRow(
+                icon: Icons.feedback_outlined,
+                label: 'Feedback & Support',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const FeedbackScreen()),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Text(
+              'Official TRA integration is not connected yet.',
+              style: textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
           ),
-          const SizedBox(height: 16),
-          Text(
-            'Official TRA integration is not connected yet.',
-            style: textTheme.bodySmall?.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 32),
 
           // ---------- Sign out ----------
-          Center(
-            child: TextButton.icon(
-              style: TextButton.styleFrom(
+          SizedBox(
+            height: 52,
+            child: OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.error,
-                minimumSize: const Size(160, 48),
+                side: const BorderSide(color: AppColors.error),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -219,7 +258,9 @@ class ProfileScreen extends StatelessWidget {
               icon: const Icon(Icons.logout_rounded, size: 20),
               label: Text(
                 'Sign out',
-                style: textTheme.labelLarge?.copyWith(color: AppColors.error),
+                style: textTheme.labelLarge?.copyWith(
+                  color: AppColors.error,
+                ),
               ),
             ),
           ),
@@ -230,7 +271,7 @@ class ProfileScreen extends StatelessWidget {
 }
 
 // =====================================================================
-// EDIT PROFILE: compact bottom sheet (about half the screen)
+// EDIT PROFILE SHEET
 // =====================================================================
 
 class _EditProfileSheet extends StatefulWidget {
@@ -299,15 +340,30 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
     }
   }
 
+  InputDecoration _decoration({required IconData icon, String? label}) {
+    OutlineInputBorder border(Color c, [double w = 1]) => OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: c, width: w),
+        );
+    return InputDecoration(
+      labelText: label,
+      filled: true,
+      fillColor: const Color(0xFFF9FAFB),
+      isDense: true,
+      prefixIcon: Icon(icon, color: AppColors.navy, size: 20),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      enabledBorder: border(AppColors.border),
+      focusedBorder: border(AppColors.gold, 2),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final keyboard = MediaQuery.of(context).viewInsets.bottom;
-    final bottomSafe = MediaQuery.of(context).padding.bottom;
-    final maxHeight = MediaQuery.of(context).size.height * 0.62;
+    final maxHeight = MediaQuery.of(context).size.height * 0.7;
 
     return Padding(
-      // Lifts the whole sheet above the keyboard
       padding: EdgeInsets.only(bottom: keyboard),
       child: Align(
         alignment: Alignment.bottomCenter,
@@ -321,148 +377,92 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
               topRight: Radius.circular(24),
             ),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Drag handle
-              const SizedBox(height: 10),
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: AppColors.border,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-
-              // Header
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 8, 4),
-                child: Row(
+          child: SafeArea(
+            top: false,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(
-                      child: Text(
-                        'Edit profile',
-                        style: textTheme.titleLarge?.copyWith(
-                          color: AppColors.navy,
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: AppColors.border,
+                          borderRadius: BorderRadius.circular(2),
                         ),
                       ),
                     ),
-                    IconButton(
-                      tooltip: 'Close',
-                      onPressed:
-                      _loading ? null : () => Navigator.pop(context),
-                      icon: const Icon(Icons.close_rounded,
-                          color: AppColors.navy, size: 22),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Edit Profile',
+                      style: textTheme.titleLarge?.copyWith(
+                        color: AppColors.navy,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ],
-                ),
-              ),
-
-              // Form (scrolls only if taller than the sheet)
-              Flexible(
-                child: Form(
-                  key: _formKey,
-                  child: ListView(
-                    shrinkWrap: true,
-                    keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-                    children: [
-                      if (_error != null) ...[
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.error.withValues(alpha: 0.08),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: AppColors.error.withValues(alpha: 0.3),
-                            ),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Icon(Icons.error_outline_rounded,
-                                  color: AppColors.error, size: 18),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  _error!,
-                                  style: textTheme.bodySmall
-                                      ?.copyWith(color: AppColors.error),
-                                ),
-                              ),
-                            ],
+                    const SizedBox(height: 16),
+                    if (_error != null) ...[
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.error.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppColors.error.withValues(alpha: 0.3),
                           ),
                         ),
-                        const SizedBox(height: 14),
-                      ],
-                      _Field(
-                        controller: _name,
-                        label: 'Full name',
-                        icon: Icons.person_outline_rounded,
-                        textCapitalization: TextCapitalization.words,
-                        validator: (v) => (v == null || v.trim().isEmpty)
-                            ? 'Please enter your name'
-                            : null,
-                      ),
-                      const SizedBox(height: 14),
-                      _Field(
-                        controller: _email,
-                        label: 'Email address',
-                        icon: Icons.mail_outline_rounded,
-                        keyboardType: TextInputType.emailAddress,
-                      ),
-                      const SizedBox(height: 14),
-                      _Field(
-                        controller: _region,
-                        label: 'Region',
-                        icon: Icons.location_on_outlined,
-                        textCapitalization: TextCapitalization.words,
-                      ),
-                      if (widget.user.isMiner) ...[
-                        const SizedBox(height: 14),
-                        _Field(
-                          controller: _site,
-                          label: 'Mining site',
-                          icon: Icons.landscape_outlined,
-                          textCapitalization: TextCapitalization.words,
+                        child: Text(
+                          _error!,
+                          style: textTheme.bodySmall
+                              ?.copyWith(color: AppColors.error),
                         ),
-                      ],
+                      ),
+                      const SizedBox(height: 16),
                     ],
-                  ),
-                ),
-              ),
-
-              // Actions
-              Padding(
-                padding: EdgeInsets.fromLTRB(20, 4, 20, 16 + bottomSafe),
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.navy,
-                          minimumSize: const Size.fromHeight(48),
-                          side: const BorderSide(color: AppColors.border),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        onPressed:
-                        _loading ? null : () => Navigator.pop(context),
-                        child: const Text('Cancel'),
-                      ),
+                    TextFormField(
+                      controller: _name,
+                      style: textTheme.bodyLarge?.copyWith(color: AppColors.navy),
+                      cursorColor: AppColors.gold,
+                      decoration: _decoration(icon: Icons.person_outline, label: 'Full name'),
+                      validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      flex: 3,
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _email,
+                      keyboardType: TextInputType.emailAddress,
+                      style: textTheme.bodyLarge?.copyWith(color: AppColors.navy),
+                      cursorColor: AppColors.gold,
+                      decoration: _decoration(icon: Icons.email_outlined, label: 'Email address'),
+                      validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _region,
+                      style: textTheme.bodyLarge?.copyWith(color: AppColors.navy),
+                      cursorColor: AppColors.gold,
+                      decoration: _decoration(icon: Icons.location_on_outlined, label: 'Region'),
+                    ),
+                    if (widget.user.isMiner) ...[
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _site,
+                        style: textTheme.bodyLarge?.copyWith(color: AppColors.navy),
+                        cursorColor: AppColors.gold,
+                        decoration: _decoration(icon: Icons.landscape_outlined, label: 'Mining site'),
+                      ),
+                    ],
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      height: 52,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.gold,
                           foregroundColor: AppColors.navy,
-                          minimumSize: const Size.fromHeight(48),
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -471,24 +471,26 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                         onPressed: _loading ? null : _save,
                         child: _loading
                             ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            color: AppColors.navy,
-                          ),
-                        )
-                            : Text(
-                          'Save changes',
-                          style: textTheme.labelLarge
-                              ?.copyWith(color: AppColors.navy),
-                        ),
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  color: AppColors.navy,
+                                ),
+                              )
+                            : const Text(
+                                'Save changes',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                              ),
                       ),
                     ),
                   ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -496,70 +498,8 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
   }
 }
 
-class _Field extends StatelessWidget {
-  const _Field({
-    required this.controller,
-    required this.label,
-    required this.icon,
-    this.keyboardType,
-    this.textCapitalization = TextCapitalization.none,
-    this.validator,
-  });
-
-  final TextEditingController controller;
-  final String label;
-  final IconData icon;
-  final TextInputType? keyboardType;
-  final TextCapitalization textCapitalization;
-  final String? Function(String?)? validator;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    OutlineInputBorder border(Color color, [double width = 1]) =>
-        OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: color, width: width),
-        );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: textTheme.bodySmall?.copyWith(
-            color: AppColors.navy,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 6),
-        TextFormField(
-          controller: controller,
-          keyboardType: keyboardType,
-          textCapitalization: textCapitalization,
-          validator: validator,
-          style: textTheme.bodyLarge?.copyWith(color: AppColors.navy),
-          cursorColor: AppColors.gold,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: AppColors.white,
-            isDense: true,
-            prefixIcon: Icon(icon, color: AppColors.textSecondary, size: 20),
-            contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-            enabledBorder: border(AppColors.border),
-            focusedBorder: border(AppColors.gold, 2),
-            errorBorder: border(AppColors.error),
-            focusedErrorBorder: border(AppColors.error, 2),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 // =====================================================================
-// Profile page rows (no cards: clean list with thin dividers)
+// HELPER WIDGETS
 // =====================================================================
 
 class _SectionTitle extends StatelessWidget {
@@ -570,15 +510,66 @@ class _SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
+      padding: const EdgeInsets.only(left: 4, bottom: 10),
       child: Text(
         text,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: AppColors.textSecondary,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 1.4,
-        ),
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.3,
+            ),
       ),
+    );
+  }
+}
+
+class _InfoCard extends StatelessWidget {
+  const _InfoCard({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    final items = <Widget>[];
+    for (var i = 0; i < children.length; i++) {
+      items.add(children[i]);
+      if (i < children.length - 1) {
+        items.add(const Divider(height: 1, color: AppColors.border));
+      }
+    }
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(children: items),
+    );
+  }
+}
+
+class _IconBox extends StatelessWidget {
+  const _IconBox(this.icon);
+
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: AppColors.gold.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Icon(icon, color: AppColors.navy, size: 20),
     );
   }
 }
@@ -601,25 +592,23 @@ class _InfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.border)),
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
         children: [
-          Icon(icon, color: AppColors.textSecondary, size: 22),
-          const SizedBox(width: 16),
+          _IconBox(icon),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   label,
-                  style: textTheme.bodySmall
-                      ?.copyWith(color: AppColors.textSecondary),
+                  style: textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 2),
                 Text(
                   value,
                   style: textTheme.bodyLarge?.copyWith(
@@ -640,6 +629,7 @@ class _InfoRow extends StatelessWidget {
 
 class _ActionRow extends StatelessWidget {
   const _ActionRow({
+    super.key,
     required this.icon,
     required this.label,
     required this.onTap,
@@ -652,16 +642,14 @@ class _ActionRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      borderRadius: BorderRadius.circular(16),
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: const BoxDecoration(
-          border: Border(bottom: BorderSide(color: AppColors.border)),
-        ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           children: [
-            Icon(icon, color: AppColors.textSecondary, size: 22),
-            const SizedBox(width: 16),
+            _IconBox(icon),
+            const SizedBox(width: 14),
             Expanded(
               child: Text(
                 label,
