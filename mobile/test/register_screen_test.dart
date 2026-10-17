@@ -1,6 +1,7 @@
 import 'package:dhahabu/features/auth/providers/auth_provider.dart';
 import 'package:dhahabu/features/auth/screens/register_screen.dart';
 import 'package:dhahabu/core/providers/app_settings_provider.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -44,9 +45,26 @@ void main() {
           ChangeNotifierProvider(create: (_) => AuthProvider()),
           ChangeNotifierProvider(create: (_) => AppSettingsProvider()),
         ],
-        child: const MaterialApp(home: RegisterScreen()),
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  settings: const RouteSettings(arguments: 'miner'),
+                  builder: (_) => const RegisterScreen(),
+                ),
+              ),
+              child: const Text('Go'),
+            ),
+          ),
+        ),
       ),
     );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Go'));
     await tester.pumpAndSettle();
 
     final createAccountButton =
@@ -68,14 +86,16 @@ void main() {
           ChangeNotifierProvider(create: (_) => AuthProvider()),
           ChangeNotifierProvider(create: (_) => AppSettingsProvider()),
         ],
-        child: const MaterialApp(home: RegisterScreen()),
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: RegisterScreen(),
+        ),
       ),
     );
     await tester.pumpAndSettle();
 
-    final checkbox = find.byType(CheckboxListTile);
-    await tester.ensureVisible(checkbox);
-    await tester.tap(checkbox);
+    await tester.tap(find.byType(Checkbox), warnIfMissed: false);
     await tester.pumpAndSettle();
 
     final createAccountButton =
@@ -85,7 +105,7 @@ void main() {
     await tester.pump();
 
     expect(
-      find.text('Choose whether you are a miner or dealer.'),
+      find.text('Role not specified. Please go back and select a role.'),
       findsOneWidget,
     );
   });
@@ -99,17 +119,29 @@ void main() {
           ChangeNotifierProvider<AuthProvider>.value(value: auth),
           ChangeNotifierProvider(create: (_) => AppSettingsProvider()),
         ],
-        child: const MaterialApp(home: RegisterScreen()),
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  settings: const RouteSettings(arguments: 'miner'),
+                  builder: (_) => const RegisterScreen(),
+                ),
+              ),
+              child: const Text('Go'),
+            ),
+          ),
+        ),
       ),
     );
     await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Miner'));
+    await tester.tap(find.text('Go'));
     await tester.pumpAndSettle();
 
-    final checkbox = find.byType(CheckboxListTile);
-    await tester.ensureVisible(checkbox);
-    await tester.tap(checkbox);
+    await tester.tap(find.byType(Checkbox), warnIfMissed: false);
     await tester.pumpAndSettle();
 
     const values = [
@@ -135,7 +167,7 @@ void main() {
     expect(auth.registerCalled, isFalse);
   });
 
-  testWidgets('valid registration submits details and opens PIN setup',
+  testWidgets('valid registration submits details and opens home',
       (tester) async {
     final auth = _TrackingAuthProvider();
     await tester.pumpWidget(
@@ -145,21 +177,31 @@ void main() {
           ChangeNotifierProvider(create: (_) => AppSettingsProvider()),
         ],
         child: MaterialApp(
-          home: const RegisterScreen(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  settings: const RouteSettings(arguments: 'miner'),
+                  builder: (_) => const RegisterScreen(),
+                ),
+              ),
+              child: const Text('Go'),
+            ),
+          ),
           routes: {
-            '/set-pin': (_) => const Scaffold(body: Text('PIN setup destination')),
+            '/home': (_) => const Scaffold(body: Text('Home destination')),
           },
         ),
       ),
     );
     await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Miner'));
+    await tester.tap(find.text('Go'));
     await tester.pumpAndSettle();
 
-    final checkbox = find.byType(CheckboxListTile);
-    await tester.ensureVisible(checkbox);
-    await tester.tap(checkbox);
+    await tester.tap(find.byType(Checkbox), warnIfMissed: false);
     await tester.pumpAndSettle();
 
     const values = [
@@ -185,6 +227,6 @@ void main() {
     expect(auth.submittedDetails?['fullName'], 'Amina Tester');
     expect(auth.submittedDetails?['email'], 'amina@example.com');
     expect(auth.submittedDetails?['role'], 'miner');
-    expect(find.text('PIN setup destination'), findsOneWidget);
+    expect(find.text('Home destination'), findsOneWidget);
   });
 }

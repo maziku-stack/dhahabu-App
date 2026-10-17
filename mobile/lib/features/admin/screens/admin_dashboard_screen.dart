@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import 'package:dhahabu/core/network/api_service.dart';
 import 'package:dhahabu/core/theme/app_colors.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -39,6 +40,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final summary = _data?['summary'] as Map<String, dynamic>? ?? {};
     final textTheme = Theme.of(context).textTheme;
 
@@ -50,7 +52,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          'Government Overview',
+          l10n.govOverview,
           style: textTheme.titleLarge?.copyWith(
             color: AppColors.navy,
             fontWeight: FontWeight.bold,
@@ -65,7 +67,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
           children: [
             Text(
-              'Government Overview',
+              l10n.govOverview,
               style: textTheme.displayLarge?.copyWith(
                 color: AppColors.navy,
                 fontSize: 26,
@@ -73,7 +75,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ),
             const SizedBox(height: 6),
             Text(
-              'A clear view of confirmed gold trade and royalties.',
+              l10n.govOverviewSubtitle,
               style: textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -88,25 +90,25 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             else ...[
               _metricCard(
                 textTheme,
-                'Confirmed transactions',
+                l10n.confirmedTransactions,
                 '${summary['transaction_count'] ?? 0}',
                 Icons.receipt_long_outlined,
               ),
               _metricCard(
                 textTheme,
-                'Gold traded',
+                l10n.goldTraded,
                 '${summary['total_volume_grams'] ?? 0} g',
                 Icons.scale_outlined,
               ),
               _metricCard(
                 textTheme,
-                'Total trade value',
+                l10n.totalTradeValue,
                 'TSh ${_fmt.format(double.tryParse('${summary['total_value_tzs']}') ?? 0)}',
                 Icons.payments_outlined,
               ),
               _metricCard(
                 textTheme,
-                'Assessed charges (not payment)',
+                l10n.assessedChargesNotPayment,
                 'TSh ${_fmt.format(double.tryParse('${summary['total_assessed_charges_tzs']}') ?? 0)}',
                 Icons.account_balance_wallet_outlined,
               ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dhahabu/core/network/api_service.dart';
 import 'package:dhahabu/core/theme/app_colors.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 
 class FeedbackScreen extends StatefulWidget {
   final bool isAdmin;
@@ -31,6 +32,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   }
 
   Future<void> _submit() async {
+    final l10n = context.l10n;
     if (_subject.text.trim().isEmpty || _body.text.trim().isEmpty) return;
     setState(() => _loading = true);
     try {
@@ -43,7 +45,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       _body.clear();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Feedback submitted successfully.')),
+        SnackBar(content: Text(l10n.feedbackSubmitted)),
       );
       _load();
     } catch (e) {
@@ -58,25 +60,26 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   }
 
   Future<void> _respond(String id) async {
+    final l10n = context.l10n;
     final controller = TextEditingController();
     final response = await showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Resolve feedback'),
+        title: Text(l10n.resolveFeedback),
         content: TextField(
           controller: controller,
           minLines: 2,
           maxLines: 4,
-          decoration: const InputDecoration(labelText: 'Response (optional)'),
+          decoration: InputDecoration(labelText: l10n.responseOptional),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(dialogContext, controller.text),
-            child: const Text('Mark resolved'),
+            child: Text(l10n.markResolved),
           ),
         ],
       ),
@@ -121,6 +124,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
@@ -131,7 +135,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          widget.isAdmin ? 'Feedback Inbox' : 'Feedback & Support',
+          widget.isAdmin ? l10n.feedbackInbox : l10n.feedbackAndSupport,
           style: textTheme.titleLarge?.copyWith(
             color: AppColors.navy,
             fontWeight: FontWeight.bold,
@@ -161,7 +165,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Category',
+                    l10n.category,
                     style: textTheme.bodySmall?.copyWith(
                       color: AppColors.textSecondary,
                       fontWeight: FontWeight.w600,
@@ -169,16 +173,16 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   ),
                   const SizedBox(height: 8),
                   SegmentedButton<String>(
-                    segments: const [
+                    segments: [
                       ButtonSegment(
                         value: 'feedback',
-                        label: Text('Feedback'),
-                        icon: Icon(Icons.feedback_outlined, size: 16),
+                        label: Text(l10n.feedback),
+                        icon: const Icon(Icons.feedback_outlined, size: 16),
                       ),
                       ButtonSegment(
                         value: 'grievance',
-                        label: Text('Grievance'),
-                        icon: Icon(Icons.report_problem_outlined, size: 16),
+                        label: Text(l10n.grievance),
+                        icon: const Icon(Icons.report_problem_outlined, size: 16),
                       ),
                     ],
                     selected: {_type},
@@ -195,7 +199,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     cursorColor: AppColors.gold,
                     decoration: _decoration(
                       icon: Icons.subject_rounded,
-                      label: 'Subject',
+                      label: l10n.subject,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -206,7 +210,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     cursorColor: AppColors.gold,
                     decoration: _decoration(
                       icon: Icons.message_outlined,
-                      label: 'Message',
+                      label: l10n.message,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -231,9 +235,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                 color: AppColors.navy,
                               ),
                             )
-                          : const Text(
-                              'Submit',
-                              style: TextStyle(
+                          : Text(
+                              l10n.submit,
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 15,
                               ),
@@ -245,7 +249,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             ),
             const SizedBox(height: 28),
             Text(
-              widget.isAdmin ? 'All Submissions' : 'Your History',
+              widget.isAdmin ? l10n.allSubmissions : l10n.yourHistory,
               style: textTheme.titleLarge?.copyWith(
                 color: AppColors.navy,
                 fontWeight: FontWeight.bold,
@@ -264,7 +268,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               ),
               child: Center(
                 child: Text(
-                  'No feedback records found.',
+                  l10n.noFeedbackRecords,
                   style: textTheme.bodyMedium
                       ?.copyWith(color: AppColors.textSecondary),
                 ),
@@ -341,7 +345,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                           border: Border.all(color: AppColors.border),
                         ),
                         child: Text(
-                          'Reply: ${f['admin_response']}',
+                          l10n.reply('${f['admin_response']}'),
                           style: textTheme.bodySmall?.copyWith(
                             color: AppColors.navy,
                             fontWeight: FontWeight.w600,
@@ -360,7 +364,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                           onPressed: () => _respond(f['id'].toString()),
                           icon: const Icon(Icons.check_circle_outline_rounded,
                               size: 18, color: AppColors.gold),
-                          label: const Text('Respond / resolve'),
+                          label: Text(l10n.respondResolve),
                         ),
                       ),
                     ],

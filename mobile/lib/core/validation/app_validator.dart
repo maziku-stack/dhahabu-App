@@ -1,35 +1,37 @@
+import 'package:dhahabu/l10n/l10n.dart';
+
 class AppValidator {
-  static String? validateEmail(String? value) {
+  static String? validateEmail(AppLocalizations l10n, String? value) {
     if (value == null || value.trim().isEmpty) {
-      return 'Enter your email address.';
+      return l10n.validatorEmailRequired;
     }
     final trimmed = value.trim();
     if (!trimmed.contains('@') || !trimmed.contains('.')) {
-      return 'Enter a valid email address.';
+      return l10n.validatorEmailValid;
     }
     return null;
   }
 
-  static String? validatePassword(String? value) {
+  static String? validatePassword(AppLocalizations l10n, String? value) {
     if (value == null || value.isEmpty) {
-      return 'Enter your password.';
+      return l10n.validatorPasswordRequired;
     }
     if (value.length < 8) {
-      return 'Use a password with at least 8 characters.';
+      return l10n.validatorPasswordLength;
     }
     return null;
   }
 
-  static String? validatePhone(String? value) {
+  static String? validatePhone(AppLocalizations l10n, String? value) {
     if (value == null || value.trim().length < 9) {
-      return 'Enter a valid phone number.';
+      return l10n.validatorPhoneValid;
     }
     return null;
   }
 
-  static String? validateName(String? value) {
+  static String? validateName(AppLocalizations l10n, String? value) {
     if (value == null || value.trim().isEmpty) {
-      return 'Enter your full name.';
+      return l10n.validatorNameRequired;
     }
     return null;
   }

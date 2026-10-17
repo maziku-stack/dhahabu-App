@@ -1,0 +1,344 @@
+{
+  "@@locale": "sw",
+  "dhahabu": "Dhahabu",
+  "tagline": "Biashara ya Dhahabu kwa Uwazi",
+  "version": "v1.0.0",
+  "skip": "Ruka",
+  "continueText": "Endelea",
+  "getStarted": "Anza",
+  "cancel": "Ghairi",
+  "confirm": "Thibitisha",
+  "submit": "Wasilisha",
+  "save": "Hifadhi mabadiliko",
+  "close": "Funga",
+  "copyJson": "Nakili JSON",
+  "copied": "Hamisho la data limenakiliwa kwenye ubao wa klipu",
+  "loading": "Tafadhali subiri…",
+  "error": "Hitilafu",
+  "success": "Mafanikio",
+
+  "onboardingTitle1": "Biashara Salama ya Dhahabu",
+  "onboardingDesc1": "Chapisha matangazo yako ya dhahabu na uunganishwe kwa urahisi na wafanyabiashara walioidhinishwa kote Tanzania.",
+  "onboardingTitle2": "Wafanyabiashara Walioidhinishwa",
+  "onboardingDesc2": "Kila mfanyabiashara hukaguliwa na kuidhinishwa kabla ya kununua, kuhakikisha unafanya biashara na washirika wanaoaminika.",
+  "onboardingTitle3": "Kodi na Stakabadhi za Uwazi",
+  "onboardingDesc3": "Royaliti ya 7% huhesabiwa kiotomatiki na stakabadhi salama za kidijitali huhifadhiwa kwa kila muamala.",
+
+  "splashSubtitle": "Biashara ya Dhahabu kwa Uwazi",
+
+  "signIn": "Ingia",
+  "welcomeBack": "Karibu tena",
+  "signInSubtitle": "Ingia kwa kutumia barua pepe na nenosiri lako.",
+  "emailAddress": "Barua pepe",
+  "password": "Nenosiri",
+  "passwordMin8": "Nenosiri (angalau herufi 8)",
+  "newUserPrompt": "Mtumiaji mpya? ",
+  "register": "Jisajili",
+  "chooseRole": "Chagua jukumu",
+  "roleSelectionSubtitle": "Chagua jinsi utakavyoshiriki kwenye jukwaa la Dhahabu.",
+  "miner": "Mchimbaji",
+  "dealer": "Mfanyabiashara",
+  "alreadyHaveAccount": "Una akaunti tayari? ",
+  "registerAs": "Jisajili kama {role}",
+  "@registerAs": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "createAccount": "Fungua akaunti",
+  "completeDetails": "Kamilisha maelezo yako",
+  "fullName": "Jina kamili",
+  "phoneNumber": "Namba ya simu",
+  "confirmPassword": "Thibitisha nenosiri",
+  "privacyNoticeAgreement": "Nimesoma na kukubaliana na taarifa ya faragha",
+  "selectRoleError": "Tafadhali chagua ikiwa wewe ni Mchimbaji au Mfanyabiashara.",
+  "privacyAckError": "Soma na ukubali taarifa ya faragha ili kuendelea.",
+  "roleNotSpecified": "Jukumu halijatajwa. Tafadhali rudi nyuma na uchague jukumu.",
+  "passwordsDoNotMatch": "Manenosiri hayafanani.",
+
+  "validatorEmailRequired": "Weka anwani yako ya barua pepe.",
+  "validatorEmailValid": "Weka anwani sahihi ya barua pepe.",
+  "validatorPasswordRequired": "Weka nenosiri lako.",
+  "validatorPasswordLength": "Tumia nenosiri lenye angalau herufi 8.",
+  "validatorPhoneValid": "Weka namba sahihi ya simu.",
+  "validatorNameRequired": "Weka jina lako kamili.",
+
+  "navHome": "Nyumbani",
+  "navListings": "Matangazo",
+  "navSales": "Mauzo",
+  "navProfile": "Wasifu",
+  "navOverview": "Muhtasari",
+  "navDealers": "Wafanyabiashara",
+  "navAudit": "Ukaguzi",
+  "notLoggedIn": "Hujaingia kwenye akaunti",
+
+  "minerDashboard": "Dashibodi ya Mchimbaji",
+  "dealerDashboard": "Dashibodi ya Mfanyabiashara",
+  "govDashboard": "Dashibodi ya Serikali",
+  "goldMarket": "Soko la Dhahabu",
+  "government": "SERIKALI",
+  "recordSaleTooltip": "Rekodi mauzo",
+  "recentSales": "Mauzo ya Hivi Karibuni",
+  "totalCount": "Jumla {count}",
+  "@totalCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "governmentCharge": "Ada ya serikali: {status}",
+  "@governmentCharge": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentStatus": "Malipo: {status}",
+  "@paymentStatus": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "notAssessed": "haijathminiwa",
+  "notStarted": "haijaanza",
+  "viewReceipt": "Tazama stakabadhi",
+  "portfolioSummary": "MUHTASARI WA PORTFOLIO",
+  "dealerPortfolioSummary": "MUHTASARI WA PORTFOLIO YA MFANYABIASHARA",
+  "active": "Hai",
+  "totalSalesValue": "Jumla ya Thamani ya Mauzo",
+  "goldSold": "Dhahabu Iliyouzwa",
+  "totalPurchases": "Jumla ya Manunuzi",
+  "goldAcquired": "Dhahabu Iliyopatikana",
+  "confirmed": "Imethibitishwa",
+  "awaiting": "Inasubiri",
+  "welcomeUser": "Karibu, {name}",
+  "@welcomeUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "govOversightSubtitle": "Usimamizi na utii wa serikali",
+  "goldMarketOverviewSubtitle": "Muhtasari na portfolio",
+  "minerOverviewSubtitle": "Simamia matangazo yako na portfolio ya mauzo",
+  "dealerLicensedSubtitle": "Mnunuzi wa dhahabu aliyeidhinishwa",
+
+  "browseListings": "Vinjari Matangazo",
+  "myListings": "Matangazo Yangu",
+  "createListing": "Unda tangazo",
+  "noOpenListings": "Hakuna matangazo ya wazi",
+  "myListingsEmptyDesc": "Matangazo unayochapisha yataonekana hapa. Tumia kitufe cha + hapa chini kuunda moja.",
+  "browseListingsEmptyDesc": "Matangazo ya wazi ya dhahabu kutoka kwa wachimbaji waliothibitishwa yataonekana hapa.",
+  "sharePhoneOnListing": "Shiriki namba ya simu kwenye tangazo",
+  "sellerPhonePrivate": "Namba ya simu ya muuzaji ni ya faragha.",
+  "contactSeller": "Mawasiliano: {phone}",
+  "@contactSeller": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "createNewListing": "Unda Tangazo Jipya",
+  "weightGrams": "Uzito (gramu)",
+  "karat": "Karati",
+  "askingPriceTzs": "Bei ya kuomba (Jumla ya TZS)",
+  "notes": "Maelezo",
+  "showPhoneOnListing": "Onyesha namba yangu ya simu kwenye tangazo hili",
+  "showPhoneSubtitle": "Watumiaji walioingia tu ndio wanaoweza kuona. Imezimwa kwa chaguo-msingi.",
+  "publishListing": "Chapisha tangazo",
+
+  "sales": "Mauzo",
+  "confirmWithPinTitle": "Thibitisha kwa PIN yako",
+  "accountPin": "PIN ya Akaunti",
+  "confirmSale": "Thibitisha mauzo",
+  "agreeToSaleAndSign": "Kukubali mauzo na kusaini",
+  "noSalesYet": "Hakuna mauzo bado",
+  "noSalesDesc": "Mauzo unayorekodi au kuthibitisha yataonekana hapa na stakabadhi zake. Tumia kitufe cha + hapa chini kurekodi mauzo mapya.",
+  "recordASale": "Rekodi mauzo",
+  "saleDetailsPrompt": "Weka maelezo yaliyokubaliana na upande mwingine. Nyote wawili mnatakiwa kuthibitisha kwa PIN yenu ili kukamilisha mauzo.",
+  "counterpartyPhone": "Namba ya simu ya upande mwingine",
+  "weight": "Uzito",
+  "pricePerGram": "Bei kwa gramu",
+  "selfReportedNote": "Uzito na karati zinaripotiwa na wewe mwenyewe hadi kifaa au mtoa huduma aliyuidhinishwa aunganishwe.",
+  "agreedSaleValue": "Thamani ya mauzo iliyokubaliwa",
+  "agreedSaleValueDesc": "Hii ndiyo bei iliyokubaliwa na pande zote mbili. Ada rasmi za serikali na stakabadhi zitatolewa kiotomatiki.",
+  "submitSale": "Wasilisha mauzo",
+  "saleCreatedSnackbar": "Mauzo yameundwa. Pande zote mbili lazima zithibitishe ili kuyakamilisha.",
+  "receipt": "Stakabadhi",
+  "saleConfirmed": "Mauzo yamethibitishwa",
+  "waitingForConfirmation": "Inasubiri uthibitisho",
+  "bothPartiesMustConfirmNote": "Mchimbaji na mfanyabiashara lazima wafungue Sehemu ya Mauzo na wathibitishe kwa PIN zao wenyewe.",
+  "transactionId": "Muamala {id}",
+  "@transactionId": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "parties": "PANDE",
+  "gold": "DHAHABU",
+  "assayStatus": "Hali ya uchunguzi",
+  "unverified": "haijathibitishwa",
+  "verified": "imethibitishwa",
+  "measuredWeight": "Uzito uliopimwa",
+  "measuredKarat": "Karati iliyopimwa",
+  "measuredPurity": "Usafi uliopimwa",
+  "assayDevice": "Kifaa cha kupimia",
+  "assayReference": "Rejea ya kupimia",
+  "price": "BEI",
+  "priceBasis": "Msingi wa bei",
+  "agreedPrice": "Bei iliyokubaliwa",
+  "governmentCharges": "ADA ZA SERIKALI",
+  "assessment": "Tathmini",
+  "unavailable": "haipatikani",
+  "payment": "Malipo",
+  "authorityReference": "Rejea ya mamlaka",
+  "assessedAmount": "Kiasi kilichothaminiwa",
+  "assessed": "Imethaminiwa",
+  "legalBasis": "Msingi wa kisheria",
+  "paymentReference": "Rejea ya malipo",
+  "agreement": "MAKUBALIANO",
+  "recorded": "Imerekodiwa",
+  "waiting": "Inasubiri",
+  "downloadPdf": "Pakua PDF (inakuja hivi karibuni)",
+  "backToHome": "Rudi nyumbani",
+
+  "taxSummary": "Muhtasari wa Kodi",
+  "assessedGovCharges": "Ada za serikali zilizothaminiwa",
+  "confirmedTransactionsCount": "Mikataba {count} iliyothibitishwa",
+  "@confirmedTransactionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "taxSummaryUnavailableNote": "Tathmini ya mamlaka haijaunganishwa. Jumla hii inajumuisha kumbukumbu zilizothaminiwa pekee; haionyeshi malipo yaliyokusanywa.",
+  "govOverview": "Muhtasari wa Serikali",
+  "govOverviewSubtitle": "Mtazamo wazi wa biashara ya dhahabu iliyothibitishwa na mrabaha.",
+  "confirmedTransactions": "Mikataba iliyothibitishwa",
+  "goldTraded": "Dhahabu iliyouzwa",
+  "totalTradeValue": "Jumla ya thamani ya biashara",
+  "assessedChargesNotPayment": "Ada zilizothaminiwa (si malipo)",
+  "auditLog": "Kumbukumbu ya Ukaguzi",
+  "dealerVerification": "Uthibitishaji wa Mfanyabiashara",
+  "noPendingDealers": "Hakuna wafanyabiashara wanaosubiri",
+  "owner": "Mmiliki: {name}",
+  "@owner": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "phone": "Simu: {phone}",
+  "@phone": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "license": "Leseni: {license}",
+  "@license": {
+    "placeholders": {
+      "license": {
+        "type": "String"
+      }
+    }
+  },
+  "approve": "Idhinisha",
+  "reject": "Kataa",
+
+  "profile": "Wasifu",
+  "editProfile": "Hariri Wasifu",
+  "signOut": "Ondoka",
+  "signOutPrompt": "Ondoka kwenye akaunti?",
+  "signOutConfirm": "Utahitaji kuingia tena ili kuendelea.",
+  "accountInfo": "TAARIFA ZA AKAUNTI",
+  "region": "Mkoa",
+  "miningSite": "Eneo la uchimbaji",
+  "notSpecified": "Haijatajwa",
+  "pending": "Inasubiri",
+  "settingsAndPrivacy": "MPANGILIO NA FARAGHA",
+  "privacyAndDataPolicy": "Sera ya Faragha na Data",
+  "appVersion": "Toleo la App",
+  "support": "MSAADA",
+  "feedbackAndSupport": "Maoni na Msaada",
+  "officialTraNotConnected": "Ujumuishaji rasmi wa TRA bado haujaunganishwa.",
+  "profileUpdated": "Wasifu umesasishwa kwa mafanikio!",
+  "required": "Inahitajika",
+  "language": "Lugha",
+  "english": "Kiingereza",
+  "swahili": "Kiswahili",
+
+  "feedbackInbox": "Kasha la Maoni",
+  "category": "Kategoria",
+  "feedback": "Maoni",
+  "grievance": "Malalamiko",
+  "subject": "Somo",
+  "message": "Ujumbe",
+  "feedbackSubmitted": "Maoni yamewasilishwa kwa mafanikio.",
+  "allSubmissions": "Wasilisho Zote",
+  "yourHistory": "Historia Yako",
+  "noFeedbackRecords": "Hakuna kumbukumbu za maoni zilizopatikana.",
+  "reply": "Jibu: {reply}",
+  "@reply": {
+    "placeholders": {
+      "reply": {
+        "type": "String"
+      }
+    }
+  },
+  "respondResolve": "Jibu / suluhisha",
+  "resolveFeedback": "Suluhisha maoni",
+  "responseOptional": "Jibu (si lazima)",
+  "markResolved": "Weka kama imesuluhishwa",
+
+  "privacyAndData": "Faragha na data",
+  "draftNotice": "RASIMU — HAIJAKAMILIKA KWA UZALISHAJI. Shirika linaloendesha, mawasiliano ya faragha, watoa huduma, vipindi vya kuhifadhi na masharti ya kisheria bado yanahitaji uthibitisho.",
+  "dataWeCollect": "Data tunayokusanya",
+  "dataCollectDesc": "Data ya akaunti: jina, simu, barua pepe, aina ya akaunti na lugha; mkoa na eneo la uchimbaji ni vya hiari. Pia tunachakata maelezo ya matangazo, vipimo vya biashara na kumbukumbu, na taarifa za uthibitishaji wa mfanyabiashara. Nenosiri/PIN zinahifadhiwa kama hash; ishara za kuingia huwekwa kwenye kifaa chako.",
+  "useAndAccess": "Matumizi na ufikiaji",
+  "useAndAccessDesc": "Data inasaidia akaunti, matangazo, biashara, usalama na msaada. Namba ya simu ya mchimbaji inaonekana kwenye tangazo wakati tu anapochagua kuishiriki. Washiriki wa biashara wanaona maelezo husika ya upande mwingine. Ufikiaji wa mamlaka lazima uwe na msingi wa kisheria na ujumuishaji uliopitishwa; ujumuishaji wa Tume ya Madini/TRA bado haujaunganishwa.",
+  "retentionRights": "Uhifadhi, watoa huduma na haki zako",
+  "retentionRightsDesc": "Vipindi vya uhifadhi, watoa huduma za hosting/SMS/uchambuzi, uhifadhi wa mipakani na mawasiliano ya afisa faragha bado yanahitaji uthibitisho. Unaweza kuomba ufikiaji, urekebishaji, ufutaji, kuzuia au uhamishaji, au kupinga uchakataji. Kumbukumbu za biashara zinaweza kuwa na mahitaji ya kisheria ya uhifadhi; ombi la kufuta linakaguliwa na halifuti kiotomatiki kumbukumbu hizo.",
+  "noticeVersionDesc": "Toleo {version}. Taarifa hii ya bidhaa ni rasimu, si ushauri wa kisheria au cheti cha utii.",
+  "@noticeVersionDesc": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "useYourDataRights": "Tumia haki zako za data",
+  "viewAndCopyDataExport": "Tazama na unakili uhamisho wangu wa data",
+  "requestType": "Aina ya ombi",
+  "accessExport": "Fikia / hamisha",
+  "correctMyData": "Sahihisha data yangu",
+  "requestDeletion": "Omba kufutwa",
+  "restrictProcessing": "Zuia uchakataji",
+  "objectToProcessing": "Pingamizi la uchakataji",
+  "dataPortability": "Uhamisho wa data",
+  "withdrawConsent": "Ondoa idhini ya hiari",
+  "detailsOptional": "Maelezo (si lazima)",
+  "submitRequestForReview": "Wasilisha ombi kwa ukaguzi",
+  "requestsRecordedNote": "Maombi yanarekodiwa kama yaliyopokelewa ili mwendeshaji ayakague. Fomu hii haifuti data kiotomatiki.",
+  "yourDataExport": "Uhamisho wako wa data",
+  "dataExportCopied": "Uhamisho wa data umenakiliwa kwenye ubao wa klipu",
+  "requestRecorded": "Ombi lako limerekodiwa kwa ajili ya ukaguzi.",
+  "appearance": "Muonekano",
+  "theme": "Mandhari",
+  "lightTheme": "Mwanga",
+  "darkTheme": "Giza",
+  "systemTheme": "Mfumo"
+}

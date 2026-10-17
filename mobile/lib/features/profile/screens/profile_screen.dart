@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dhahabu/core/theme/app_colors.dart';
 import 'package:dhahabu/core/widgets/status_badge.dart';
+import 'package:dhahabu/core/providers/app_settings_provider.dart';
 import 'package:dhahabu/features/auth/models/user.dart';
 import 'package:dhahabu/features/auth/providers/auth_provider.dart';
 import 'package:dhahabu/features/feedback/screens/feedback_screen.dart';
 import 'package:dhahabu/features/privacy/screens/privacy_screen.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -27,21 +29,22 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Future<void> _confirmSignOut(BuildContext context) async {
+    final l10n = context.l10n;
     final auth = context.read<AuthProvider>();
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Sign out?'),
-        content: const Text('You will need to sign in again to continue.'),
+        title: Text(l10n.signOutPrompt),
+        content: Text(l10n.signOutConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
-              'Sign out',
+              l10n.signOut,
               style: Theme.of(ctx)
                   .textTheme
                   .labelLarge
@@ -66,11 +69,12 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final settings = context.watch<AppSettingsProvider>();
     final user = context.watch<AuthProvider>().user;
     if (user == null) return const SizedBox();
 
     final textTheme = Theme.of(context).textTheme;
-    const notSpecified = 'Not specified';
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -80,7 +84,7 @@ class ProfileScreen extends StatelessWidget {
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          'Profile',
+          l10n.profile,
           style: textTheme.titleLarge?.copyWith(
             color: AppColors.navy,
             fontWeight: FontWeight.bold,
@@ -89,7 +93,7 @@ class ProfileScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.edit_outlined, color: AppColors.navy),
-            tooltip: 'Edit Profile',
+            tooltip: l10n.editProfile,
             onPressed: () => _showEditProfileSheet(context, user),
           ),
           const SizedBox(width: 4),
@@ -98,7 +102,6 @@ class ProfileScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
         children: [
-          // ---------- Header ----------
           Center(
             child: Container(
               padding: const EdgeInsets.all(4),
@@ -159,35 +162,34 @@ class ProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 32),
 
-          // ---------- Account Info ----------
-          const _SectionTitle('ACCOUNT INFO'),
+          _SectionTitle(l10n.accountInfo),
           _InfoCard(
             children: [
               _InfoRow(
                 icon: Icons.phone_outlined,
-                label: 'Phone',
+                label: l10n.phoneNumber,
                 value: user.phone,
               ),
               _InfoRow(
                 icon: Icons.location_on_outlined,
-                label: 'Region',
-                value: user.region.isNotEmpty ? user.region : notSpecified,
+                label: l10n.region,
+                value: user.region.isNotEmpty ? user.region : l10n.notSpecified,
                 muted: user.region.isEmpty,
               ),
               if (user.isMiner)
                 _InfoRow(
                   icon: Icons.landscape_outlined,
-                  label: 'Mining site',
+                  label: l10n.miningSite,
                   value: user.miningSite.isNotEmpty
                       ? user.miningSite
-                      : notSpecified,
+                      : l10n.notSpecified,
                   muted: user.miningSite.isEmpty,
                 ),
               if (user.isDealer)
                 _InfoRow(
                   icon: Icons.verified_outlined,
-                  label: 'Dealer verification',
-                  value: user.isVerifiedDealer ? 'Verified' : 'Pending',
+                  label: l10n.dealerVerification,
+                  value: user.isVerifiedDealer ? l10n.verified : l10n.pending,
                   trailing: user.isVerifiedDealer
                       ? StatusBadge.verified()
                       : StatusBadge.pending(),
@@ -196,13 +198,75 @@ class ProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
-          // ---------- Settings & Privacy ----------
-          const _SectionTitle('SETTINGS & PRIVACY'),
+          _SectionTitle(l10n.settingsAndPrivacy),
           _InfoCard(
             children: [
               _ActionRow(
+                icon: Icons.brightness_6_rounded,
+                label: l10n.theme,
+                trailingText: settings.themeMode == ThemeMode.dark
+                    ? l10n.darkTheme
+                    : settings.themeMode == ThemeMode.system
+                        ? l10n.systemTheme
+                        : l10n.lightTheme,
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (ctx) => SafeArea(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ListTile(
+                            leading: const Icon(Icons.wb_sunny_outlined),
+                            title: Text(l10n.lightTheme),
+                            trailing: settings.themeMode == ThemeMode.light
+                                ? const Icon(Icons.check, color: AppColors.gold)
+                                : null,
+                            onTap: () {
+                              settings.setThemeMode(ThemeMode.light);
+                              Navigator.pop(ctx);
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.nightlight_outlined),
+                            title: Text(l10n.darkTheme),
+                            trailing: settings.themeMode == ThemeMode.dark
+                                ? const Icon(Icons.check, color: AppColors.gold)
+                                : null,
+                            onTap: () {
+                              settings.setThemeMode(ThemeMode.dark);
+                              Navigator.pop(ctx);
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.brightness_auto_outlined),
+                            title: Text(l10n.systemTheme),
+                            trailing: settings.themeMode == ThemeMode.system
+                                ? const Icon(Icons.check, color: AppColors.gold)
+                                : null,
+                            onTap: () {
+                              settings.setThemeMode(ThemeMode.system);
+                              Navigator.pop(ctx);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+              _ActionRow(
+                icon: Icons.language_rounded,
+                label: l10n.language,
+                trailingText: settings.isSwahili ? l10n.swahili : l10n.english,
+                onTap: () {
+                  final newLang = settings.isSwahili ? 'en' : 'sw';
+                  settings.setLanguage(newLang);
+                },
+              ),
+              _ActionRow(
                 icon: Icons.privacy_tip_outlined,
-                label: 'Privacy & Data Policy',
+                label: l10n.privacyAndDataPolicy,
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const PrivacyScreen()),
@@ -210,20 +274,19 @@ class ProfileScreen extends StatelessWidget {
               ),
               _InfoRow(
                 icon: Icons.info_outline_rounded,
-                label: 'App Version',
+                label: l10n.appVersion,
                 value: 'v1.0.0 (Dhahabu Mobile)',
               ),
             ],
           ),
           const SizedBox(height: 24),
 
-          // ---------- Support ----------
-          const _SectionTitle('SUPPORT'),
+          _SectionTitle(l10n.support),
           _InfoCard(
             children: [
               _ActionRow(
                 icon: Icons.feedback_outlined,
-                label: 'Feedback & Support',
+                label: l10n.feedbackAndSupport,
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const FeedbackScreen()),
@@ -235,7 +298,7 @@ class ProfileScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Text(
-              'Official TRA integration is not connected yet.',
+              l10n.officialTraNotConnected,
               style: textTheme.bodySmall?.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -243,7 +306,6 @@ class ProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 32),
 
-          // ---------- Sign out ----------
           SizedBox(
             height: 52,
             child: OutlinedButton.icon(
@@ -257,7 +319,7 @@ class ProfileScreen extends StatelessWidget {
               onPressed: () => _confirmSignOut(context),
               icon: const Icon(Icons.logout_rounded, size: 20),
               label: Text(
-                'Sign out',
+                l10n.signOut,
                 style: textTheme.labelLarge?.copyWith(
                   color: AppColors.error,
                 ),
@@ -269,10 +331,6 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 }
-
-// =====================================================================
-// EDIT PROFILE SHEET
-// =====================================================================
 
 class _EditProfileSheet extends StatefulWidget {
   const _EditProfileSheet({required this.user});
@@ -311,6 +369,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
   }
 
   Future<void> _save() async {
+    final l10n = context.l10n;
     if (!(_formKey.currentState?.validate() ?? false)) return;
     final auth = context.read<AuthProvider>();
     final navigator = Navigator.of(context);
@@ -329,7 +388,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
       );
       navigator.pop();
       messenger.showSnackBar(
-        const SnackBar(content: Text('Profile updated successfully!')),
+        SnackBar(content: Text(l10n.profileUpdated)),
       );
     } catch (e) {
       if (!mounted) return;
@@ -359,6 +418,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final textTheme = Theme.of(context).textTheme;
     final keyboard = MediaQuery.of(context).viewInsets.bottom;
     final maxHeight = MediaQuery.of(context).size.height * 0.7;
@@ -399,7 +459,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Edit Profile',
+                      l10n.editProfile,
                       style: textTheme.titleLarge?.copyWith(
                         color: AppColors.navy,
                         fontWeight: FontWeight.bold,
@@ -428,8 +488,8 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                       controller: _name,
                       style: textTheme.bodyLarge?.copyWith(color: AppColors.navy),
                       cursorColor: AppColors.gold,
-                      decoration: _decoration(icon: Icons.person_outline, label: 'Full name'),
-                      validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
+                      decoration: _decoration(icon: Icons.person_outline, label: l10n.fullName),
+                      validator: (v) => v?.trim().isEmpty == true ? l10n.required : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
@@ -437,15 +497,15 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                       keyboardType: TextInputType.emailAddress,
                       style: textTheme.bodyLarge?.copyWith(color: AppColors.navy),
                       cursorColor: AppColors.gold,
-                      decoration: _decoration(icon: Icons.email_outlined, label: 'Email address'),
-                      validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
+                      decoration: _decoration(icon: Icons.email_outlined, label: l10n.emailAddress),
+                      validator: (v) => v?.trim().isEmpty == true ? l10n.required : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _region,
                       style: textTheme.bodyLarge?.copyWith(color: AppColors.navy),
                       cursorColor: AppColors.gold,
-                      decoration: _decoration(icon: Icons.location_on_outlined, label: 'Region'),
+                      decoration: _decoration(icon: Icons.location_on_outlined, label: l10n.region),
                     ),
                     if (widget.user.isMiner) ...[
                       const SizedBox(height: 16),
@@ -453,7 +513,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                         controller: _site,
                         style: textTheme.bodyLarge?.copyWith(color: AppColors.navy),
                         cursorColor: AppColors.gold,
-                        decoration: _decoration(icon: Icons.landscape_outlined, label: 'Mining site'),
+                        decoration: _decoration(icon: Icons.landscape_outlined, label: l10n.miningSite),
                       ),
                     ],
                     const SizedBox(height: 24),
@@ -478,9 +538,9 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                                   color: AppColors.navy,
                                 ),
                               )
-                            : const Text(
-                                'Save changes',
-                                style: TextStyle(
+                            : Text(
+                                l10n.save,
+                                style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 15,
                                 ),
@@ -497,10 +557,6 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
     );
   }
 }
-
-// =====================================================================
-// HELPER WIDGETS
-// =====================================================================
 
 class _SectionTitle extends StatelessWidget {
   const _SectionTitle(this.text);
@@ -633,11 +689,13 @@ class _ActionRow extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.onTap,
+    this.trailingText,
   });
 
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+  final String? trailingText;
 
   @override
   Widget build(BuildContext context) {
@@ -659,6 +717,17 @@ class _ActionRow extends StatelessWidget {
                 ),
               ),
             ),
+            if (trailingText != null) ...[
+              Text(
+                trailingText!,
+                style: const TextStyle(
+                  color: AppColors.gold,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
             const Icon(Icons.chevron_right_rounded,
                 color: AppColors.textSecondary),
           ],

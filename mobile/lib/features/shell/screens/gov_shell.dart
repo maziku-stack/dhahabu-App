@@ -4,6 +4,7 @@ import 'package:dhahabu/features/government/screens/compliance_screen.dart';
 import 'package:dhahabu/features/government/screens/dealer_queue_screen.dart';
 import 'package:dhahabu/features/government/screens/audit_screen.dart';
 import 'package:dhahabu/features/profile/screens/profile_screen.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 
 class GovShell extends StatefulWidget {
   const GovShell({super.key});
@@ -22,6 +23,7 @@ class _GovShellState extends State<GovShell> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: AppColors.white,
       body: _screens[_i],
@@ -32,11 +34,11 @@ class _GovShellState extends State<GovShell> {
         child: NavigationBar(
           selectedIndex: _i,
           onDestinationSelected: (idx) => setState(() => _i = idx),
-          destinations: const [
-            NavigationDestination(icon: Icon(Icons.verified), label: 'Overview'),
-            NavigationDestination(icon: Icon(Icons.people), label: 'Dealers'),
-            NavigationDestination(icon: Icon(Icons.history), label: 'Audit'),
-            NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
+          destinations: [
+            NavigationDestination(icon: const Icon(Icons.verified), label: l10n.navOverview),
+            NavigationDestination(icon: const Icon(Icons.people), label: l10n.navDealers),
+            NavigationDestination(icon: const Icon(Icons.history), label: l10n.navAudit),
+            NavigationDestination(icon: const Icon(Icons.person), label: l10n.navProfile),
           ],
         ),
       ),

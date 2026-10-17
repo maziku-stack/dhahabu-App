@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dhahabu/core/theme/app_colors.dart';
+import 'package:dhahabu/core/theme/app_palette.dart';
 
 ThemeData dhahabuTheme() {
+  final palette = AppPalette.light;
   return ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
-    scaffoldBackgroundColor: AppColors.white,
-    colorScheme: const ColorScheme.light(
+    scaffoldBackgroundColor: palette.background,
+    extensions: [palette],
+    colorScheme: ColorScheme.light(
       primary: AppColors.navy,
       secondary: AppColors.gold,
-      surface: AppColors.white,
+      surface: palette.surface,
       surfaceTint: Colors.transparent,
       error: AppColors.error,
       onPrimary: AppColors.white,
       onSecondary: AppColors.navy,
-      onSurface: AppColors.navy,
-      onSurfaceVariant: AppColors.textSecondary,
+      onSurface: palette.textPrimary,
+      onSurfaceVariant: palette.textSecondary,
     ),
     navigationBarTheme: NavigationBarThemeData(
-      backgroundColor: AppColors.white,
+      backgroundColor: palette.background,
       surfaceTintColor: Colors.transparent,
       height: 68,
       indicatorColor: AppColors.gold.withValues(alpha: 0.18),
@@ -30,7 +33,7 @@ ThemeData dhahabuTheme() {
         if (states.contains(WidgetState.selected)) {
           return const IconThemeData(color: AppColors.navy);
         }
-        return const IconThemeData(color: AppColors.textSecondary);
+        return IconThemeData(color: palette.textSecondary);
       }),
       labelTextStyle: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
@@ -43,80 +46,102 @@ ThemeData dhahabuTheme() {
         return GoogleFonts.publicSans(
           fontSize: 12,
           fontWeight: FontWeight.w500,
-          color: AppColors.textSecondary,
+          color: palette.textSecondary,
         );
       }),
     ),
     appBarTheme: AppBarTheme(
-      backgroundColor: AppColors.navy,
-      foregroundColor: AppColors.white,
+      backgroundColor: palette.appBar,
+      foregroundColor: palette.onAppBar,
       elevation: 0,
       centerTitle: false,
       toolbarHeight: 64,
       titleTextStyle: GoogleFonts.urbanist(
         fontSize: 20,
         fontWeight: FontWeight.w600,
-        color: AppColors.white,
+        color: palette.onAppBar,
       ),
+    ),
+    dividerTheme: DividerThemeData(
+      color: palette.border,
+      thickness: 1,
+    ),
+    dialogTheme: DialogThemeData(
+      backgroundColor: palette.surface,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    ),
+    bottomSheetTheme: BottomSheetThemeData(
+      backgroundColor: palette.surface,
+      surfaceTintColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+    ),
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: AppColors.navy,
+      contentTextStyle: GoogleFonts.publicSans(color: AppColors.white),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      behavior: SnackBarBehavior.floating,
     ),
     textTheme: TextTheme(
       displayLarge: GoogleFonts.urbanist(
         fontSize: 28,
         fontWeight: FontWeight.w700,
-        color: AppColors.navy,
+        color: palette.textPrimary,
       ),
       titleLarge: GoogleFonts.urbanist(
         fontSize: 20,
         fontWeight: FontWeight.w600,
-        color: AppColors.navy,
+        color: palette.textPrimary,
       ),
       titleMedium: GoogleFonts.urbanist(
         fontSize: 16,
         fontWeight: FontWeight.w600,
-        color: AppColors.navy,
+        color: palette.textPrimary,
       ),
       bodyLarge: GoogleFonts.publicSans(
         fontSize: 16,
         fontWeight: FontWeight.w400,
-        color: AppColors.navy,
+        color: palette.textPrimary,
       ),
       bodyMedium: GoogleFonts.publicSans(
         fontSize: 14,
         fontWeight: FontWeight.w400,
-        color: AppColors.navy,
+        color: palette.textPrimary,
       ),
       bodySmall: GoogleFonts.publicSans(
         fontSize: 12,
         fontWeight: FontWeight.w400,
-        color: AppColors.textSecondary,
+        color: palette.textSecondary,
       ),
       labelLarge: GoogleFonts.publicSans(
         fontSize: 16,
         fontWeight: FontWeight.w600,
-        color: AppColors.navy,
+        color: palette.textPrimary,
       ),
       labelMedium: GoogleFonts.publicSans(
         fontSize: 13,
         fontWeight: FontWeight.w500,
-        color: AppColors.navy,
+        color: palette.textPrimary,
       ),
       labelSmall: GoogleFonts.publicSans(
         fontSize: 12,
         fontWeight: FontWeight.w500,
-        color: AppColors.textSecondary,
+        color: palette.textSecondary,
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.white,
+      fillColor: palette.surface,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: palette.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: palette.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -143,9 +168,9 @@ ThemeData dhahabuTheme() {
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: AppColors.navy,
+        foregroundColor: palette.textPrimary,
         minimumSize: const Size(0, 52),
-        side: const BorderSide(color: AppColors.border),
+        side: BorderSide(color: palette.border),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         textStyle: GoogleFonts.publicSans(
           fontSize: 16,
@@ -155,19 +180,19 @@ ThemeData dhahabuTheme() {
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: AppColors.navy,
+        foregroundColor: palette.accent,
         textStyle: GoogleFonts.publicSans(
           fontSize: 14,
           fontWeight: FontWeight.w600,
         ),
       ),
     ),
-    cardTheme: const CardThemeData(
-      color: AppColors.white,
+    cardTheme: CardThemeData(
+      color: palette.surface,
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-        side: BorderSide(color: AppColors.border, width: 1),
+        borderRadius: const BorderRadius.all(Radius.circular(16)),
+        side: BorderSide(color: palette.border, width: 1),
       ),
       margin: EdgeInsets.zero,
     ),
@@ -175,91 +200,144 @@ ThemeData dhahabuTheme() {
 }
 
 ThemeData dhahabuDarkTheme() {
+  final palette = AppPalette.dark;
   return ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: AppColors.navy,
-    colorScheme: const ColorScheme.dark(
+    scaffoldBackgroundColor: palette.background,
+    extensions: [palette],
+    colorScheme: ColorScheme.dark(
       primary: AppColors.gold,
       secondary: AppColors.navyLight,
-      surface: AppColors.navyLight,
+      surface: palette.surface,
       surfaceTint: Colors.transparent,
       error: AppColors.error,
       onPrimary: AppColors.navy,
       onSecondary: AppColors.white,
-      onSurface: AppColors.white,
-      onSurfaceVariant: AppColors.textSecondary,
+      onSurface: palette.textPrimary,
+      onSurfaceVariant: palette.textSecondary,
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: palette.background,
+      surfaceTintColor: Colors.transparent,
+      height: 68,
+      indicatorColor: AppColors.gold.withValues(alpha: 0.18),
+      indicatorShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      iconTheme: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return const IconThemeData(color: AppColors.goldLight);
+        }
+        return IconThemeData(color: palette.textSecondary);
+      }),
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return GoogleFonts.publicSans(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: AppColors.goldLight,
+          );
+        }
+        return GoogleFonts.publicSans(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          color: palette.textSecondary,
+        );
+      }),
     ),
     appBarTheme: AppBarTheme(
-      backgroundColor: AppColors.navyLight,
-      foregroundColor: AppColors.white,
+      backgroundColor: palette.appBar,
+      foregroundColor: palette.onAppBar,
       elevation: 0,
       centerTitle: false,
       toolbarHeight: 64,
       titleTextStyle: GoogleFonts.urbanist(
         fontSize: 20,
         fontWeight: FontWeight.w600,
-        color: AppColors.white,
+        color: palette.onAppBar,
       ),
+    ),
+    dividerTheme: DividerThemeData(
+      color: palette.border,
+      thickness: 1,
+    ),
+    dialogTheme: DialogThemeData(
+      backgroundColor: palette.surface,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    ),
+    bottomSheetTheme: BottomSheetThemeData(
+      backgroundColor: palette.surface,
+      surfaceTintColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+    ),
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: AppColors.navyLight,
+      contentTextStyle: GoogleFonts.publicSans(color: AppColors.white),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      behavior: SnackBarBehavior.floating,
     ),
     textTheme: TextTheme(
       displayLarge: GoogleFonts.urbanist(
         fontSize: 28,
         fontWeight: FontWeight.w700,
-        color: AppColors.white,
+        color: palette.textPrimary,
       ),
       titleLarge: GoogleFonts.urbanist(
         fontSize: 20,
         fontWeight: FontWeight.w600,
-        color: AppColors.white,
+        color: palette.textPrimary,
       ),
       titleMedium: GoogleFonts.urbanist(
         fontSize: 16,
         fontWeight: FontWeight.w600,
-        color: AppColors.white,
+        color: palette.textPrimary,
       ),
       bodyLarge: GoogleFonts.publicSans(
         fontSize: 16,
         fontWeight: FontWeight.w400,
-        color: AppColors.white,
+        color: palette.textPrimary,
       ),
       bodyMedium: GoogleFonts.publicSans(
         fontSize: 14,
         fontWeight: FontWeight.w400,
-        color: AppColors.white,
+        color: palette.textPrimary,
       ),
       bodySmall: GoogleFonts.publicSans(
         fontSize: 12,
         fontWeight: FontWeight.w400,
-        color: AppColors.textSecondary,
+        color: palette.textSecondary,
       ),
       labelLarge: GoogleFonts.publicSans(
         fontSize: 16,
         fontWeight: FontWeight.w600,
-        color: AppColors.navy,
+        color: palette.textPrimary,
       ),
       labelMedium: GoogleFonts.publicSans(
         fontSize: 13,
         fontWeight: FontWeight.w500,
-        color: AppColors.white,
+        color: palette.textPrimary,
       ),
       labelSmall: GoogleFonts.publicSans(
         fontSize: 12,
         fontWeight: FontWeight.w500,
-        color: AppColors.textSecondary,
+        color: palette.textSecondary,
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.navyLight,
+      fillColor: palette.surface,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: palette.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: palette.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -281,9 +359,9 @@ ThemeData dhahabuDarkTheme() {
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: AppColors.gold,
+        foregroundColor: palette.textPrimary,
         minimumSize: const Size(0, 52),
-        side: const BorderSide(color: AppColors.border),
+        side: BorderSide(color: palette.border),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         textStyle: GoogleFonts.publicSans(
           fontSize: 16,
@@ -291,12 +369,21 @@ ThemeData dhahabuDarkTheme() {
         ),
       ),
     ),
-    cardTheme: const CardThemeData(
-      color: AppColors.navyLight,
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: palette.accent,
+        textStyle: GoogleFonts.publicSans(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ),
+    cardTheme: CardThemeData(
+      color: palette.surface,
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-        side: BorderSide(color: AppColors.border, width: 1),
+        borderRadius: const BorderRadius.all(Radius.circular(16)),
+        side: BorderSide(color: palette.border, width: 1),
       ),
       margin: EdgeInsets.zero,
     ),

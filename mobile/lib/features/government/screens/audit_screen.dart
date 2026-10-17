@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dhahabu/core/network/api_service.dart';
 import 'package:dhahabu/core/widgets/app_card.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 
 class AuditScreen extends StatefulWidget {
   const AuditScreen({super.key});
@@ -32,8 +33,9 @@ class _AuditScreenState extends State<AuditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
-      appBar: AppBar(title: const Text('Audit Log')),
+      appBar: AppBar(title: Text(l10n.auditLog)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(

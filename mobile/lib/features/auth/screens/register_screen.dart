@@ -4,6 +4,7 @@ import 'package:dhahabu/features/auth/providers/auth_provider.dart';
 import 'package:dhahabu/core/theme/app_colors.dart';
 import 'package:dhahabu/features/privacy/screens/privacy_screen.dart';
 import 'package:dhahabu/core/validation/app_validator.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -40,42 +41,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _register() async {
+    final l10n = context.l10n;
     if (!_noticeAcknowledged) {
-      setState(() =>
-          _error = 'Read and acknowledge the privacy notice to continue.');
+      setState(() => _error = l10n.privacyAckError);
       return;
     }
     if (_role == null) {
-      setState(() => _error = 'Role not specified. Please go back and select a role.');
+      setState(() => _error = l10n.roleNotSpecified);
       return;
     }
 
-    final nameErr = AppValidator.validateName(_name.text);
+    final nameErr = AppValidator.validateName(l10n, _name.text);
     if (nameErr != null) {
       setState(() => _error = nameErr);
       return;
     }
 
-    final phoneErr = AppValidator.validatePhone(_phone.text);
+    final phoneErr = AppValidator.validatePhone(l10n, _phone.text);
     if (phoneErr != null) {
       setState(() => _error = phoneErr);
       return;
     }
 
-    final emailErr = AppValidator.validateEmail(_email.text);
+    final emailErr = AppValidator.validateEmail(l10n, _email.text);
     if (emailErr != null) {
       setState(() => _error = emailErr);
       return;
     }
 
-    final passErr = AppValidator.validatePassword(_password.text);
+    final passErr = AppValidator.validatePassword(l10n, _password.text);
     if (passErr != null) {
       setState(() => _error = passErr);
       return;
     }
 
     if (_password.text != _passwordConfirmation.text) {
-      setState(() => _error = 'The passwords do not match.');
+      setState(() => _error = l10n.passwordsDoNotMatch);
       return;
     }
 
@@ -116,9 +117,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final roleTitle = _role != null 
-        ? 'Registering as ${_role![0].toUpperCase()}${_role!.substring(1)}' 
-        : 'Create account';
+        ? l10n.registerAs('${_role![0].toUpperCase()}${_role!.substring(1)}')
+        : l10n.createAccount;
 
     final logoAsset = _role == 'dealer'
         ? 'assets/icon/dealer.jpg'
@@ -203,10 +205,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Complete your details',
+                    Text(
+                      l10n.completeDetails,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: AppColors.navy,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -224,9 +226,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       controller: _name,
                       style: const TextStyle(color: AppColors.navy, fontSize: 14),
                       textCapitalization: TextCapitalization.words,
-                      decoration: const InputDecoration(
-                        labelText: 'Full name',
-                        prefixIcon: Icon(Icons.person_outline, size: 20),
+                      decoration: InputDecoration(
+                        labelText: l10n.fullName,
+                        prefixIcon: const Icon(Icons.person_outline, size: 20),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -235,9 +237,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       style: const TextStyle(color: AppColors.navy, fontSize: 14),
                       keyboardType: TextInputType.emailAddress,
                       autocorrect: false,
-                      decoration: const InputDecoration(
-                        labelText: 'Email address',
-                        prefixIcon: Icon(Icons.email_outlined, size: 20),
+                      decoration: InputDecoration(
+                        labelText: l10n.emailAddress,
+                        prefixIcon: const Icon(Icons.email_outlined, size: 20),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -245,9 +247,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       controller: _phone,
                       style: const TextStyle(color: AppColors.navy, fontSize: 14),
                       keyboardType: TextInputType.phone,
-                      decoration: const InputDecoration(
-                        labelText: 'Phone number',
-                        prefixIcon: Icon(Icons.phone_outlined, size: 20),
+                      decoration: InputDecoration(
+                        labelText: l10n.phoneNumber,
+                        prefixIcon: const Icon(Icons.phone_outlined, size: 20),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -256,7 +258,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       style: const TextStyle(color: AppColors.navy, fontSize: 14),
                       obscureText: !_passwordVisible,
                       decoration: InputDecoration(
-                        labelText: 'Password (at least 8 chars)',
+                        labelText: l10n.passwordMin8,
                         prefixIcon: const Icon(Icons.lock_outline, size: 20),
                         suffixIcon: IconButton(
                           onPressed: () => setState(
@@ -279,7 +281,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       obscureText: !_passwordConfirmationVisible,
                       textInputAction: TextInputAction.done,
                       decoration: InputDecoration(
-                        labelText: 'Confirm password',
+                        labelText: l10n.confirmPassword,
                         prefixIcon: const Icon(Icons.lock_reset_outlined, size: 20),
                         suffixIcon: IconButton(
                           onPressed: () => setState(
@@ -311,9 +313,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (_) => const PrivacyScreen())),
-                            child: const Text(
-                              'I have read and agree to the privacy notice',
-                              style: TextStyle(
+                            child: Text(
+                              l10n.privacyNoticeAgreement,
+                              style: const TextStyle(
                                 color: AppColors.navy,
                                 fontSize: 13,
                                 decoration: TextDecoration.underline,
@@ -334,7 +336,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 strokeWidth: 2,
                                 color: AppColors.navy,
                               ))
-                          : const Text('Create account'),
+                          : Text(l10n.createAccount),
                     ),
                   ],
                 ),

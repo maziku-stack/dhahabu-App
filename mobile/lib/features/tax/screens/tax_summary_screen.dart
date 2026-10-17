@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:dhahabu/core/network/api_service.dart';
 import 'package:dhahabu/core/theme/app_colors.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 
 class TaxSummaryScreen extends StatefulWidget {
   const TaxSummaryScreen({super.key});
@@ -36,6 +37,7 @@ class _TaxSummaryScreenState extends State<TaxSummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final textTheme = Theme.of(context).textTheme;
     final totalAssessed =
         double.tryParse('${_data?['total_assessed_charges_tzs']}') ?? 0;
@@ -51,7 +53,7 @@ class _TaxSummaryScreenState extends State<TaxSummaryScreen> {
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          'Tax Summary',
+          l10n.taxSummary,
           style: textTheme.titleLarge?.copyWith(
             color: AppColors.navy,
             fontWeight: FontWeight.bold,
@@ -87,7 +89,7 @@ class _TaxSummaryScreenState extends State<TaxSummaryScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Assessed government charges',
+                          l10n.assessedGovCharges,
                           style: textTheme.bodySmall?.copyWith(
                             color: AppColors.gold,
                             fontWeight: FontWeight.w700,
@@ -108,7 +110,7 @@ class _TaxSummaryScreenState extends State<TaxSummaryScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '$txnCount confirmed transactions',
+                          l10n.confirmedTransactionsCount(txnCount),
                           style: textTheme.bodyMedium?.copyWith(
                             color: AppColors.textSecondary,
                             fontWeight: FontWeight.w600,
@@ -126,7 +128,7 @@ class _TaxSummaryScreenState extends State<TaxSummaryScreen> {
                               ),
                             ),
                             child: Text(
-                              'Authority assessment is not connected. This total includes assessed records only; it does not show payments collected.',
+                              l10n.taxSummaryUnavailableNote,
                               style: textTheme.bodySmall?.copyWith(
                                 color: AppColors.navy,
                                 height: 1.45,

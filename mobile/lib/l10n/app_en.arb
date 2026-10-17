@@ -1,0 +1,344 @@
+{
+  "@@locale": "en",
+  "dhahabu": "Dhahabu",
+  "tagline": "Biashara ya Dhahabu kwa Uwazi",
+  "version": "v1.0.0",
+  "skip": "Skip",
+  "continueText": "Continue",
+  "getStarted": "Get Started",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "submit": "Submit",
+  "save": "Save changes",
+  "close": "Close",
+  "copyJson": "Copy JSON",
+  "copied": "Data export copied to clipboard",
+  "loading": "Please wait…",
+  "error": "Error",
+  "success": "Success",
+
+  "onboardingTitle1": "Trade Gold Securely",
+  "onboardingDesc1": "Post your gold listings and easily connect with licensed dealers across Tanzania.",
+  "onboardingTitle2": "Verified Dealers",
+  "onboardingDesc2": "Every dealer is vetted and approved before purchasing, ensuring you trade with trusted partners.",
+  "onboardingTitle3": "Transparent Taxes & Receipts",
+  "onboardingDesc3": "7% royalty is automatically calculated and secure digital receipts are stored for every transaction.",
+
+  "splashSubtitle": "Biashara ya Dhahabu kwa Uwazi",
+
+  "signIn": "Sign in",
+  "welcomeBack": "Welcome back",
+  "signInSubtitle": "Sign in with your email and password.",
+  "emailAddress": "Email address",
+  "password": "Password",
+  "passwordMin8": "Password (at least 8 chars)",
+  "newUserPrompt": "New user? ",
+  "register": "Register",
+  "chooseRole": "Choose role",
+  "roleSelectionSubtitle": "Select how you will participate in the Dhahabu platform.",
+  "miner": "Miner",
+  "dealer": "Dealer",
+  "alreadyHaveAccount": "Already have an account? ",
+  "registerAs": "Registering as {role}",
+  "@registerAs": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "createAccount": "Create account",
+  "completeDetails": "Complete your details",
+  "fullName": "Full name",
+  "phoneNumber": "Phone number",
+  "confirmPassword": "Confirm password",
+  "privacyNoticeAgreement": "I have read and agree to the privacy notice",
+  "selectRoleError": "Please select whether you are a Miner or Dealer.",
+  "privacyAckError": "Read and acknowledge the privacy notice to continue.",
+  "roleNotSpecified": "Role not specified. Please go back and select a role.",
+  "passwordsDoNotMatch": "The passwords do not match.",
+
+  "validatorEmailRequired": "Enter your email address.",
+  "validatorEmailValid": "Enter a valid email address.",
+  "validatorPasswordRequired": "Enter your password.",
+  "validatorPasswordLength": "Use a password with at least 8 characters.",
+  "validatorPhoneValid": "Enter a valid phone number.",
+  "validatorNameRequired": "Enter your full name.",
+
+  "navHome": "Home",
+  "navListings": "Listings",
+  "navSales": "Sales",
+  "navProfile": "Profile",
+  "navOverview": "Overview",
+  "navDealers": "Dealers",
+  "navAudit": "Audit",
+  "notLoggedIn": "Not logged in",
+
+  "minerDashboard": "Miner Dashboard",
+  "dealerDashboard": "Dealer Dashboard",
+  "govDashboard": "Government Dashboard",
+  "goldMarket": "Gold Market",
+  "government": "GOVERNMENT",
+  "recordSaleTooltip": "Record a sale",
+  "recentSales": "Recent Sales",
+  "totalCount": "{count} total",
+  "@totalCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "governmentCharge": "Government charge: {status}",
+  "@governmentCharge": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentStatus": "Payment: {status}",
+  "@paymentStatus": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "notAssessed": "not assessed",
+  "notStarted": "not started",
+  "viewReceipt": "View receipt",
+  "portfolioSummary": "PORTFOLIO SUMMARY",
+  "dealerPortfolioSummary": "DEALER PORTFOLIO SUMMARY",
+  "active": "Active",
+  "totalSalesValue": "Total Sales Value",
+  "goldSold": "Gold Sold",
+  "totalPurchases": "Total Purchases",
+  "goldAcquired": "Gold Acquired",
+  "confirmed": "Confirmed",
+  "awaiting": "Awaiting",
+  "welcomeUser": "Welcome, {name}",
+  "@welcomeUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "govOversightSubtitle": "Government oversight and compliance",
+  "goldMarketOverviewSubtitle": "Overview and portfolio",
+  "minerOverviewSubtitle": "Manage your listings and sales portfolio",
+  "dealerLicensedSubtitle": "Licensed gold buyer",
+
+  "browseListings": "Browse Listings",
+  "myListings": "My Listings",
+  "createListing": "Create a listing",
+  "noOpenListings": "No open listings",
+  "myListingsEmptyDesc": "Listings you publish will appear here. Use the + button below to create one.",
+  "browseListingsEmptyDesc": "Open gold listings from verified miners will appear here.",
+  "sharePhoneOnListing": "Share phone on listing",
+  "sellerPhonePrivate": "Seller phone is private.",
+  "contactSeller": "Contact: {phone}",
+  "@contactSeller": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "createNewListing": "Create New Listing",
+  "weightGrams": "Weight (grams)",
+  "karat": "Karat",
+  "askingPriceTzs": "Asking price (TZS total)",
+  "notes": "Notes",
+  "showPhoneOnListing": "Show my phone number on this listing",
+  "showPhoneSubtitle": "Only logged-in users browsing listings can see it. Off by default.",
+  "publishListing": "Publish listing",
+
+  "sales": "Sales",
+  "confirmWithPinTitle": "Confirm with your PIN",
+  "accountPin": "Account PIN",
+  "confirmSale": "Confirm sale",
+  "agreeToSaleAndSign": "Agree to sale & sign",
+  "noSalesYet": "No sales yet",
+  "noSalesDesc": "Sales you record or confirm will appear here with their receipts. Use the + button below to record a new sale.",
+  "recordASale": "Record a sale",
+  "saleDetailsPrompt": "Enter the details agreed with the other party. Both of you must confirm with your PIN to finalize the sale.",
+  "counterpartyPhone": "Counterparty phone",
+  "weight": "Weight",
+  "pricePerGram": "Price per gram",
+  "selfReportedNote": "Weight and karat are self-reported until an approved assay device or provider is connected.",
+  "agreedSaleValue": "Agreed sale value",
+  "agreedSaleValueDesc": "This is the price agreed by both parties. Official government charges and receipts will be generated automatically.",
+  "submitSale": "Submit sale",
+  "saleCreatedSnackbar": "Sale created. Both parties must confirm to finalize it.",
+  "receipt": "Receipt",
+  "saleConfirmed": "Sale confirmed",
+  "waitingForConfirmation": "Waiting for confirmation",
+  "bothPartiesMustConfirmNote": "Both the miner and the dealer must open Sales and confirm with their own PIN.",
+  "transactionId": "Transaction {id}",
+  "@transactionId": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "parties": "PARTIES",
+  "gold": "GOLD",
+  "assayStatus": "Assay status",
+  "unverified": "unverified",
+  "verified": "verified",
+  "measuredWeight": "Measured weight",
+  "measuredKarat": "Measured karat",
+  "measuredPurity": "Measured purity",
+  "assayDevice": "Assay device",
+  "assayReference": "Assay reference",
+  "price": "PRICE",
+  "priceBasis": "Price basis",
+  "agreedPrice": "Agreed price",
+  "governmentCharges": "GOVERNMENT CHARGES",
+  "assessment": "Assessment",
+  "unavailable": "unavailable",
+  "payment": "Payment",
+  "authorityReference": "Authority reference",
+  "assessedAmount": "Assessed amount",
+  "assessed": "Assessed",
+  "legalBasis": "Legal basis",
+  "paymentReference": "Payment reference",
+  "agreement": "AGREEMENT",
+  "recorded": "Recorded",
+  "waiting": "Waiting",
+  "downloadPdf": "Download PDF (coming soon)",
+  "backToHome": "Back to home",
+
+  "taxSummary": "Tax Summary",
+  "assessedGovCharges": "Assessed government charges",
+  "confirmedTransactionsCount": "{count} confirmed transactions",
+  "@confirmedTransactionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "taxSummaryUnavailableNote": "Authority assessment is not connected. This total includes assessed records only; it does not show payments collected.",
+  "govOverview": "Government Overview",
+  "govOverviewSubtitle": "A clear view of confirmed gold trade and royalties.",
+  "confirmedTransactions": "Confirmed transactions",
+  "goldTraded": "Gold traded",
+  "totalTradeValue": "Total trade value",
+  "assessedChargesNotPayment": "Assessed charges (not payment)",
+  "auditLog": "Audit Log",
+  "dealerVerification": "Dealer Verification",
+  "noPendingDealers": "No pending dealers",
+  "owner": "Owner: {name}",
+  "@owner": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "phone": "Phone: {phone}",
+  "@phone": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "license": "License: {license}",
+  "@license": {
+    "placeholders": {
+      "license": {
+        "type": "String"
+      }
+    }
+  },
+  "approve": "Approve",
+  "reject": "Reject",
+
+  "profile": "Profile",
+  "editProfile": "Edit Profile",
+  "signOut": "Sign out",
+  "signOutPrompt": "Sign out?",
+  "signOutConfirm": "You will need to sign in again to continue.",
+  "accountInfo": "ACCOUNT INFO",
+  "region": "Region",
+  "miningSite": "Mining site",
+  "notSpecified": "Not specified",
+  "pending": "Pending",
+  "settingsAndPrivacy": "SETTINGS & PRIVACY",
+  "privacyAndDataPolicy": "Privacy & Data Policy",
+  "appVersion": "App Version",
+  "support": "SUPPORT",
+  "feedbackAndSupport": "Feedback & Support",
+  "officialTraNotConnected": "Official TRA integration is not connected yet.",
+  "profileUpdated": "Profile updated successfully!",
+  "required": "Required",
+  "language": "Language",
+  "english": "English",
+  "swahili": "Swahili",
+
+  "feedbackInbox": "Feedback Inbox",
+  "category": "Category",
+  "feedback": "Feedback",
+  "grievance": "Grievance",
+  "subject": "Subject",
+  "message": "Message",
+  "feedbackSubmitted": "Feedback submitted successfully.",
+  "allSubmissions": "All Submissions",
+  "yourHistory": "Your History",
+  "noFeedbackRecords": "No feedback records found.",
+  "reply": "Reply: {reply}",
+  "@reply": {
+    "placeholders": {
+      "reply": {
+        "type": "String"
+      }
+    }
+  },
+  "respondResolve": "Respond / resolve",
+  "resolveFeedback": "Resolve feedback",
+  "responseOptional": "Response (optional)",
+  "markResolved": "Mark resolved",
+
+  "privacyAndData": "Privacy and data",
+  "draftNotice": "DRAFT — NOT READY FOR PRODUCTION. The operating entity, privacy contact, service providers, retention periods and legal terms still need confirmation.",
+  "dataWeCollect": "Data we collect",
+  "dataCollectDesc": "Account data: name, phone, email, account type and language; region and mining site are optional. We also process listing details, trade measurements and records, and dealer verification information. Passwords/PINs are stored as hashes; sign-in tokens are kept on your device.",
+  "useAndAccess": "Use and access",
+  "useAndAccessDesc": "Data supports accounts, listings, trades, security and support. A miner’s phone appears on a listing only when they choose to share it. Trade participants see relevant counterparty details. Authority access must have a lawful basis and approved integration; Mining Commission/TRA integrations are not connected yet.",
+  "retentionRights": "Retention, providers and your rights",
+  "retentionRightsDesc": "Retention periods, hosting/SMS/analytics providers, cross-border storage and the privacy officer’s contact still need confirmation. You can request access, correction, deletion, restriction or portability, or object to processing. Trade records may have legal retention requirements; a deletion request is reviewed and does not automatically erase such records.",
+  "noticeVersionDesc": "Version {version}. This product notice is a draft, not legal advice or a certification of compliance.",
+  "@noticeVersionDesc": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "useYourDataRights": "Use your data rights",
+  "viewAndCopyDataExport": "View and copy my data export",
+  "requestType": "Request type",
+  "accessExport": "Access / export",
+  "correctMyData": "Correct my data",
+  "requestDeletion": "Request deletion",
+  "restrictProcessing": "Restrict processing",
+  "objectToProcessing": "Object to processing",
+  "dataPortability": "Data portability",
+  "withdrawConsent": "Withdraw optional consent",
+  "detailsOptional": "Details (optional)",
+  "submitRequestForReview": "Submit request for review",
+  "requestsRecordedNote": "Requests are recorded as received for an operator to review. This form does not automatically delete data.",
+  "yourDataExport": "Your data export",
+  "dataExportCopied": "Data export copied to clipboard",
+  "requestRecorded": "Your request has been recorded for review.",
+  "appearance": "Appearance",
+  "theme": "Theme",
+  "lightTheme": "Light",
+  "darkTheme": "Dark",
+  "systemTheme": "System"
+}

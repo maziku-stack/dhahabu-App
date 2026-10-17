@@ -9,6 +9,7 @@ import 'package:dhahabu/core/widgets/dhahabu_logo.dart';
 import 'package:dhahabu/features/auth/providers/auth_provider.dart';
 import 'package:dhahabu/features/transactions/screens/add_new_sale_screen.dart';
 import 'package:dhahabu/features/transactions/screens/receipt_screen.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 
 class MarketScreen extends StatefulWidget {
   final bool showNewListing;
@@ -68,19 +69,20 @@ class _MarketScreenState extends State<MarketScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final user = context.watch<AuthProvider>().user;
     final textTheme = Theme.of(context).textTheme;
 
     final String subtitle = widget.showNewListing
-        ? 'Miner Dashboard'
+        ? l10n.minerDashboard
         : widget.isAdmin
-            ? 'Government Dashboard'
+            ? l10n.govDashboard
             : user?.isDealer == true
-                ? 'Dealer Dashboard'
-                : 'Gold Market';
+                ? l10n.dealerDashboard
+                : l10n.goldMarket;
 
     final String chip = widget.isAdmin
-        ? 'GOVERNMENT'
+        ? l10n.government
         : (user?.role.toUpperCase() ?? 'USER');
 
     return Scaffold(
@@ -102,7 +104,7 @@ class _MarketScreenState extends State<MarketScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Dhahabu',
+              l10n.dhahabu,
               style: textTheme.titleLarge?.copyWith(
                 color: AppColors.white,
                 fontWeight: FontWeight.w700,
@@ -143,7 +145,7 @@ class _MarketScreenState extends State<MarketScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        tooltip: 'Record a sale',
+        tooltip: l10n.recordSaleTooltip,
         backgroundColor: AppColors.gold,
         foregroundColor: AppColors.navy,
         elevation: 4,
@@ -161,19 +163,19 @@ class _MarketScreenState extends State<MarketScreen> {
           padding: const EdgeInsets.fromLTRB(20, 24, 20, 96),
           children: [
             if (widget.showNewListing)
-              ..._minerHeader(user?.fullName ?? '', textTheme)
+              ..._minerHeader(user?.fullName ?? '', textTheme, l10n)
             else if (widget.isAdmin)
               ..._plainHeader(
-                'Welcome, ${_firstName(user?.fullName ?? '', 'Admin')}',
-                'Government oversight and compliance',
+                l10n.welcomeUser(_firstName(user?.fullName ?? '', 'Admin')),
+                l10n.govOversightSubtitle,
                 textTheme,
               )
             else if (user?.isDealer == true)
-              ..._dealerHeader(user?.fullName ?? '', textTheme)
+              ..._dealerHeader(user?.fullName ?? '', textTheme, l10n)
             else
               ..._plainHeader(
-                'Gold market',
-                'Overview and portfolio',
+                l10n.goldMarket,
+                l10n.goldMarketOverviewSubtitle,
                 textTheme,
               ),
             const SizedBox(height: 28),
@@ -181,14 +183,14 @@ class _MarketScreenState extends State<MarketScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Recent Sales',
+                  l10n.recentSales,
                   style: textTheme.titleLarge?.copyWith(
                     color: AppColors.navy,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
-                  '${_transactions.length} total',
+                  l10n.totalCount(_transactions.length),
                   style: textTheme.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
                     fontWeight: FontWeight.w600,
@@ -235,7 +237,7 @@ class _MarketScreenState extends State<MarketScreen> {
                               ),
                             ),
                           ),
-                          _StatusPill(confirmed: confirmed),
+                          _StatusPill(confirmed: confirmed, l10n: l10n),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -252,8 +254,7 @@ class _MarketScreenState extends State<MarketScreen> {
                       if (tax != null) ...[
                         const SizedBox(height: 8),
                         Text(
-                          'Government charge: ${tax['assessment_status'] ?? 'not assessed'}'
-                          '  ·  Payment: ${tax['payment_status'] ?? 'not started'}',
+                          '${l10n.governmentCharge(tax['assessment_status'] ?? l10n.notAssessed)}  ·  ${l10n.paymentStatus(tax['payment_status'] ?? l10n.notStarted)}',
                           style: textTheme.bodySmall?.copyWith(
                             color: AppColors.textSecondary,
                             height: 1.4,
@@ -280,7 +281,7 @@ class _MarketScreenState extends State<MarketScreen> {
                           icon: const Icon(Icons.receipt_long_outlined,
                               size: 18, color: AppColors.gold),
                           label: Text(
-                            'View receipt',
+                            l10n.viewReceipt,
                             style: textTheme.labelLarge?.copyWith(
                               color: AppColors.navy,
                               fontSize: 14,
@@ -310,7 +311,7 @@ class _MarketScreenState extends State<MarketScreen> {
         ),
       ];
 
-  List<Widget> _minerHeader(String fullName, TextTheme t) {
+  List<Widget> _minerHeader(String fullName, TextTheme t, AppLocalizations l10n) {
     double totalWeight = 0;
     double totalRevenue = 0;
     for (var tx in _transactions) {
@@ -322,13 +323,11 @@ class _MarketScreenState extends State<MarketScreen> {
 
     return [
       ..._plainHeader(
-        'Welcome, ${_firstName(fullName, 'Miner')}',
-        'Manage your listings and sales portfolio',
+        l10n.welcomeUser(_firstName(fullName, l10n.miner)),
+        l10n.minerOverviewSubtitle,
         t,
       ),
       const SizedBox(height: 24),
-
-      // Professional Portfolio Summary Card
       Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
@@ -353,9 +352,9 @@ class _MarketScreenState extends State<MarketScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'PORTFOLIO SUMMARY',
-                  style: TextStyle(
+                Text(
+                  l10n.portfolioSummary,
+                  style: const TextStyle(
                     color: AppColors.gold,
                     fontSize: 11,
                     letterSpacing: 1.5,
@@ -369,9 +368,9 @@ class _MarketScreenState extends State<MarketScreen> {
                     color: AppColors.gold.withValues(alpha: .2),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Text(
-                    'Active',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.active,
+                    style: const TextStyle(
                       color: AppColors.gold,
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
@@ -387,9 +386,9 @@ class _MarketScreenState extends State<MarketScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Total Sales Value',
-                        style: TextStyle(color: Colors.white70, fontSize: 12),
+                      Text(
+                        l10n.totalSalesValue,
+                        style: const TextStyle(color: Colors.white70, fontSize: 12),
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -413,9 +412,9 @@ class _MarketScreenState extends State<MarketScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Gold Sold',
-                        style: TextStyle(color: Colors.white70, fontSize: 12),
+                      Text(
+                        l10n.goldSold,
+                        style: const TextStyle(color: Colors.white70, fontSize: 12),
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -438,7 +437,7 @@ class _MarketScreenState extends State<MarketScreen> {
     ];
   }
 
-  List<Widget> _dealerHeader(String fullName, TextTheme t) {
+  List<Widget> _dealerHeader(String fullName, TextTheme t, AppLocalizations l10n) {
     double totalWeight = 0;
     double totalRevenue = 0;
     for (var tx in _transactions) {
@@ -450,8 +449,8 @@ class _MarketScreenState extends State<MarketScreen> {
 
     return [
       ..._plainHeader(
-        'Welcome, ${_firstName(fullName, 'Dealer')}',
-        'Licensed gold buyer',
+        l10n.welcomeUser(_firstName(fullName, l10n.dealer)),
+        l10n.dealerLicensedSubtitle,
         t,
       ),
       const SizedBox(height: 20),
@@ -469,9 +468,9 @@ class _MarketScreenState extends State<MarketScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'DEALER PORTFOLIO SUMMARY',
-              style: TextStyle(
+            Text(
+              l10n.dealerPortfolioSummary,
+              style: const TextStyle(
                 color: AppColors.gold,
                 fontSize: 11,
                 letterSpacing: 1.5,
@@ -485,9 +484,9 @@ class _MarketScreenState extends State<MarketScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Total Purchases',
-                        style: TextStyle(color: Colors.white70, fontSize: 12),
+                      Text(
+                        l10n.totalPurchases,
+                        style: const TextStyle(color: Colors.white70, fontSize: 12),
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -510,9 +509,9 @@ class _MarketScreenState extends State<MarketScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Gold Acquired',
-                        style: TextStyle(color: Colors.white70, fontSize: 12),
+                      Text(
+                        l10n.goldAcquired,
+                        style: const TextStyle(color: Colors.white70, fontSize: 12),
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -536,9 +535,10 @@ class _MarketScreenState extends State<MarketScreen> {
 }
 
 class _StatusPill extends StatelessWidget {
-  const _StatusPill({required this.confirmed});
+  const _StatusPill({required this.confirmed, required this.l10n});
 
   final bool confirmed;
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
@@ -559,7 +559,7 @@ class _StatusPill extends StatelessWidget {
           ),
           const SizedBox(width: 5),
           Text(
-            confirmed ? 'Confirmed' : 'Awaiting',
+            confirmed ? l10n.confirmed : l10n.awaiting,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: color,
                   fontWeight: FontWeight.w700,

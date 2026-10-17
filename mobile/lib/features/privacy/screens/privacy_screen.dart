@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:dhahabu/core/theme/app_colors.dart';
 import 'package:dhahabu/core/network/api_service.dart';
 import 'package:dhahabu/features/auth/providers/auth_provider.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 
 class PrivacyScreen extends StatefulWidget {
   const PrivacyScreen({super.key});
@@ -28,6 +29,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
   }
 
   Future<void> _export() async {
+    final l10n = context.l10n;
     setState(() => _busy = true);
     try {
       final data = await ApiService().exportMyData();
@@ -36,7 +38,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
       await showDialog<void>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Your data export'),
+          title: Text(l10n.yourDataExport),
           content: SizedBox(
             width: 520,
             child: SingleChildScrollView(child: SelectableText(json)),
@@ -44,7 +46,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Close'),
+              child: Text(l10n.close),
             ),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
@@ -57,13 +59,13 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                 if (context.mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Data export copied to clipboard')),
+                    SnackBar(
+                        content: Text(l10n.dataExportCopied)),
                   );
                 }
               },
               icon: const Icon(Icons.copy, size: 18),
-              label: const Text('Copy JSON'),
+              label: Text(l10n.copyJson),
             ),
           ],
         ),
@@ -76,12 +78,13 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
   }
 
   Future<void> _submitRequest() async {
+    final l10n = context.l10n;
     setState(() => _busy = true);
     try {
       await ApiService().submitPrivacyRequest(
           type: _requestType, details: _details.text.trim());
       _details.clear();
-      _message('Your request has been recorded for review.');
+      _message(l10n.requestRecorded);
     } catch (e) {
       _message(e.toString());
     } finally {
@@ -115,6 +118,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final authenticated = context.watch<AuthProvider>().isAuthenticated;
     final textTheme = Theme.of(context).textTheme;
 
@@ -126,7 +130,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          'Privacy and data',
+          l10n.privacyAndData,
           style: textTheme.titleLarge?.copyWith(
             color: AppColors.navy,
             fontWeight: FontWeight.bold,
@@ -147,7 +151,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
               ),
             ),
             child: Text(
-              'DRAFT — NOT READY FOR PRODUCTION. The operating entity, privacy contact, service providers, retention periods and legal terms still need confirmation.',
+              l10n.draftNotice,
               style: textTheme.bodySmall?.copyWith(
                 color: AppColors.navy,
                 height: 1.45,
@@ -156,7 +160,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
           ),
           const SizedBox(height: 24),
           Text(
-            'Data we collect',
+            l10n.dataWeCollect,
             style: textTheme.titleMedium?.copyWith(
               color: AppColors.navy,
               fontWeight: FontWeight.bold,
@@ -164,7 +168,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Account data: name, phone, email, account type and language; region and mining site are optional. We also process listing details, trade measurements and records, and dealer verification information. Passwords/PINs are stored as hashes; sign-in tokens are kept on your device.',
+            l10n.dataCollectDesc,
             style: textTheme.bodyMedium?.copyWith(
               color: AppColors.textSecondary,
               height: 1.5,
@@ -172,7 +176,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
           ),
           const SizedBox(height: 24),
           Text(
-            'Use and access',
+            l10n.useAndAccess,
             style: textTheme.titleMedium?.copyWith(
               color: AppColors.navy,
               fontWeight: FontWeight.bold,
@@ -180,7 +184,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Data supports accounts, listings, trades, security and support. A miner’s phone appears on a listing only when they choose to share it. Trade participants see relevant counterparty details. Authority access must have a lawful basis and approved integration; Mining Commission/TRA integrations are not connected yet.',
+            l10n.useAndAccessDesc,
             style: textTheme.bodyMedium?.copyWith(
               color: AppColors.textSecondary,
               height: 1.5,
@@ -188,7 +192,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
           ),
           const SizedBox(height: 24),
           Text(
-            'Retention, providers and your rights',
+            l10n.retentionRights,
             style: textTheme.titleMedium?.copyWith(
               color: AppColors.navy,
               fontWeight: FontWeight.bold,
@@ -196,7 +200,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Retention periods, hosting/SMS/analytics providers, cross-border storage and the privacy officer’s contact still need confirmation. You can request access, correction, deletion, restriction or portability, or object to processing. Trade records may have legal retention requirements; a deletion request is reviewed and does not automatically erase such records.',
+            l10n.retentionRightsDesc,
             style: textTheme.bodyMedium?.copyWith(
               color: AppColors.textSecondary,
               height: 1.5,
@@ -204,7 +208,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
           ),
           const SizedBox(height: 20),
           Text(
-            'Version $_noticeVersion. This product notice is a draft, not legal advice or a certification of compliance.',
+            l10n.noticeVersionDesc(_noticeVersion),
             style: textTheme.bodySmall?.copyWith(
               color: AppColors.textSecondary,
               fontStyle: FontStyle.italic,
@@ -215,7 +219,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
             const Divider(color: AppColors.border, height: 1),
             const SizedBox(height: 28),
             Text(
-              'Use your data rights',
+              l10n.useYourDataRights,
               style: textTheme.titleLarge?.copyWith(
                 color: AppColors.navy,
                 fontWeight: FontWeight.bold,
@@ -234,7 +238,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                 ),
                 onPressed: _busy ? null : _export,
                 icon: const Icon(Icons.download_outlined, color: AppColors.gold),
-                label: const Text('View and copy my data export'),
+                label: Text(l10n.viewAndCopyDataExport),
               ),
             ),
             const SizedBox(height: 20),
@@ -242,27 +246,27 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
               initialValue: _requestType,
               isExpanded: true,
               style: textTheme.bodyLarge?.copyWith(color: AppColors.navy),
-              items: const [
+              items: [
                 DropdownMenuItem(
-                    value: 'access', child: Text('Access / export')),
+                    value: 'access', child: Text(l10n.accessExport)),
                 DropdownMenuItem(
-                    value: 'correction', child: Text('Correct my data')),
+                    value: 'correction', child: Text(l10n.correctMyData)),
                 DropdownMenuItem(
-                    value: 'deletion', child: Text('Request deletion')),
+                    value: 'deletion', child: Text(l10n.requestDeletion)),
                 DropdownMenuItem(
-                    value: 'restriction', child: Text('Restrict processing')),
+                    value: 'restriction', child: Text(l10n.restrictProcessing)),
                 DropdownMenuItem(
-                    value: 'objection', child: Text('Object to processing')),
+                    value: 'objection', child: Text(l10n.objectToProcessing)),
                 DropdownMenuItem(
-                    value: 'portability', child: Text('Data portability')),
+                    value: 'portability', child: Text(l10n.dataPortability)),
                 DropdownMenuItem(
                     value: 'withdraw_consent',
-                    child: Text('Withdraw optional consent')),
+                    child: Text(l10n.withdrawConsent)),
               ],
               onChanged: _busy
                   ? null
                   : (value) => setState(() => _requestType = value ?? 'access'),
-              decoration: _decoration(icon: Icons.shield_outlined, label: 'Request type'),
+              decoration: _decoration(icon: Icons.shield_outlined, label: l10n.requestType),
             ),
             const SizedBox(height: 18),
             TextField(
@@ -271,7 +275,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
               maxLines: 3,
               style: textTheme.bodyLarge?.copyWith(color: AppColors.navy),
               cursorColor: AppColors.gold,
-              decoration: _decoration(icon: Icons.notes_rounded, label: 'Details (optional)'),
+              decoration: _decoration(icon: Icons.notes_rounded, label: l10n.detailsOptional),
             ),
             const SizedBox(height: 12),
             SizedBox(
@@ -286,15 +290,15 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                   ),
                 ),
                 onPressed: _busy ? null : _submitRequest,
-                child: const Text(
-                  'Submit request for review',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                child: Text(
+                  l10n.submitRequestForReview,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
             ),
             const SizedBox(height: 12),
             Text(
-              'Requests are recorded as received for an operator to review. This form does not automatically delete data.',
+              l10n.requestsRecordedNote,
               style: textTheme.bodySmall?.copyWith(
                 color: AppColors.textSecondary,
                 height: 1.4,

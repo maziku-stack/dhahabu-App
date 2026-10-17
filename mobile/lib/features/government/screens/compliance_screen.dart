@@ -5,6 +5,7 @@ import 'package:dhahabu/core/network/api_service.dart';
 import 'package:dhahabu/core/theme/app_colors.dart';
 import 'package:dhahabu/core/widgets/app_card.dart';
 import 'package:dhahabu/core/widgets/dhahabu_logo.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 
 class ComplianceScreen extends StatefulWidget {
   const ComplianceScreen({super.key});
@@ -40,6 +41,7 @@ class _ComplianceScreenState extends State<ComplianceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final summary = _data?['summary'] as Map<String, dynamic>? ?? {};
     final secondary = Theme.of(context).colorScheme.onSurfaceVariant;
 
@@ -55,21 +57,21 @@ class _ComplianceScreenState extends State<ComplianceScreen> {
           padding: EdgeInsets.only(left: 12),
           child: Center(child: DhahabuLogo(size: 36)),
         ),
-        title: const Column(
+        title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Dhahabu',
-              style: TextStyle(
+              l10n.dhahabu,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: AppColors.white,
               ),
             ),
             Text(
-              'GOVERNMENT DASHBOARD',
-              style: TextStyle(
+              l10n.government,
+              style: const TextStyle(
                 fontSize: 10,
                 letterSpacing: 1.4,
                 color: AppColors.gold,
@@ -94,9 +96,9 @@ class _ComplianceScreenState extends State<ComplianceScreen> {
                     color: AppColors.gold.withValues(alpha: .4),
                   ),
                 ),
-                child: const Text(
-                  'GOVERNMENT',
-                  style: TextStyle(
+                child: Text(
+                  l10n.government,
+                  style: const TextStyle(
                     fontSize: 10,
                     letterSpacing: .8,
                     color: AppColors.gold,
@@ -122,9 +124,9 @@ class _ComplianceScreenState extends State<ComplianceScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'GOVERNMENT DASHBOARD',
-                          style: TextStyle(
+                        Text(
+                          l10n.government,
+                          style: const TextStyle(
                             color: AppColors.gold,
                             fontSize: 11,
                             letterSpacing: 1.4,
@@ -132,9 +134,9 @@ class _ComplianceScreenState extends State<ComplianceScreen> {
                           ),
                         ),
                         const SizedBox(height: 9),
-                        const Text(
-                          'Sector overview',
-                          style: TextStyle(
+                        Text(
+                          l10n.govOverview,
+                          style: const TextStyle(
                             color: AppColors.navy,
                             fontSize: 24,
                             fontWeight: FontWeight.w700,
@@ -142,7 +144,7 @@ class _ComplianceScreenState extends State<ComplianceScreen> {
                         ),
                         const SizedBox(height: 7),
                         Text(
-                          'Monitor reported gold trade and royalties.',
+                          l10n.govOverviewSubtitle,
                           style: TextStyle(
                             color: AppColors.textSecondary,
                             fontSize: 14,
@@ -162,13 +164,13 @@ class _ComplianceScreenState extends State<ComplianceScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Trade summary',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: AppColors.navy),
+            Text(
+              l10n.confirmedTransactions,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: AppColors.navy),
             ),
             const SizedBox(height: 5),
             Text(
-              'Totals from confirmed transactions',
+              l10n.govOverviewSubtitle,
               style: TextStyle(color: secondary, fontSize: 14),
             ),
             const SizedBox(height: 14),
@@ -187,26 +189,26 @@ class _ComplianceScreenState extends State<ComplianceScreen> {
                     children: [
                       _metric(
                         width: width,
-                        label: 'Transactions',
+                        label: l10n.confirmedTransactions,
                         value: '${summary['transaction_count'] ?? 0}',
                         icon: Icons.receipt_long_outlined,
                       ),
                       _metric(
                         width: width,
-                        label: 'Gold traded',
+                        label: l10n.goldTraded,
                         value: '${summary['total_volume_grams'] ?? 0} g',
                         icon: Icons.scale_outlined,
                       ),
                       _metric(
                         width: width,
-                        label: 'Trade value',
+                        label: l10n.totalTradeValue,
                         value:
                             'TSh ${_fmt.format(double.tryParse('${summary['total_value_tzs']}') ?? 0)}',
                         icon: Icons.payments_outlined,
                       ),
                       _metric(
                         width: width,
-                        label: 'Assessed charges (not payment)',
+                        label: l10n.assessedChargesNotPayment,
                         value:
                             'TSh ${_fmt.format(double.tryParse('${summary['total_assessed_charges_tzs']}') ?? 0)}',
                         icon: Icons.account_balance_wallet_outlined,

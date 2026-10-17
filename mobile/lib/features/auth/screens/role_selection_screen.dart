@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dhahabu/core/theme/app_colors.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 
 class RoleSelectionScreen extends StatefulWidget {
   const RoleSelectionScreen({super.key});
@@ -13,8 +14,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
   String? _error;
 
   void _continue() {
+    final l10n = context.l10n;
     if (_selectedRole == null) {
-      setState(() => _error = 'Please select whether you are a Miner or Dealer.');
+      setState(() => _error = l10n.selectRoleError);
       return;
     }
     Navigator.pushNamed(
@@ -26,6 +28,8 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -67,20 +71,20 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  const Text(
-                    'Choose your role',
+                  Text(
+                    l10n.chooseRole,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppColors.navy,
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Select how you will participate in the Dhahabu platform.',
+                  Text(
+                    l10n.roleSelectionSubtitle,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 16,
                     ),
@@ -100,7 +104,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                     children: [
                       Expanded(
                         child: _roleOption(
-                          'Miner',
+                          l10n.miner,
                           'assets/icon/mirer.png',
                           _selectedRole == 'miner',
                           () => setState(() {
@@ -112,7 +116,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                       const SizedBox(width: 32),
                       Expanded(
                         child: _roleOption(
-                          'Dealer',
+                          l10n.dealer,
                           'assets/icon/dealer.jpg',
                           _selectedRole == 'dealer',
                           () => setState(() {
@@ -126,23 +130,23 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                   const SizedBox(height: 40),
                   ElevatedButton(
                     onPressed: _continue,
-                    child: const Text('Continue'),
+                    child: Text(l10n.continueText),
                   ),
                   const SizedBox(height: 16),
                   TextButton(
                     onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
                     child: RichText(
-                      text: const TextSpan(
-                        text: 'Already have an account? ',
-                        style: TextStyle(
+                      text: TextSpan(
+                        text: l10n.alreadyHaveAccount,
+                        style: const TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                         ),
                         children: [
                           TextSpan(
-                            text: 'Sign in',
-                            style: TextStyle(
+                            text: l10n.signIn,
+                            style: const TextStyle(
                               color: AppColors.gold,
                               fontWeight: FontWeight.bold,
                             ),

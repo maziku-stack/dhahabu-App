@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:dhahabu/core/theme/app_colors.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 
 class ReceiptScreen extends StatelessWidget {
   final Map<String, dynamic> txn;
@@ -10,6 +11,7 @@ class ReceiptScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final fmt = NumberFormat('#,##0.00');
     final textTheme = Theme.of(context).textTheme;
     final tax = txn['tax_record'] as Map<String, dynamic>?;
@@ -31,14 +33,13 @@ class ReceiptScreen extends StatelessWidget {
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          'Receipt',
+          l10n.receipt,
           style: textTheme.titleLarge?.copyWith(color: AppColors.navy),
         ),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(24, 16, 24, 40),
         children: [
-          // ---------- Status header ----------
           Center(
             child: Container(
               width: 72,
@@ -56,7 +57,7 @@ class ReceiptScreen extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           Text(
-            confirmed ? 'Sale confirmed' : 'Waiting for confirmation',
+            confirmed ? l10n.saleConfirmed : l10n.waitingForConfirmation,
             textAlign: TextAlign.center,
             style: textTheme.titleLarge
                 ?.copyWith(color: AppColors.navy, fontSize: 22),
@@ -74,7 +75,7 @@ class ReceiptScreen extends StatelessWidget {
           if (!confirmed) ...[
             const SizedBox(height: 12),
             Text(
-              'Both the miner and the dealer must open Sales and confirm with their own PIN.',
+              l10n.bothPartiesMustConfirmNote,
               textAlign: TextAlign.center,
               style: textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
@@ -84,52 +85,48 @@ class ReceiptScreen extends StatelessWidget {
           ],
           const SizedBox(height: 12),
           Text(
-            'Transaction ${txn['id']}',
+            l10n.transactionId('${txn['id']}'),
             textAlign: TextAlign.center,
             style: textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 32),
 
-          // ---------- Parties ----------
-          const _SectionTitle('PARTIES'),
-          _DetailRow('Miner', '${txn['miner_name'] ?? txn['miner_phone'] ?? '-'}'),
-          _DetailRow('Dealer', '${txn['dealer_name'] ?? txn['dealer_phone'] ?? '-'}'),
+          _SectionTitle(l10n.parties),
+          _DetailRow(l10n.miner, '${txn['miner_name'] ?? txn['miner_phone'] ?? '-'}'),
+          _DetailRow(l10n.dealer, '${txn['dealer_name'] ?? txn['dealer_phone'] ?? '-'}'),
           const SizedBox(height: 28),
 
-          // ---------- Gold ----------
-          const _SectionTitle('GOLD'),
-          _DetailRow('Weight', '${txn['weight_grams']} g'),
-          _DetailRow('Karat', '${txn['karat']}'),
-          _DetailRow('Assay status', '${txn['assay_status'] ?? 'unverified'}'),
+          _SectionTitle(l10n.gold),
+          _DetailRow(l10n.weight, '${txn['weight_grams']} g'),
+          _DetailRow(l10n.karat, '${txn['karat']}'),
+          _DetailRow(l10n.assayStatus, '${txn['assay_status'] ?? l10n.unverified}'),
           if (txn['assay_status'] == 'verified') ...[
             if (has(txn['measured_weight_grams']))
-              _DetailRow('Measured weight', '${txn['measured_weight_grams']} g'),
+              _DetailRow(l10n.measuredWeight, '${txn['measured_weight_grams']} g'),
             if (has(txn['measured_karat']))
-              _DetailRow('Measured karat', '${txn['measured_karat']}'),
+              _DetailRow(l10n.measuredKarat, '${txn['measured_karat']}'),
             if (has(txn['measured_purity']))
-              _DetailRow('Measured purity', '${txn['measured_purity']}'),
+              _DetailRow(l10n.measuredPurity, '${txn['measured_purity']}'),
             if (has(txn['assay_device_id']))
-              _DetailRow('Assay device', '${txn['assay_device_id']}'),
+              _DetailRow(l10n.assayDevice, '${txn['assay_device_id']}'),
             if (has(txn['assay_reference']))
-              _DetailRow('Assay reference', '${txn['assay_reference']}'),
+              _DetailRow(l10n.assayReference, '${txn['assay_reference']}'),
           ],
           const SizedBox(height: 28),
 
-          // ---------- Price ----------
-          const _SectionTitle('PRICE'),
-          _DetailRow('Price basis', '${txn['price_basis'] ?? 'party_agreed'}'),
-          _DetailRow('Agreed price', 'TSh ${fmt.format(price)}'),
+          _SectionTitle(l10n.price),
+          _DetailRow(l10n.priceBasis, '${txn['price_basis'] ?? 'party_agreed'}'),
+          _DetailRow(l10n.agreedPrice, 'TSh ${fmt.format(price)}'),
 
-          // ---------- Government charges ----------
           if (tax != null) ...[
             const SizedBox(height: 28),
-            const _SectionTitle('GOVERNMENT CHARGES'),
-            _DetailRow('Assessment', '${tax['assessment_status'] ?? 'unavailable'}'),
-            _DetailRow('Payment', '${tax['payment_status'] ?? 'not started'}'),
+            _SectionTitle(l10n.governmentCharges),
+            _DetailRow(l10n.assessment, '${tax['assessment_status'] ?? l10n.unavailable}'),
+            _DetailRow(l10n.payment, '${tax['payment_status'] ?? l10n.notStarted}'),
             if (has(tax['authority_reference']))
-              _DetailRow('Authority reference', '${tax['authority_reference']}'),
+              _DetailRow(l10n.authorityReference, '${tax['authority_reference']}'),
             if (tax['royalty_amount'] != null)
-              _DetailRow('Assessed amount', 'TSh ${money(tax['royalty_amount'])}'),
+              _DetailRow(l10n.assessedAmount, 'TSh ${money(tax['royalty_amount'])}'),
             for (final charge in charges) ...[
               const SizedBox(height: 20),
               Text(
@@ -143,23 +140,22 @@ class ReceiptScreen extends StatelessWidget {
               if (charge['assessment_status'] == 'assessed' &&
                   charge['amount'] != null)
                 _DetailRow(
-                  'Assessed',
+                  l10n.assessed,
                   '${charge['currency']} ${money(charge['amount'])}',
                 ),
-              _DetailRow('Payment', '${charge['payment_status']}'),
+              _DetailRow(l10n.payment, '${charge['payment_status']}'),
               if (has(charge['legal_basis']))
-                _DetailRow('Legal basis', '${charge['legal_basis']}'),
+                _DetailRow(l10n.legalBasis, '${charge['legal_basis']}'),
               if (has(charge['payment_reference']))
-                _DetailRow('Payment reference', '${charge['payment_reference']}'),
+                _DetailRow(l10n.paymentReference, '${charge['payment_reference']}'),
             ],
           ],
 
-          // ---------- Agreements ----------
           if (!confirmed) ...[
             const SizedBox(height: 28),
-            const _SectionTitle('AGREEMENT'),
-            _DetailRow('Miner', minerConfirmed ? 'Recorded' : 'Waiting'),
-            _DetailRow('Dealer', dealerConfirmed ? 'Recorded' : 'Waiting'),
+            _SectionTitle(l10n.agreement),
+            _DetailRow(l10n.miner, minerConfirmed ? l10n.recorded : l10n.waiting),
+            _DetailRow(l10n.dealer, dealerConfirmed ? l10n.recorded : l10n.waiting),
           ],
 
           const SizedBox(height: 36),
@@ -175,7 +171,7 @@ class ReceiptScreen extends StatelessWidget {
               ),
               onPressed: () {},
               icon: const Icon(Icons.picture_as_pdf_outlined, size: 20),
-              label: const Text('Download PDF (coming soon)'),
+              label: Text(l10n.downloadPdf),
             ),
           ),
           const SizedBox(height: 12),
@@ -192,7 +188,7 @@ class ReceiptScreen extends StatelessWidget {
               ),
               onPressed: () => Navigator.popUntil(context, (r) => r.isFirst),
               child: Text(
-                'Back to home',
+                l10n.backToHome,
                 style: textTheme.labelLarge?.copyWith(color: AppColors.navy),
               ),
             ),

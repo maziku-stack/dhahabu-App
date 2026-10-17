@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:dhahabu/core/network/api_service.dart';
 import 'package:dhahabu/core/theme/app_colors.dart';
 import 'package:dhahabu/features/auth/providers/auth_provider.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 import 'add_new_sale_screen.dart';
 import 'receipt_screen.dart';
 
@@ -50,26 +51,27 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   }
 
   Future<void> _confirm(String id) async {
+    final l10n = context.l10n;
     final pinController = TextEditingController();
     final pin = await showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Confirm with your PIN'),
+        title: Text(l10n.confirmWithPinTitle),
         content: TextField(
           controller: pinController,
           autofocus: true,
           obscureText: true,
           keyboardType: TextInputType.number,
-          decoration: const InputDecoration(labelText: 'Account PIN'),
+          decoration: InputDecoration(labelText: l10n.accountPin),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(dialogContext, pinController.text),
-            child: const Text('Confirm sale'),
+            child: Text(l10n.confirmSale),
           ),
         ],
       ),
@@ -95,6 +97,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final user = context.watch<AuthProvider>().user;
     final textTheme = Theme.of(context).textTheme;
 
@@ -106,12 +109,12 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          'Sales',
+          l10n.sales,
           style: textTheme.titleLarge?.copyWith(color: AppColors.navy),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        tooltip: 'Record a sale',
+        tooltip: l10n.recordSaleTooltip,
         backgroundColor: AppColors.gold,
         foregroundColor: AppColors.navy,
         elevation: 4,
@@ -129,7 +132,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           child: CircularProgressIndicator(color: AppColors.gold),
         )
             : _items.isEmpty
-            ? const _EmptyState()
+            ? _EmptyState(l10n: l10n)
             : ListView.separated(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 96),
@@ -174,7 +177,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                           ),
                         ),
                       ),
-                      _StatusPill(confirmed: confirmed),
+                      _StatusPill(confirmed: confirmed, l10n: l10n),
                     ],
                   ),
                   const SizedBox(height: 10),
@@ -191,8 +194,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   if (tax != null) ...[
                     const SizedBox(height: 10),
                     Text(
-                      'Government charge: ${tax['assessment_status'] ?? 'not assessed'}'
-                          '  ·  Payment: ${tax['payment_status'] ?? 'not started'}',
+                      '${l10n.governmentCharge(tax['assessment_status'] ?? l10n.notAssessed)}  ·  ${l10n.paymentStatus(tax['payment_status'] ?? l10n.notStarted)}',
                       style: textTheme.bodySmall?.copyWith(
                         color: AppColors.textSecondary,
                         height: 1.4,
@@ -215,7 +217,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                         ),
                         onPressed: () => _confirm(t['id'].toString()),
                         child: Text(
-                          'Agree to sale & sign',
+                          l10n.agreeToSaleAndSign,
                           style: textTheme.labelLarge
                               ?.copyWith(color: AppColors.navy),
                         ),
@@ -242,7 +244,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       icon: const Icon(Icons.receipt_long_outlined,
                           size: 18, color: AppColors.gold),
                       label: Text(
-                        'View receipt',
+                        l10n.viewReceipt,
                         style: textTheme.labelLarge?.copyWith(
                           color: AppColors.navy,
                           fontSize: 14,
@@ -261,9 +263,10 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
 }
 
 class _StatusPill extends StatelessWidget {
-  const _StatusPill({required this.confirmed});
+  const _StatusPill({required this.confirmed, required this.l10n});
 
   final bool confirmed;
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
@@ -284,7 +287,7 @@ class _StatusPill extends StatelessWidget {
           ),
           const SizedBox(width: 5),
           Text(
-            confirmed ? 'Confirmed' : 'Awaiting',
+            confirmed ? l10n.confirmed : l10n.awaiting,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
               color: color,
               fontWeight: FontWeight.w700,
@@ -297,7 +300,9 @@ class _StatusPill extends StatelessWidget {
 }
 
 class _EmptyState extends StatelessWidget {
-  const _EmptyState();
+  const _EmptyState({required this.l10n});
+
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
@@ -321,14 +326,14 @@ class _EmptyState extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         Text(
-          'No sales yet',
+          l10n.noSalesYet,
           textAlign: TextAlign.center,
           style: textTheme.titleLarge
               ?.copyWith(color: AppColors.navy, fontSize: 22),
         ),
         const SizedBox(height: 12),
         Text(
-          'Sales you record or confirm will appear here with their receipts. Use the + button below to record a new sale.',
+          l10n.noSalesDesc,
           textAlign: TextAlign.center,
           style: textTheme.bodyMedium?.copyWith(
             color: AppColors.textSecondary,

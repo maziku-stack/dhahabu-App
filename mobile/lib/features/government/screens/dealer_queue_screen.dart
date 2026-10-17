@@ -3,6 +3,7 @@ import 'package:dhahabu/core/network/api_service.dart';
 import 'package:dhahabu/core/theme/app_colors.dart';
 import 'package:dhahabu/core/widgets/app_card.dart';
 import 'package:dhahabu/core/widgets/status_badge.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 
 class DealerQueueScreen extends StatefulWidget {
   const DealerQueueScreen({super.key});
@@ -39,12 +40,13 @@ class _DealerQueueScreenState extends State<DealerQueueScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
-      appBar: AppBar(title: const Text('Dealer Verification')),
+      appBar: AppBar(title: Text(l10n.dealerVerification)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _items.isEmpty
-              ? const Center(child: Text('No pending dealers'))
+              ? Center(child: Text(l10n.noPendingDealers))
               : ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: _items.length,
@@ -59,10 +61,10 @@ class _DealerQueueScreenState extends State<DealerQueueScreen> {
                             Text(d['business_name'] ?? '',
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold)),
-                            Text('Owner: ${d['owner_name'] ?? '—'}'),
-                            Text('Phone: ${d['owner_phone'] ?? '—'}'),
+                            Text(l10n.owner(d['owner_name'] ?? '—')),
+                            Text(l10n.phone(d['owner_phone'] ?? '—')),
                             Text(
-                                'License: ${d['license_number'] ?? 'Not provided'}'),
+                                l10n.license(d['license_number'] ?? 'Not provided')),
                             StatusBadge.pending(),
                             const SizedBox(height: 12),
                             Row(
@@ -71,14 +73,14 @@ class _DealerQueueScreenState extends State<DealerQueueScreen> {
                                     child: ElevatedButton(
                                         onPressed: () =>
                                             _act(d['id'].toString(), true),
-                                        child: const Text('Approve'))),
+                                        child: Text(l10n.approve))),
                                 const SizedBox(width: 8),
                                 Expanded(
                                     child: OutlinedButton(
                                         onPressed: () =>
                                             _act(d['id'].toString(), false),
-                                        child: const Text('Reject',
-                                            style: TextStyle(
+                                        child: Text(l10n.reject,
+                                            style: const TextStyle(
                                                 color: AppColors.error)))),
                               ],
                             ),

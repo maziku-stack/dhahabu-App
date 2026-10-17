@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AppSettingsProvider extends ChangeNotifier {
   static const _languageKey = 'app_language';
-  static const _themeKey = 'app_dark_mode';
+  static const _themeKey = 'theme_mode';
 
   Locale _locale = const Locale('en');
   ThemeMode _themeMode = ThemeMode.light;
@@ -11,7 +11,11 @@ class AppSettingsProvider extends ChangeNotifier {
   Locale get locale => _locale;
   ThemeMode get themeMode => _themeMode;
   bool get isSwahili => _locale.languageCode == 'sw';
-  bool get isDark => _themeMode == ThemeMode.dark;
+  bool get isDark {
+    if (_themeMode == ThemeMode.dark) return true;
+    if (_themeMode == ThemeMode.light) return false;
+    return WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark;
+  }
 
   AppSettingsProvider() {
     _load();
@@ -20,9 +24,19 @@ class AppSettingsProvider extends ChangeNotifier {
   Future<void> _load() async {
     final preferences = await SharedPreferences.getInstance();
     _locale = Locale(preferences.getString(_languageKey) ?? 'en');
-    _themeMode = (preferences.getBool(_themeKey) ?? false)
-        ? ThemeMode.dark
-        : ThemeMode.light;
+    final themeStr = preferences.getString(_themeKey) ?? 'light';
+    switch (themeStr) {
+      case 'dark':
+        _themeMode = ThemeMode.dark;
+        break;
+      case 'system':
+        _themeMode = ThemeMode.system;
+        break;
+      case 'light':
+      default:
+        _themeMode = ThemeMode.light;
+        break;
+    }
     notifyListeners();
   }
 
@@ -33,10 +47,18 @@ class AppSettingsProvider extends ChangeNotifier {
     await preferences.setString(_languageKey, languageCode);
   }
 
-  Future<void> toggleTheme() async {
-    _themeMode = isDark ? ThemeMode.light : ThemeMode.dark;
+  Future<void> setThemeMode(ThemeMode mode) async {
+    _themeMode = mode;
     notifyListeners();
     final preferences = await SharedPreferences.getInstance();
-    await preferences.setBool(_themeKey, isDark);
+    String modeStr = 'light';
+    if (mode == ThemeMode.dark) modeStr = 'dark';
+    if (mode == ThemeMode.system) modeStr = 'system';
+    await preferences.setString(_themeKey, modeStr);
+  }
+
+  Future<void> toggleTheme() async {
+    final newMode = isDark ? ThemeMode.light : ThemeMode.dark;
+    await setThemeMode(newMode);
   }
 }

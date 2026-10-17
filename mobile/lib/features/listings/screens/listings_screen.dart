@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:dhahabu/core/network/api_service.dart';
 import 'package:dhahabu/core/theme/app_colors.dart';
-import 'package:dhahabu/core/widgets/app_card.dart';
 import 'package:dhahabu/features/listings/screens/listing_new_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:dhahabu/features/auth/providers/auth_provider.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 
 class ListingsScreen extends StatefulWidget {
   final bool mineOnly;
@@ -50,6 +50,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final user = context.watch<AuthProvider>().user;
     final textTheme = Theme.of(context).textTheme;
 
@@ -61,13 +62,13 @@ class _ListingsScreenState extends State<ListingsScreen> {
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          widget.mineOnly ? 'My Listings' : 'Browse Listings',
+          widget.mineOnly ? l10n.myListings : l10n.browseListings,
           style: textTheme.titleLarge?.copyWith(color: AppColors.navy),
         ),
       ),
       floatingActionButton: widget.mineOnly
           ? FloatingActionButton(
-              tooltip: 'Create a listing',
+              tooltip: l10n.createListing,
               backgroundColor: AppColors.gold,
               foregroundColor: AppColors.navy,
               elevation: 4,
@@ -105,7 +106,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        'No open listings',
+                        l10n.noOpenListings,
                         textAlign: TextAlign.center,
                         style: textTheme.titleLarge
                             ?.copyWith(color: AppColors.navy, fontSize: 22),
@@ -113,8 +114,8 @@ class _ListingsScreenState extends State<ListingsScreen> {
                       const SizedBox(height: 12),
                       Text(
                         widget.mineOnly
-                            ? 'Listings you publish will appear here. Use the + button below to create one.'
-                            : 'Open gold listings from verified miners will appear here.',
+                            ? l10n.myListingsEmptyDesc
+                            : l10n.browseListingsEmptyDesc,
                         textAlign: TextAlign.center,
                         style: textTheme.bodyMedium?.copyWith(
                           color: AppColors.textSecondary,
@@ -146,10 +147,10 @@ class _ListingsScreenState extends State<ListingsScreen> {
                               SwitchListTile(
                                 value: l['share_phone'] == true,
                                 contentPadding: EdgeInsets.zero,
-                                activeColor: AppColors.navy,
-                                title: const Text(
-                                  'Share phone on listing',
-                                  style: TextStyle(
+                                activeThumbColor: AppColors.navy,
+                                title: Text(
+                                  l10n.sharePhoneOnListing,
+                                  style: const TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
                                     color: AppColors.navy,
@@ -209,14 +210,14 @@ class _ListingsScreenState extends State<ListingsScreen> {
                               const SizedBox(height: 10),
                               if (l['miner_phone'] == null)
                                 Text(
-                                  'Seller phone is private.',
+                                  l10n.sellerPhonePrivate,
                                   style: textTheme.bodySmall?.copyWith(
                                     color: AppColors.textSecondary,
                                   ),
                                 )
                               else
                                 Text(
-                                  'Contact: ${l['miner_phone']}',
+                                  l10n.contactSeller('${l['miner_phone']}'),
                                   style: textTheme.bodySmall?.copyWith(
                                     color: AppColors.navy,
                                     fontWeight: FontWeight.w600,

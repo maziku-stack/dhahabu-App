@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dhahabu/core/network/api_service.dart';
 import 'package:dhahabu/core/theme/app_colors.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 
 class ListingNewScreen extends StatefulWidget {
   const ListingNewScreen({super.key});
@@ -81,6 +82,7 @@ class _ListingNewScreenState extends State<ListingNewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final textTheme = Theme.of(context).textTheme;
     final fieldStyle = textTheme.bodyLarge?.copyWith(
       color: AppColors.navy,
@@ -96,7 +98,7 @@ class _ListingNewScreenState extends State<ListingNewScreen> {
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          'Create New Listing',
+          l10n.createNewListing,
           style: textTheme.titleLarge?.copyWith(
             color: AppColors.navy,
             fontWeight: FontWeight.bold,
@@ -137,7 +139,7 @@ class _ListingNewScreenState extends State<ListingNewScreen> {
               ),
               const SizedBox(height: 20),
             ],
-            _label('Weight (grams)'),
+            _label(l10n.weightGrams),
             TextField(
               controller: _weight,
               keyboardType:
@@ -147,7 +149,7 @@ class _ListingNewScreenState extends State<ListingNewScreen> {
               decoration: _decoration(icon: Icons.scale_outlined, suffix: 'g'),
             ),
             const SizedBox(height: 18),
-            _label('Karat'),
+            _label(l10n.karat),
             DropdownButtonFormField<String>(
               initialValue: _karat,
               isExpanded: true,
@@ -161,7 +163,7 @@ class _ListingNewScreenState extends State<ListingNewScreen> {
               decoration: _decoration(icon: Icons.diamond_outlined),
             ),
             const SizedBox(height: 18),
-            _label('Asking price (TZS total)'),
+            _label(l10n.askingPriceTzs),
             TextField(
               controller: _price,
               keyboardType:
@@ -171,7 +173,7 @@ class _ListingNewScreenState extends State<ListingNewScreen> {
               decoration: _decoration(icon: Icons.payments_outlined, suffix: 'TZS'),
             ),
             const SizedBox(height: 18),
-            _label('Notes'),
+            _label(l10n.notes),
             TextField(
               controller: _notes,
               maxLines: 3,
@@ -187,17 +189,17 @@ class _ListingNewScreenState extends State<ListingNewScreen> {
                   : (value) => setState(() => _sharePhone = value ?? false),
               activeColor: AppColors.navy,
               contentPadding: EdgeInsets.zero,
-              title: const Text(
-                'Show my phone number on this listing',
-                style: TextStyle(
+              title: Text(
+                l10n.showPhoneOnListing,
+                style: const TextStyle(
                   color: AppColors.navy,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              subtitle: const Text(
-                'Only logged-in users browsing listings can see it. Off by default.',
-                style: TextStyle(
+              subtitle: Text(
+                l10n.showPhoneSubtitle,
+                style: const TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 12,
                 ),
@@ -226,7 +228,7 @@ class _ListingNewScreenState extends State<ListingNewScreen> {
                         ),
                       )
                     : Text(
-                        'Publish listing',
+                        l10n.publishListing,
                         style: textTheme.labelLarge
                             ?.copyWith(color: AppColors.navy),
                       ),

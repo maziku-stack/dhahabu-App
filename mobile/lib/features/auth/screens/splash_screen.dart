@@ -9,6 +9,7 @@ import 'package:dhahabu/core/widgets/dhahabu_logo.dart';
 import 'package:dhahabu/features/onboarding/screens/onboarding_screen.dart';
 import 'package:dhahabu/features/shell/screens/role_router.dart';
 import 'package:dhahabu/features/auth/screens/login_screen.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -93,6 +94,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: AppColors.navy,
       body: FadeTransition(
@@ -113,7 +115,7 @@ class _SplashScreenState extends State<SplashScreen>
                         const DhahabuLogo(size: 88),
                         const SizedBox(height: 20),
                         Text(
-                          'Dhahabu',
+                          l10n.dhahabu,
                           style: GoogleFonts.urbanist(
                             fontSize: 32,
                             fontWeight: FontWeight.w700,
@@ -122,7 +124,7 @@ class _SplashScreenState extends State<SplashScreen>
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Biashara ya Dhahabu kwa Uwazi',
+                          l10n.splashSubtitle,
                           style: GoogleFonts.publicSans(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
@@ -145,7 +147,7 @@ class _SplashScreenState extends State<SplashScreen>
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'v1.0.0',
+                            l10n.version,
                             style: GoogleFonts.publicSans(
                               fontSize: 12,
                               fontWeight: FontWeight.w400,

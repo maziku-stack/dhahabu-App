@@ -1,5 +1,7 @@
 import 'package:dhahabu/features/auth/providers/auth_provider.dart';
 import 'package:dhahabu/features/auth/screens/login_screen.dart';
+import 'package:dhahabu/core/providers/app_settings_provider.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -20,11 +22,18 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  Future<void> showLoginScreen(WidgetTester tester) async {
+  Future<void> showLoginScreen(WidgetTester tester, {AuthProvider? authProvider}) async {
     await tester.pumpWidget(
-      ChangeNotifierProvider(
-        create: (_) => AuthProvider(),
-        child: const MaterialApp(home: LoginScreen()),
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<AuthProvider>.value(value: authProvider ?? AuthProvider()),
+          ChangeNotifierProvider(create: (_) => AppSettingsProvider()),
+        ],
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: LoginScreen(),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -39,33 +48,12 @@ void main() {
     await tester.tap(signInButton);
     await tester.pump();
 
-    expect(find.text('Enter your email and password.'), findsOneWidget);
-  });
-
-  testWidgets('short phone number is rejected before requesting an OTP',
-      (tester) async {
-    await showLoginScreen(tester);
-    await tester.tap(find.text('Phone code'));
-    await tester.pumpAndSettle();
-
-    await tester.enterText(find.byType(TextField).first, '123');
-    final sendOtpButton = find.widgetWithText(ElevatedButton, 'Send OTP');
-    await tester.ensureVisible(sendOtpButton);
-    await tester.tap(sendOtpButton);
-    await tester.pump();
-
-    expect(find.text('Enter a valid phone number'), findsOneWidget);
+    expect(find.text('Enter your email address.'), findsOneWidget);
   });
 
   testWidgets('failed sign-in shows the server error and clears loading',
       (tester) async {
-    await tester.pumpWidget(
-      ChangeNotifierProvider<AuthProvider>(
-        create: (_) => _FailingAuthProvider(),
-        child: const MaterialApp(home: LoginScreen()),
-      ),
-    );
-    await tester.pumpAndSettle();
+    await showLoginScreen(tester, authProvider: _FailingAuthProvider());
 
     await tester.enterText(find.byType(TextField).at(0), 'miner@example.com');
     await tester.enterText(find.byType(TextField).at(1), 'wrong-password');

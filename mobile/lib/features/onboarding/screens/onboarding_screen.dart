@@ -3,19 +3,47 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dhahabu/core/theme/app_colors.dart';
 import 'package:dhahabu/features/auth/screens/login_screen.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 
-class OnboardingPage {
-  const OnboardingPage({
+class OnboardingPageInfo {
+  const OnboardingPageInfo({
     required this.image,
-    required this.title,
-    required this.description,
+    required String titleKey,
+    required String descKey,
     required this.color,
-  });
+  })  : _titleKey = titleKey,
+        _descKey = descKey;
 
   final String image;
-  final String title;
-  final String description;
+  final String _titleKey;
+  final String _descKey;
   final Color color;
+
+  String title(AppLocalizations l10n) {
+    switch (_titleKey) {
+      case 'onboardingTitle1':
+        return l10n.onboardingTitle1;
+      case 'onboardingTitle2':
+        return l10n.onboardingTitle2;
+      case 'onboardingTitle3':
+        return l10n.onboardingTitle3;
+      default:
+        return '';
+    }
+  }
+
+  String description(AppLocalizations l10n) {
+    switch (_descKey) {
+      case 'onboardingDesc1':
+        return l10n.onboardingDesc1;
+      case 'onboardingDesc2':
+        return l10n.onboardingDesc2;
+      case 'onboardingDesc3':
+        return l10n.onboardingDesc3;
+      default:
+        return '';
+    }
+  }
 }
 
 class OnboardingScreen extends StatefulWidget {
@@ -30,30 +58,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   double _pageOffset = 0.0;
   int _currentIndex = 0;
 
-  // Each page color is matched to its image:
-  // gold bars -> deep warm gold-brown, rock -> deep earth brown-green,
-  // third image -> deep navy blue. Change these freely.
-  static const List<OnboardingPage> _pages = [
-    OnboardingPage(
+  static const List<OnboardingPageInfo> _pages = [
+    OnboardingPageInfo(
       image:
       'assets/images/depositphotos_9221392-stock-photo-stacked-gold-bars.jpg',
-      title: 'Trade Gold Securely',
-      description:
-      'Post your gold listings and easily connect with licensed dealers across Tanzania.',
+      titleKey: 'onboardingTitle1',
+      descKey: 'onboardingDesc1',
       color: Color(0xFF7A5C0A),
     ),
-    OnboardingPage(
+    OnboardingPageInfo(
       image: 'assets/images/gold2.jpg',
-      title: 'Verified Dealers',
-      description:
-      'Every dealer is vetted and approved before purchasing, ensuring you trade with trusted partners.',
+      titleKey: 'onboardingTitle2',
+      descKey: 'onboardingDesc2',
       color: Color(0xFF3E4A3D),
     ),
-    OnboardingPage(
+    OnboardingPageInfo(
       image: 'assets/images/gold3.jpg',
-      title: 'Transparent Taxes & Receipts',
-      description:
-      '7% royalty is automatically calculated and secure digital receipts are stored for every transaction.',
+      titleKey: 'onboardingTitle3',
+      descKey: 'onboardingDesc3',
       color: Color(0xFF12306B),
     ),
   ];
@@ -119,6 +141,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final media = MediaQuery.of(context);
     final topInset = media.padding.top;
     final bottomInset = media.padding.bottom;
@@ -135,7 +158,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         body: SizedBox.expand(
           child: Stack(
             children: [
-              // Pages: image circle + text slide together
               Positioned.fill(
                 child: PageView.builder(
                   controller: _pageController,
@@ -183,7 +205,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 ),
                                 SizedBox(height: available < 380 ? 24 : 44),
                                 Text(
-                                  page.title,
+                                  page.title(l10n),
                                   textAlign: TextAlign.center,
                                   style: textTheme.displayLarge?.copyWith(
                                     color: AppColors.white,
@@ -193,7 +215,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 ),
                                 const SizedBox(height: 14),
                                 Text(
-                                  page.description,
+                                  page.description(l10n),
                                   textAlign: TextAlign.center,
                                   style: textTheme.bodyLarge?.copyWith(
                                     color:
@@ -212,7 +234,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
 
-              // Top bar
               Positioned(
                 top: topInset + 12,
                 left: 24,
@@ -232,7 +253,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'DHAHABU',
+                          l10n.dhahabu.toUpperCase(),
                           style: textTheme.titleMedium?.copyWith(
                             color: AppColors.white,
                             fontWeight: FontWeight.w800,
@@ -249,7 +270,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         child: TextButton(
                           onPressed: _finishOnboarding,
                           child: Text(
-                            'Skip',
+                            l10n.skip,
                             style: textTheme.labelLarge?.copyWith(
                               fontSize: 15,
                               color: AppColors.white.withValues(alpha: 0.9),
@@ -262,7 +283,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
 
-              // Bottom controls: dots + button
               Positioned(
                 left: 28,
                 right: 28,
@@ -289,7 +309,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            isLast ? 'Get Started' : 'Continue',
+                            isLast ? l10n.getStarted : l10n.continueText,
                             style: textTheme.labelLarge?.copyWith(
                               color: AppColors.navy,
                             ),

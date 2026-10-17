@@ -4,6 +4,7 @@ import 'package:dhahabu/core/theme/app_theme.dart';
 import 'package:dhahabu/features/auth/providers/auth_provider.dart';
 import 'package:dhahabu/core/providers/app_settings_provider.dart';
 import 'package:dhahabu/features/auth/screens/splash_screen.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 
 import 'package:dhahabu/features/auth/screens/login_screen.dart';
 import 'package:dhahabu/features/auth/screens/register_screen.dart';
@@ -29,6 +30,9 @@ class DhahabuApp extends StatelessWidget {
           return MaterialApp(
             title: 'Dhahabu',
             debugShowCheckedModeBanner: false,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: settings.locale,
             builder: (context, child) {
               final mediaQuery = MediaQuery.of(context);
               return MediaQuery(
@@ -41,7 +45,6 @@ class DhahabuApp extends StatelessWidget {
             theme: lightTheme,
             darkTheme: darkTheme,
             themeMode: settings.themeMode,
-            locale: settings.locale,
             home: const SplashScreen(),
             routes: {
               '/role-selection': (_) => const RoleSelectionScreen(),

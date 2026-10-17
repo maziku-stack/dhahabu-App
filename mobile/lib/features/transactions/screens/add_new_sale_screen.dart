@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:dhahabu/core/network/api_service.dart';
 import 'package:dhahabu/core/theme/app_colors.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 import 'receipt_screen.dart';
 
 class AddNewSaleScreen extends StatefulWidget {
@@ -50,6 +51,7 @@ class _AddNewSaleScreenState extends State<AddNewSaleScreen> {
   }
 
   Future<void> _submit() async {
+    final l10n = context.l10n;
     setState(() {
       _loading = true;
       _error = null;
@@ -64,9 +66,8 @@ class _AddNewSaleScreenState extends State<AddNewSaleScreen> {
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content:
-              Text('Sale created. Both parties must confirm to finalize it.'),
+        SnackBar(
+          content: Text(l10n.saleCreatedSnackbar),
         ),
       );
       Navigator.pushReplacement(
@@ -119,6 +120,7 @@ class _AddNewSaleScreenState extends State<AddNewSaleScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final textTheme = Theme.of(context).textTheme;
     final fieldStyle = textTheme.bodyLarge?.copyWith(
       color: AppColors.navy,
@@ -134,7 +136,7 @@ class _AddNewSaleScreenState extends State<AddNewSaleScreen> {
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          'Record a sale',
+          l10n.recordASale,
           style: textTheme.titleLarge?.copyWith(
             color: AppColors.navy,
             fontWeight: FontWeight.bold,
@@ -148,7 +150,7 @@ class _AddNewSaleScreenState extends State<AddNewSaleScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Enter the details agreed with the other party. Both of you must confirm with your PIN to finalize the sale.',
+              l10n.saleDetailsPrompt,
               style: textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
                 height: 1.5,
@@ -183,7 +185,7 @@ class _AddNewSaleScreenState extends State<AddNewSaleScreen> {
               ),
               const SizedBox(height: 20),
             ],
-            _label('Counterparty phone'),
+            _label(l10n.counterpartyPhone),
             TextField(
               controller: _phone,
               keyboardType: TextInputType.phone,
@@ -192,7 +194,7 @@ class _AddNewSaleScreenState extends State<AddNewSaleScreen> {
               decoration: _decoration(icon: Icons.phone_outlined),
             ),
             const SizedBox(height: 18),
-            _label('Weight'),
+            _label(l10n.weight),
             TextField(
               controller: _weight,
               keyboardType:
@@ -203,7 +205,7 @@ class _AddNewSaleScreenState extends State<AddNewSaleScreen> {
               onChanged: (_) => setState(() {}),
             ),
             const SizedBox(height: 18),
-            _label('Karat'),
+            _label(l10n.karat),
             DropdownButtonFormField<String>(
               initialValue: _karat,
               isExpanded: true,
@@ -218,14 +220,14 @@ class _AddNewSaleScreenState extends State<AddNewSaleScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Weight and karat are self-reported until an approved assay device or provider is connected.',
+              l10n.selfReportedNote,
               style: textTheme.bodySmall?.copyWith(
                 color: AppColors.textSecondary,
                 height: 1.4,
               ),
             ),
             const SizedBox(height: 18),
-            _label('Price per gram'),
+            _label(l10n.pricePerGram),
             TextField(
               controller: _price,
               keyboardType:
@@ -238,7 +240,6 @@ class _AddNewSaleScreenState extends State<AddNewSaleScreen> {
             ),
             const SizedBox(height: 28),
 
-            // ---------- Summary (Plain & Clean) ----------
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Column(
@@ -247,7 +248,7 @@ class _AddNewSaleScreenState extends State<AddNewSaleScreen> {
                   const Divider(color: AppColors.border, height: 1),
                   const SizedBox(height: 16),
                   Text(
-                    'Agreed sale value',
+                    l10n.agreedSaleValue,
                     style: textTheme.bodySmall?.copyWith(
                       color: AppColors.textSecondary,
                       fontWeight: FontWeight.w600,
@@ -265,7 +266,7 @@ class _AddNewSaleScreenState extends State<AddNewSaleScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'This is the price agreed by both parties. Official government charges and receipts will be generated automatically.',
+                    l10n.agreedSaleValueDesc,
                     style: textTheme.bodySmall?.copyWith(
                       color: AppColors.textSecondary,
                       height: 1.5,
@@ -299,7 +300,7 @@ class _AddNewSaleScreenState extends State<AddNewSaleScreen> {
                         ),
                       )
                     : Text(
-                        'Submit sale',
+                        l10n.submitSale,
                         style: textTheme.labelLarge
                             ?.copyWith(color: AppColors.navy),
                       ),

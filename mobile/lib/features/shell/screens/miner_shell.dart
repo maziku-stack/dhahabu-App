@@ -4,6 +4,7 @@ import 'package:dhahabu/features/market/screens/market_screen.dart';
 import 'package:dhahabu/features/listings/screens/listings_screen.dart';
 import 'package:dhahabu/features/transactions/screens/transactions_screen.dart';
 import 'package:dhahabu/features/profile/screens/profile_screen.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 
 class MinerShell extends StatefulWidget {
   const MinerShell({super.key});
@@ -22,6 +23,7 @@ class _MinerShellState extends State<MinerShell> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: AppColors.white,
       body: _screens[_i],
@@ -32,11 +34,11 @@ class _MinerShellState extends State<MinerShell> {
         child: NavigationBar(
           selectedIndex: _i,
           onDestinationSelected: (idx) => setState(() => _i = idx),
-          destinations: const [
-            NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-            NavigationDestination(icon: Icon(Icons.list), label: 'Listings'),
-            NavigationDestination(icon: Icon(Icons.receipt), label: 'Sales'),
-            NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
+          destinations: [
+            NavigationDestination(icon: const Icon(Icons.home), label: l10n.navHome),
+            NavigationDestination(icon: const Icon(Icons.list), label: l10n.navListings),
+            NavigationDestination(icon: const Icon(Icons.receipt), label: l10n.navSales),
+            NavigationDestination(icon: const Icon(Icons.person), label: l10n.navProfile),
           ],
         ),
       ),

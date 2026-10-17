@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dhahabu/features/auth/providers/auth_provider.dart';
+import 'package:dhahabu/l10n/l10n.dart';
 import 'miner_shell.dart';
 import 'dealer_shell.dart';
 import 'gov_shell.dart';
@@ -10,9 +11,10 @@ class RoleRouter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final user = context.watch<AuthProvider>().user;
     if (user == null) {
-      return const Scaffold(body: Center(child: Text('Not logged in')));
+      return Scaffold(body: Center(child: Text(l10n.notLoggedIn)));
     }
     if (user.isAdmin) {
       return const GovShell();
