@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dhahabu/core/theme/app_colors.dart';
@@ -685,7 +683,6 @@ class _InfoRow extends StatelessWidget {
 
 class _ActionRow extends StatelessWidget {
   const _ActionRow({
-    super.key,
     required this.icon,
     required this.label,
     required this.onTap,
