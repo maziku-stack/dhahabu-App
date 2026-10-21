@@ -226,8 +226,9 @@ class AppLocalizationsSw extends AppLocalizations {
       'Ni kwa rejea tu. Si bei rasmi ya Tume ya Madini wala tathmini ya mauzo.';
 
   @override
-  String indicativeReferenceUpdated(String goldTime, String fxDate) =>
-      'Dhahabu imesasishwa $goldTime · Tarehe ya FX $fxDate';
+  String indicativeReferenceUpdated(String goldTime, String fxDate) {
+    return 'Dhahabu imesasishwa $goldTime · Tarehe ya FX $fxDate';
+  }
 
   @override
   String get indicativeReferenceStale =>

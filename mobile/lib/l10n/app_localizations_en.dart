@@ -226,8 +226,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'For reference only. Not an official Mining Commission price or sale assessment.';
 
   @override
-  String indicativeReferenceUpdated(String goldTime, String fxDate) =>
-      'Gold updated $goldTime · FX date $fxDate';
+  String indicativeReferenceUpdated(String goldTime, String fxDate) {
+    return 'Gold updated $goldTime · FX date $fxDate';
+  }
 
   @override
   String get indicativeReferenceStale =>
