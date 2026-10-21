@@ -356,7 +356,10 @@ abstract class AppLocalizations {
   /// **'I have read and agree to the privacy notice'**
   String get privacyNoticeAgreement;
 
-  /// Button to accept the privacy notice and return to registration.
+  /// No description provided for @acceptPrivacyNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Agree and return'**
   String get acceptPrivacyNotice;
 
   /// No description provided for @selectRoleError.

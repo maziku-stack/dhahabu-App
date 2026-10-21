@@ -274,4 +274,70 @@ void main() {
     expect(auth.submittedDetails?['role'], 'miner');
     expect(find.text('Home destination'), findsOneWidget);
   });
+
+  testWidgets('dealer registration submits dealer role after privacy consent',
+      (tester) async {
+    final auth = _TrackingAuthProvider();
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<AuthProvider>.value(value: auth),
+          ChangeNotifierProvider(create: (_) => AppSettingsProvider()),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  settings: const RouteSettings(arguments: 'dealer'),
+                  builder: (_) => const RegisterScreen(),
+                ),
+              ),
+              child: const Text('Go'),
+            ),
+          ),
+          routes: {
+            '/home': (_) => const Scaffold(body: Text('Home destination')),
+          },
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Go'));
+    await tester.pumpAndSettle();
+    expect(find.text('Register as Dealer'), findsOneWidget);
+
+    const values = [
+      'Asha Dealer',
+      'asha@example.com',
+      '0712345679',
+      'correct-horse',
+      'correct-horse',
+    ];
+    for (var index = 0; index < values.length; index++) {
+      final field = find.byType(TextField).at(index);
+      await tester.ensureVisible(field);
+      await tester.enterText(field, values[index]);
+    }
+
+    await tester.tap(find.text('I have read and agree to the privacy notice'));
+    await tester.pumpAndSettle();
+    final acceptButton = find.text('Agree and return');
+    await tester.ensureVisible(acceptButton);
+    await tester.tap(acceptButton);
+    await tester.pumpAndSettle();
+
+    final createAccountButton =
+        find.widgetWithText(ElevatedButton, 'Create account');
+    await tester.ensureVisible(createAccountButton);
+    await tester.tap(createAccountButton);
+    await tester.pumpAndSettle();
+
+    expect(auth.registerCalled, isTrue);
+    expect(auth.submittedDetails?['role'], 'dealer');
+    expect(find.text('Home destination'), findsOneWidget);
+  });
 }
