@@ -10,7 +10,10 @@ import 'package:dhahabu/features/auth/providers/auth_provider.dart';
 import 'package:dhahabu/l10n/l10n.dart';
 
 class PrivacyScreen extends StatefulWidget {
-  const PrivacyScreen({super.key});
+  const PrivacyScreen({super.key, this.showAcceptAction = false});
+
+  /// Shows an explicit consent action when this screen is opened during signup.
+  final bool showAcceptAction;
 
   @override
   State<PrivacyScreen> createState() => _PrivacyScreenState();
@@ -58,8 +61,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                 if (context.mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text(l10n.dataExportCopied)),
+                    SnackBar(content: Text(l10n.dataExportCopied)),
                   );
                 }
               },
@@ -213,6 +215,21 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
               fontStyle: FontStyle.italic,
             ),
           ),
+          if (widget.showAcceptAction) ...[
+            const SizedBox(height: 24),
+            SizedBox(
+              height: 52,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.gold,
+                  foregroundColor: AppColors.navy,
+                  elevation: 0,
+                ),
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(l10n.acceptPrivacyNotice),
+              ),
+            ),
+          ],
           if (authenticated) ...[
             const SizedBox(height: 28),
             const Divider(color: AppColors.border, height: 1),
@@ -236,7 +253,8 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                   ),
                 ),
                 onPressed: _busy ? null : _export,
-                icon: const Icon(Icons.download_outlined, color: AppColors.gold),
+                icon:
+                    const Icon(Icons.download_outlined, color: AppColors.gold),
                 label: Text(l10n.viewAndCopyDataExport),
               ),
             ),
@@ -265,7 +283,8 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
               onChanged: _busy
                   ? null
                   : (value) => setState(() => _requestType = value ?? 'access'),
-              decoration: _decoration(icon: Icons.shield_outlined, label: l10n.requestType),
+              decoration: _decoration(
+                  icon: Icons.shield_outlined, label: l10n.requestType),
             ),
             const SizedBox(height: 18),
             TextField(
@@ -274,7 +293,8 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
               maxLines: 3,
               style: textTheme.bodyLarge?.copyWith(color: AppColors.navy),
               cursorColor: AppColors.gold,
-              decoration: _decoration(icon: Icons.notes_rounded, label: l10n.detailsOptional),
+              decoration: _decoration(
+                  icon: Icons.notes_rounded, label: l10n.detailsOptional),
             ),
             const SizedBox(height: 12),
             SizedBox(

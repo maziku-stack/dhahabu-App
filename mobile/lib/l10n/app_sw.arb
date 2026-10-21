@@ -53,6 +53,7 @@
   "phoneNumber": "Namba ya simu",
   "confirmPassword": "Thibitisha nenosiri",
   "privacyNoticeAgreement": "Nimesoma na kukubaliana na taarifa ya faragha",
+  "acceptPrivacyNotice": "Kubali na urudi",
   "selectRoleError": "Tafadhali chagua ikiwa wewe ni Mchimbaji au Mfanyabiashara.",
   "privacyAckError": "Soma na ukubali taarifa ya faragha ili kuendelea.",
   "roleNotSpecified": "Jukumu halijatajwa. Tafadhali rudi nyuma na uchague jukumu.",

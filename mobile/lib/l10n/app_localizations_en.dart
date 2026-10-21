@@ -145,6 +145,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'I have read and agree to the privacy notice';
 
   @override
+  String get acceptPrivacyNotice => 'Agree and return';
+
+  @override
   String get selectRoleError =>
       'Please select whether you are a Miner or Dealer.';
 

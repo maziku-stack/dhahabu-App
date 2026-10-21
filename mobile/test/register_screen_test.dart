@@ -38,7 +38,8 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('registration requires acknowledging privacy notice first', (tester) async {
+  testWidgets('registration requires acknowledging privacy notice first',
+      (tester) async {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
@@ -77,6 +78,50 @@ void main() {
       find.text('Read and acknowledge the privacy notice to continue.'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('accepting privacy notice from policy screen enables signup',
+      (tester) async {
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => AuthProvider()),
+          ChangeNotifierProvider(create: (_) => AppSettingsProvider()),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  settings: const RouteSettings(arguments: 'miner'),
+                  builder: (_) => const RegisterScreen(),
+                ),
+              ),
+              child: const Text('Go'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Go'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('I have read and agree to the privacy notice'));
+    await tester.pumpAndSettle();
+    expect(find.text('Privacy and data'), findsOneWidget);
+
+    final acceptButton = find.text('Agree and return');
+    await tester.ensureVisible(acceptButton);
+    await tester.tap(acceptButton);
+    await tester.pumpAndSettle();
+
+    expect(tester.widget<Checkbox>(find.byType(Checkbox)).value, isTrue);
+    expect(find.text('Read and acknowledge the privacy notice to continue.'),
+        findsNothing);
   });
 
   testWidgets('registration requires a role before submitting', (tester) async {

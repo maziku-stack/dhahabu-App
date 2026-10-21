@@ -145,6 +145,9 @@ class AppLocalizationsSw extends AppLocalizations {
       'Nimesoma na kukubaliana na taarifa ya faragha';
 
   @override
+  String get acceptPrivacyNotice => 'Kubali na urudi';
+
+  @override
   String get selectRoleError =>
       'Tafadhali chagua ikiwa wewe ni Mchimbaji au Mfanyabiashara.';
 

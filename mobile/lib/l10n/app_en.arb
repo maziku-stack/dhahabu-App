@@ -53,6 +53,7 @@
   "phoneNumber": "Phone number",
   "confirmPassword": "Confirm password",
   "privacyNoticeAgreement": "I have read and agree to the privacy notice",
+  "acceptPrivacyNotice": "Agree and return",
   "selectRoleError": "Please select whether you are a Miner or Dealer.",
   "privacyAckError": "Read and acknowledge the privacy notice to continue.",
   "roleNotSpecified": "Role not specified. Please go back and select a role.",

@@ -105,6 +105,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  Future<void> _readPrivacyNotice() async {
+    final accepted = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const PrivacyScreen(showAcceptAction: true),
+      ),
+    );
+    if (accepted == true && mounted) {
+      setState(() {
+        _noticeAcknowledged = true;
+        _error = null;
+      });
+    }
+  }
+
   @override
   void dispose() {
     _name.dispose();
@@ -118,7 +133,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final roleTitle = _role != null 
+    final roleTitle = _role != null
         ? l10n.registerAs('${_role![0].toUpperCase()}${_role!.substring(1)}')
         : l10n.createAccount;
 
@@ -224,7 +239,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     TextField(
                       controller: _name,
-                      style: const TextStyle(color: AppColors.navy, fontSize: 14),
+                      style:
+                          const TextStyle(color: AppColors.navy, fontSize: 14),
                       textCapitalization: TextCapitalization.words,
                       decoration: InputDecoration(
                         labelText: l10n.fullName,
@@ -234,7 +250,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 12),
                     TextField(
                       controller: _email,
-                      style: const TextStyle(color: AppColors.navy, fontSize: 14),
+                      style:
+                          const TextStyle(color: AppColors.navy, fontSize: 14),
                       keyboardType: TextInputType.emailAddress,
                       autocorrect: false,
                       decoration: InputDecoration(
@@ -245,7 +262,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 12),
                     TextField(
                       controller: _phone,
-                      style: const TextStyle(color: AppColors.navy, fontSize: 14),
+                      style:
+                          const TextStyle(color: AppColors.navy, fontSize: 14),
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
                         labelText: l10n.phoneNumber,
@@ -255,7 +273,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 12),
                     TextField(
                       controller: _password,
-                      style: const TextStyle(color: AppColors.navy, fontSize: 14),
+                      style:
+                          const TextStyle(color: AppColors.navy, fontSize: 14),
                       obscureText: !_passwordVisible,
                       decoration: InputDecoration(
                         labelText: l10n.passwordMin8,
@@ -277,12 +296,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 12),
                     TextField(
                       controller: _passwordConfirmation,
-                      style: const TextStyle(color: AppColors.navy, fontSize: 14),
+                      style:
+                          const TextStyle(color: AppColors.navy, fontSize: 14),
                       obscureText: !_passwordConfirmationVisible,
                       textInputAction: TextInputAction.done,
                       decoration: InputDecoration(
                         labelText: l10n.confirmPassword,
-                        prefixIcon: const Icon(Icons.lock_reset_outlined, size: 20),
+                        prefixIcon:
+                            const Icon(Icons.lock_reset_outlined, size: 20),
                         suffixIcon: IconButton(
                           onPressed: () => setState(
                             () => _passwordConfirmationVisible =
@@ -303,16 +324,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       children: [
                         Checkbox(
                           value: _noticeAcknowledged,
-                          onChanged: (value) =>
-                              setState(() => _noticeAcknowledged = value ?? false),
+                          onChanged: (value) => setState(
+                              () => _noticeAcknowledged = value ?? false),
                           activeColor: AppColors.navy,
                         ),
                         Expanded(
                           child: GestureDetector(
-                            onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => const PrivacyScreen())),
+                            onTap: _readPrivacyNotice,
                             child: Text(
                               l10n.privacyNoticeAgreement,
                               style: const TextStyle(
