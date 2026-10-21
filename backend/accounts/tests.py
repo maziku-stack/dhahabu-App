@@ -5,7 +5,7 @@ from rest_framework.test import APIClient
 
 from listings.models import Listing
 from transactions.models import Transaction
-from .models import PrivacyRequest, User
+from .models import DealerProfile, PrivacyRequest, User
 
 
 class PrivacyFeatureTests(TestCase):
@@ -72,3 +72,87 @@ class PrivacyFeatureTests(TestCase):
         created = User.objects.get(phone='0700000299')
         self.assertEqual(created.privacy_notice_version, '2026-10-draft-1')
         self.assertIsNotNone(created.privacy_acknowledged_at)
+
+
+class EmailPasswordAuthFlowTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.registration = {
+            'full_name': 'QA Miner',
+            'email': 'qa.miner@example.test',
+            'phone': '0700000501',
+            'role': 'miner',
+            'password': 'Mine-Gold-Strong-55!',
+            'password_confirmation': 'Mine-Gold-Strong-55!',
+            'privacy_notice_version': '2026-10-draft-1',
+            'privacy_notice_acknowledged': True,
+        }
+
+    def test_register_login_and_authenticated_profile_round_trip(self):
+        registered = self.client.post(
+            '/api/auth/register/', self.registration, format='json'
+        )
+        self.assertEqual(registered.status_code, 201, registered.data)
+        self.assertEqual(registered.data['user']['email'], self.registration['email'])
+        self.assertTrue(registered.data['access'])
+        self.assertTrue(registered.data['refresh'])
+
+        logged_in = self.client.post('/api/auth/login/', {
+            'email': self.registration['email'].upper(),
+            'password': self.registration['password'],
+        }, format='json')
+        self.assertEqual(logged_in.status_code, 200, logged_in.data)
+        self.assertEqual(logged_in.data['user']['id'], registered.data['user']['id'])
+
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {logged_in.data['access']}")
+        profile = self.client.get('/api/auth/me/')
+        self.assertEqual(profile.status_code, 200, profile.data)
+        self.assertEqual(profile.data['phone'], self.registration['phone'])
+        self.assertEqual(profile.data['role'], 'miner')
+
+    def test_registration_creates_pending_dealer_profile(self):
+        payload = {
+            **self.registration,
+            'email': 'qa.dealer@example.test',
+            'phone': '0700000502',
+            'role': 'dealer',
+        }
+        response = self.client.post('/api/auth/register/', payload, format='json')
+        self.assertEqual(response.status_code, 201, response.data)
+        profile = DealerProfile.objects.get(user__phone=payload['phone'])
+        self.assertEqual(profile.verification_status, 'pending')
+
+    def test_duplicate_email_or_phone_returns_validation_error(self):
+        first = self.client.post('/api/auth/register/', self.registration, format='json')
+        self.assertEqual(first.status_code, 201)
+
+        duplicate_email = {
+            **self.registration,
+            'phone': '0700000503',
+        }
+        email_response = self.client.post(
+            '/api/auth/register/', duplicate_email, format='json'
+        )
+        self.assertEqual(email_response.status_code, 400)
+
+        duplicate_phone = {
+            **self.registration,
+            'email': 'another@example.test',
+        }
+        phone_response = self.client.post(
+            '/api/auth/register/', duplicate_phone, format='json'
+        )
+        self.assertEqual(phone_response.status_code, 400)
+
+    def test_login_rejects_wrong_password(self):
+        registered = self.client.post(
+            '/api/auth/register/', self.registration, format='json'
+        )
+        self.assertEqual(registered.status_code, 201)
+
+        response = self.client.post('/api/auth/login/', {
+            'email': self.registration['email'],
+            'password': 'wrong password',
+        }, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['detail'], 'Invalid email or password.')

@@ -17,3 +17,18 @@ class GoldPrice(models.Model):
     class Meta:
         db_table = 'gold_prices'
         ordering = ['-effective_at']
+
+
+class ReferencePriceSnapshot(models.Model):
+    """Third-party estimate, kept separate from official Commission prices."""
+    gold_usd_per_troy_ounce = models.DecimalField(max_digits=16, decimal_places=6)
+    usd_to_tzs = models.DecimalField(max_digits=16, decimal_places=8)
+    tzs_per_gram = models.DecimalField(max_digits=18, decimal_places=6)
+    gold_effective_at = models.DateTimeField()
+    fx_effective_date = models.DateField()
+    gold_source = models.CharField(max_length=100)
+    fx_source = models.CharField(max_length=100)
+    fetched_at = models.DateTimeField()
+
+    class Meta:
+        ordering = ['-fetched_at']

@@ -62,6 +62,7 @@ mobile/
    ```env
    DEBUG=True
    SECRET_KEY=dev-secret
+   ALLOWED_HOSTS=*
    USE_SQLITE=False
    POSTGRES_DB=dhahabu
    POSTGRES_USER=postgres
@@ -70,6 +71,13 @@ mobile/
    POSTGRES_PORT=5433
    MOCK_OTP=True
    ```
+
+   In PowerShell, an already-set process variable overrides `.env`. If Django refuses to start with `Set explicit ALLOWED_HOSTS` (for example, because the shell has `DEBUG=release`), set the local development values in that terminal before running Django:
+   ```powershell
+   $env:DEBUG = "True"
+   $env:ALLOWED_HOSTS = "*"
+   ```
+   Use `ALLOWED_HOSTS=*` only with local `DEBUG=True`; production must use explicit host names.
 
 5. Run database migrations and create an admin user:
    ```powershell
@@ -80,8 +88,10 @@ mobile/
 
 6. Start the Django development server:
    ```powershell
-   python manage.py runserver 0.0.0.0:8000
+   .\run-dev.ps1
    ```
+
+   For an Android phone on the same Wi-Fi, run `mobile\\run-on-device.ps1` in a second terminal. It selects this computer's current LAN IP for `API_BASE_URL`.
 
 ---
 

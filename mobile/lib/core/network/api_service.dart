@@ -270,6 +270,16 @@ class ApiService {
     throw Exception('Prices failed');
   }
 
+  Future<Map<String, dynamic>> getIndicativeReferencePrice() async {
+    final res = await _get(Uri.parse('$baseUrl/pricing/reference/'),
+        headers: await _headers());
+    final data = _decodeApiResponse(res);
+    if (res.statusCode == 200 || res.statusCode == 503) return data;
+    final detail = data['detail'] ??
+        (data.isNotEmpty ? data.values.first : 'Prices failed');
+    throw Exception(detail is List ? detail.join(' ') : detail.toString());
+  }
+
   Future<void> setPrice(
     String karat,
     double price,
@@ -369,7 +379,10 @@ class ApiService {
       return data as Map<String, dynamic>;
     }
     if (data is Map) {
-      final detail = data['detail'] ?? data.values.map((v) => v is List ? v.join(' ') : v.toString()).join(' ');
+      final detail = data['detail'] ??
+          data.values
+              .map((v) => v is List ? v.join(' ') : v.toString())
+              .join(' ');
       throw Exception(detail);
     }
     throw Exception(data.toString());

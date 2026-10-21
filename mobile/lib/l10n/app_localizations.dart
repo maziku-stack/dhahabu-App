@@ -488,6 +488,24 @@ abstract class AppLocalizations {
   /// **'Gold Market'**
   String get goldMarket;
 
+  /// **'Indicative gold reference'**
+  String get indicativeReferenceTitle;
+
+  /// **'24K international spot estimate · TZS per gram'**
+  String get indicativeReferenceBasis;
+
+  /// **'For reference only. Not an official Mining Commission price or sale assessment.'**
+  String get indicativeReferenceNotice;
+
+  /// **'Gold updated {goldTime} · FX date {fxDate}'**
+  String indicativeReferenceUpdated(String goldTime, String fxDate);
+
+  /// **'This reference data may be out of date.'**
+  String get indicativeReferenceStale;
+
+  /// **'Indicative reference price is unavailable.'**
+  String get indicativeReferenceUnavailable;
+
   /// No description provided for @government.
   ///
   /// In en, this message translates to:

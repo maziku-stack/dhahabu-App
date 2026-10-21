@@ -215,6 +215,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get goldMarket => 'Gold Market';
 
   @override
+  String get indicativeReferenceTitle => 'Indicative gold reference';
+
+  @override
+  String get indicativeReferenceBasis =>
+      '24K international spot estimate · TZS per gram';
+
+  @override
+  String get indicativeReferenceNotice =>
+      'For reference only. Not an official Mining Commission price or sale assessment.';
+
+  @override
+  String indicativeReferenceUpdated(String goldTime, String fxDate) =>
+      'Gold updated $goldTime · FX date $fxDate';
+
+  @override
+  String get indicativeReferenceStale =>
+      'This reference data may be out of date.';
+
+  @override
+  String get indicativeReferenceUnavailable =>
+      'Indicative reference price is unavailable.';
+
+  @override
   String get government => 'GOVERNMENT';
 
   @override

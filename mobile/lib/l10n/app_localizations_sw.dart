@@ -215,6 +215,29 @@ class AppLocalizationsSw extends AppLocalizations {
   String get goldMarket => 'Soko la Dhahabu';
 
   @override
+  String get indicativeReferenceTitle => 'Kiwango elekezi cha dhahabu';
+
+  @override
+  String get indicativeReferenceBasis =>
+      'Makadirio ya soko la kimataifa la 24K · TZS kwa gramu';
+
+  @override
+  String get indicativeReferenceNotice =>
+      'Ni kwa rejea tu. Si bei rasmi ya Tume ya Madini wala tathmini ya mauzo.';
+
+  @override
+  String indicativeReferenceUpdated(String goldTime, String fxDate) =>
+      'Dhahabu imesasishwa $goldTime · Tarehe ya FX $fxDate';
+
+  @override
+  String get indicativeReferenceStale =>
+      'Taarifa hii ya rejea huenda imepitwa na wakati.';
+
+  @override
+  String get indicativeReferenceUnavailable =>
+      'Bei elekezi haipatikani kwa sasa.';
+
+  @override
   String get government => 'SERIKALI';
 
   @override

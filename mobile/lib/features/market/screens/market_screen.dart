@@ -26,6 +26,7 @@ class MarketScreen extends StatefulWidget {
 
 class _MarketScreenState extends State<MarketScreen> {
   List<dynamic> _transactions = [];
+  Map<String, dynamic>? _referencePrice;
   bool _loading = true;
   final _fmt = NumberFormat('#,##0.00');
   final _fmtInt = NumberFormat('#,##0');
@@ -38,6 +39,10 @@ class _MarketScreenState extends State<MarketScreen> {
 
   Future<void> _load() async {
     setState(() => _loading = true);
+    await Future.wait([_loadTransactions(), _loadReferencePrice()]);
+  }
+
+  Future<void> _loadTransactions() async {
     try {
       final txns = await ApiService().getTransactions();
       if (!mounted) return;
@@ -48,6 +53,17 @@ class _MarketScreenState extends State<MarketScreen> {
     } catch (_) {
       if (!mounted) return;
       setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _loadReferencePrice() async {
+    try {
+      final quote = await ApiService().getIndicativeReferencePrice();
+      if (!mounted) return;
+      setState(() => _referencePrice = quote);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _referencePrice = null);
     }
   }
 
@@ -80,9 +96,8 @@ class _MarketScreenState extends State<MarketScreen> {
                 ? l10n.dealerDashboard
                 : l10n.goldMarket;
 
-    final String chip = widget.isAdmin
-        ? l10n.government
-        : (user?.role.toUpperCase() ?? 'USER');
+    final String chip =
+        widget.isAdmin ? l10n.government : (user?.role.toUpperCase() ?? 'USER');
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -177,6 +192,8 @@ class _MarketScreenState extends State<MarketScreen> {
                 l10n.goldMarketOverviewSubtitle,
                 textTheme,
               ),
+            const SizedBox(height: 20),
+            _IndicativeReferenceCard(data: _referencePrice, l10n: l10n),
             const SizedBox(height: 28),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -245,9 +262,7 @@ class _MarketScreenState extends State<MarketScreen> {
                         style: textTheme.displayLarge?.copyWith(
                           color: AppColors.navy,
                           fontSize: 22,
-                          fontFeatures: const [
-                            FontFeature.tabularFigures()
-                          ],
+                          fontFeatures: const [FontFeature.tabularFigures()],
                         ),
                       ),
                       if (tax != null) ...[
@@ -310,7 +325,8 @@ class _MarketScreenState extends State<MarketScreen> {
         ),
       ];
 
-  List<Widget> _minerHeader(String fullName, TextTheme t, AppLocalizations l10n) {
+  List<Widget> _minerHeader(
+      String fullName, TextTheme t, AppLocalizations l10n) {
     double totalWeight = 0;
     double totalRevenue = 0;
     for (var tx in _transactions) {
@@ -387,7 +403,8 @@ class _MarketScreenState extends State<MarketScreen> {
                     children: [
                       Text(
                         l10n.totalSalesValue,
-                        style: const TextStyle(color: Colors.white70, fontSize: 12),
+                        style: const TextStyle(
+                            color: Colors.white70, fontSize: 12),
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -413,7 +430,8 @@ class _MarketScreenState extends State<MarketScreen> {
                     children: [
                       Text(
                         l10n.goldSold,
-                        style: const TextStyle(color: Colors.white70, fontSize: 12),
+                        style: const TextStyle(
+                            color: Colors.white70, fontSize: 12),
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -436,7 +454,8 @@ class _MarketScreenState extends State<MarketScreen> {
     ];
   }
 
-  List<Widget> _dealerHeader(String fullName, TextTheme t, AppLocalizations l10n) {
+  List<Widget> _dealerHeader(
+      String fullName, TextTheme t, AppLocalizations l10n) {
     double totalWeight = 0;
     double totalRevenue = 0;
     for (var tx in _transactions) {
@@ -485,7 +504,8 @@ class _MarketScreenState extends State<MarketScreen> {
                     children: [
                       Text(
                         l10n.totalPurchases,
-                        style: const TextStyle(color: Colors.white70, fontSize: 12),
+                        style: const TextStyle(
+                            color: Colors.white70, fontSize: 12),
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -510,7 +530,8 @@ class _MarketScreenState extends State<MarketScreen> {
                     children: [
                       Text(
                         l10n.goldAcquired,
-                        style: const TextStyle(color: Colors.white70, fontSize: 12),
+                        style: const TextStyle(
+                            color: Colors.white70, fontSize: 12),
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -530,6 +551,103 @@ class _MarketScreenState extends State<MarketScreen> {
         ),
       ),
     ];
+  }
+}
+
+class _IndicativeReferenceCard extends StatelessWidget {
+  const _IndicativeReferenceCard({required this.data, required this.l10n});
+
+  final Map<String, dynamic>? data;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final price = data?['price'];
+    final value = price is Map ? double.tryParse('${price['value']}') : null;
+    final stale = data?['is_stale'] == true || data?['status'] == 'stale';
+    final sources = (data?['sources'] as List?)?.join(' · ');
+    final goldTime = _formatTimestamp(data?['gold_effective_at']);
+    final fxDate = data?['fx_effective_date']?.toString() ?? '—';
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.gold.withValues(alpha: .45)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.info_outline_rounded,
+                  color: AppColors.gold, size: 20),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.indicativeReferenceTitle,
+                  style: textTheme.titleMedium?.copyWith(
+                    color: AppColors.navy,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              if (stale)
+                const Icon(Icons.schedule_rounded,
+                    color: AppColors.warning, size: 18),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(l10n.indicativeReferenceBasis,
+              style: textTheme.bodySmall
+                  ?.copyWith(color: AppColors.textSecondary)),
+          const SizedBox(height: 14),
+          if (value != null)
+            Text(
+              'TZS ${NumberFormat('#,##0.00').format(value)}',
+              style: textTheme.headlineSmall?.copyWith(
+                color: AppColors.navy,
+                fontWeight: FontWeight.bold,
+              ),
+            )
+          else
+            Text(
+              l10n.indicativeReferenceUnavailable,
+              style: textTheme.bodyMedium?.copyWith(color: AppColors.warning),
+            ),
+          if (stale) ...[
+            const SizedBox(height: 6),
+            Text(l10n.indicativeReferenceStale,
+                style: textTheme.bodySmall?.copyWith(color: AppColors.warning)),
+          ],
+          if (value != null) ...[
+            const SizedBox(height: 8),
+            Text(l10n.indicativeReferenceUpdated(goldTime, fxDate),
+                style: textTheme.bodySmall
+                    ?.copyWith(color: AppColors.textSecondary)),
+            if (sources != null) ...[
+              const SizedBox(height: 3),
+              Text(sources,
+                  style: textTheme.bodySmall
+                      ?.copyWith(color: AppColors.textSecondary)),
+            ],
+          ],
+          const SizedBox(height: 10),
+          Text(l10n.indicativeReferenceNotice,
+              style: textTheme.bodySmall?.copyWith(color: AppColors.navy)),
+        ],
+      ),
+    );
+  }
+
+  String _formatTimestamp(dynamic value) {
+    if (value is! String) return '—';
+    final parsed = DateTime.tryParse(value);
+    return parsed == null
+        ? '—'
+        : DateFormat.yMMMd().add_jm().format(parsed.toLocal());
   }
 }
 

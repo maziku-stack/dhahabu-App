@@ -78,6 +78,18 @@
   "dealerDashboard": "Dealer Dashboard",
   "govDashboard": "Government Dashboard",
   "goldMarket": "Gold Market",
+  "indicativeReferenceTitle": "Indicative gold reference",
+  "indicativeReferenceBasis": "24K international spot estimate · TZS per gram",
+  "indicativeReferenceNotice": "For reference only. Not an official Mining Commission price or sale assessment.",
+  "indicativeReferenceUpdated": "Gold updated {goldTime} · FX date {fxDate}",
+  "@indicativeReferenceUpdated": {
+    "placeholders": {
+      "goldTime": { "type": "String" },
+      "fxDate": { "type": "String" }
+    }
+  },
+  "indicativeReferenceStale": "This reference data may be out of date.",
+  "indicativeReferenceUnavailable": "Indicative reference price is unavailable.",
   "government": "GOVERNMENT",
   "recordSaleTooltip": "Record a sale",
   "recentSales": "Recent Sales",

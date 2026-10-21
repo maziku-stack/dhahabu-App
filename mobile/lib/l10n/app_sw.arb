@@ -78,6 +78,18 @@
   "dealerDashboard": "Dashibodi ya Mfanyabiashara",
   "govDashboard": "Dashibodi ya Serikali",
   "goldMarket": "Soko la Dhahabu",
+  "indicativeReferenceTitle": "Kiwango elekezi cha dhahabu",
+  "indicativeReferenceBasis": "Makadirio ya soko la kimataifa la 24K · TZS kwa gramu",
+  "indicativeReferenceNotice": "Ni kwa rejea tu. Si bei rasmi ya Tume ya Madini wala tathmini ya mauzo.",
+  "indicativeReferenceUpdated": "Dhahabu imesasishwa {goldTime} · Tarehe ya FX {fxDate}",
+  "@indicativeReferenceUpdated": {
+    "placeholders": {
+      "goldTime": { "type": "String" },
+      "fxDate": { "type": "String" }
+    }
+  },
+  "indicativeReferenceStale": "Taarifa hii ya rejea huenda imepitwa na wakati.",
+  "indicativeReferenceUnavailable": "Bei elekezi haipatikani kwa sasa.",
   "government": "SERIKALI",
   "recordSaleTooltip": "Rekodi mauzo",
   "recentSales": "Mauzo ya Hivi Karibuni",
