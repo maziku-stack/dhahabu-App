@@ -83,7 +83,7 @@ mobile/
    ```powershell
    python manage.py makemigrations
    python manage.py migrate
-   python manage.py create_admin --phone 0700000001 --name "TRA Admin"
+   python manage.py create_admin --phone 0781143866 --name "Government Admin"
    ```
 
 6. Start the Django development server:
@@ -107,9 +107,9 @@ mobile/
    flutter pub get
    ```
 
-3. Run the app on a connected physical device using your local network IP (e.g., `192.168.1.233`):
+3. Run the app on a connected physical device using your local network IP (e.g., `192.168.1.182`):
    ```powershell
-   flutter run --dart-define=API_BASE_URL=http://192.168.1.233:8000/api
+   flutter run --dart-define=API_BASE_URL=http://192.168.1.182:8000/api
    ```
 
    - **Android Emulator:** `flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000/api`
