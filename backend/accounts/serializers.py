@@ -86,6 +86,7 @@ class UserSerializer(serializers.ModelSerializer):
         if obj.role != 'dealer':
             return None
         try:
+        
             return obj.dealer_profile.verification_status
         except DealerProfile.DoesNotExist:
             return 'pending'
