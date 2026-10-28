@@ -70,8 +70,10 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
     def get_dealer_verified(self, obj):
-        if obj.role != 'dealer':
+        if obj.role != 'dealer':   
             return None
+        if obj.role == 'dealer':
+            return obj.dealer_profile.self.verification_status(True)
         try:
             return obj.dealer_profile.verification_status == 'verified'
         except DealerProfile.DoesNotExist:
